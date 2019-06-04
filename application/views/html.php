@@ -2,12 +2,17 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title>Dependencies</title>
+    <link href="favicon.ico" rel="shortcut icon" type="image/x-icon">
+    <title><?= $title ?></title>
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
   </head>
   <body>
+
+    <?= $header ?>
+    <?= $page_content ?>
+    <?= $footer ?>
 
     <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
     <script>window.jQuery || document.write('<script src="assets/js/jquery-3.4.1.min.js">\x3C/script>')</script>
