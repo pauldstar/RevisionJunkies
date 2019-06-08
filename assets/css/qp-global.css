@@ -1,0 +1,13 @@
+/*  NAVBAR */
+
+.navbar-brand,
+.nav-item {
+  font-family: 'Righteous', cursive;
+}
+
+#navbar-section {
+  position: relative;
+  z-index: 1031;
+}
+
+/* GAME */
