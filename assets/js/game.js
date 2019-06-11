@@ -3,50 +3,39 @@
 $(document).ready(_=>
 {
   Game.start();
-  $(document).keydown(Game.input);
-  $(document).click(Game.input);
-
-  Display.$retryBtn.click(Game.restart);
 });
 
 var Game = (_=>
 {
-  let _score, _lost, _won,
+  let _score, _status,
     _numStartTiles = 2,
     _gridSize = 4;
 
-  function _input(event)
+  function _gameScore(value)
   {
-    switch (event.type)
-    {
-      case 'click': _clickInput(); break;
-      case 'keydown': _keydownInput(event.which); break;
-      case 'swipe': break;
-    }
-  }
-
-  function _clickInput()
-  {
-
-  }
-
-  function _keydownInput(keycode)
-  {
-    switch(keycode)
-    {
-      case 32: _getNewTileValue(); break;
-      default: _move();
-    }
-  }
-
-  function _getScore()
-  {
-    return _score;
+    if (value) _score = value;
+    else return _score;
   }
 
   function _gameStatus()
   {
-    return _lost ? 'lost' : _won ? 'won' : 'live';
+    let gameOver = _status['lost'] || _status['won'];
+    return !gameOver;
+  }
+
+  function _checkGameStatus()
+  {
+    if (!Grid.movesAvailable()) _status['lost'] = true;
+    if (!_gameStatus()) Display.message(false);
+  }
+
+  function _startGame()
+  {
+    _score = 0;
+    _status = { lost: false, won: false };
+    Grid.build(_gridSize);
+    Grid.addStartTiles(_numStartTiles);
+    Display.refresh();
   }
 
   function _restartGame()
@@ -55,54 +44,15 @@ var Game = (_=>
     Display.restart();
   }
 
-  function _startGame()
+  function _move(e)
   {
-    _score = 0;
-    _won = false;
-    _lost = false;
-    Grid.build(_gridSize);
-    Grid.addStartTiles(_numStartTiles);
-    Display.refresh();
-  }
+    let preventMove = !_gameStatus() || !Display.tilesValuesAreSet();
+    if (preventMove) return;
 
-  function _getNewTileValue()
-  {
-    Display.openTile();
-    if (!Grid.movesAvailable()) _lost = true;
-    Display.checkGameStatus();
-  }
-
-  function _getInputVector(keycode, direction)
-  {
-    if (keycode)
-    { // up: 0, right: 1, down: 2, left: 3
-      let keyCodeMap = {
-        38: 0, 39: 1, 40: 2, 37: 3,
-        75: 0, 76: 1, 74: 2, 72: 3
-      };
-
-      direction = keyCodeMap[keycode];
-      if (direction === undefined) return null;
-    }
-    // Vectors representing tile movement
-    let vectorMap = {
-      0: {x: 0,  y: -1},
-      1: {x: 1,  y: 0},
-      2: {x: 0,  y: 1},
-      3: {x: -1, y: 0}
-    };
-
-    return vectorMap[direction];
-  }
-
-  function _move()
-  {
-    if (_lost || _won || !Display.tilesValuesAreSet()) return;
-
-    let vector = _getInputVector(event.which);
+    let vector = Input.getVector(e);
     if (!vector) return;
 
-    event.preventDefault();
+    e.preventDefault();
 
     let moved = Grid.move(vector);
 
@@ -112,21 +62,18 @@ var Game = (_=>
 
       let maxMergeValue = Grid.getMaxMerge(true);
 
-      if (maxMergeValue >= 9999) _won = true;
-      _score = _won ? 9999 : maxMergeValue;
+      if (maxMergeValue >= 9999) _status['won'] = true;
+      _score = _status['won'] ? 9999 : maxMergeValue;
 
       Display.refresh();
     }
   }
 
   return {
-    score: _getScore,
-    status: _gameStatus,
+    score: _gameScore,
     start: _startGame,
     move: _move,
-    restart: _restartGame,
-    input: _input,
-    getInputVector: _getInputVector
+    checkStatus: _checkGameStatus
   }
 })();
 
@@ -209,7 +156,7 @@ var Grid = (_=>
 
       for (let direction = 0; direction < 4; direction++)
       {
-        let vector = Game.getInputVector(null, direction);
+        let vector = Input.getVector(null, direction);
         let cell = {
           x: x + vector.x,
           y: y + vector.y
@@ -418,20 +365,90 @@ var Grid = (_=>
   }
 })();
 
+var Input = (_=>
+{
+  let _$retryBtn = $('.retry-button'),
+    _gestures = new Hammer(document);
+
+  $(document).on('keydown', _input);
+  _$retryBtn.click(Game.restart);
+  _gestures.get('pan').set({ direction: Hammer.DIRECTION_ALL });
+  _gestures.on('panstart tap', _input);
+
+  function _input(e)
+  {
+    switch (e.type)
+    {
+      case 'keydown': _keydownInput(e); break;
+      case 'tap': Display.openTile(); break;
+      case 'panstart': _swipeInput(e);
+    }
+  }
+
+  function _swipeInput(e)
+  {
+    let gameSection = document.getElementById('game-section');
+
+    let isModalGesture = $(e.target).is('.modal'),
+      isGridGesture = $(e.target).is('#game-section') ||
+        $.contains(gameSection, e.target);
+
+    if (isGridGesture) Game.move(e);
+    else if (isModalGesture)
+    {
+      // answer question
+    }
+  }
+
+  function _keydownInput(e)
+  {
+    switch(e.which)
+    {
+      case 32: Display.openTile(); break;
+      default: Game.move(e);
+    }
+  }
+
+  function _getInputVector(e, direction)
+  {
+    if (e)
+    { // up: 0, right: 1, down: 2, left: 3
+      let keyCodeMap = {
+        38: 0, 39: 1, 40: 2, 37: 3,
+        8: 0, 4: 1, 16: 2, 2: 3
+      };
+
+      direction = keyCodeMap[e.which || e.direction];
+      if (direction === undefined) return null;
+    }
+    // Vectors representing tile movement
+    let vectorMap = {
+      0: {x: 0,  y: -1},
+      1: {x: 1,  y: 0},
+      2: {x: 0,  y: 1},
+      3: {x: -1, y: 0}
+    };
+
+    return vectorMap[direction];
+  }
+
+  return {
+    getVector: _getInputVector
+  }
+})();
+
 var Display = (_=>
 {
-  let
-    _score = 0,
+  let _score = 0,
     _newTile = '.tile-new',
-    _$tileContainer = $('.tile-container'),
-    _$scoreContainer = $('.score-container'),
-    _$messageContainer = $('.game-message'),
-    _$retryBtn = $('.retry-button');
+    _$tileContainer = $('#tile-container'),
+    _$gameMsg = $('#game-message'),
+    _$gameScore = $('#game-score');
 
   function _restart()
   {
-    _$messageContainer.removeClass('game-won');
-    _$messageContainer.removeClass('game-over');
+    _$gameMsg.removeClass('game-won');
+    _$gameMsg.removeClass('game-over');
     _updateScore();
   }
 
@@ -460,17 +477,8 @@ var Display = (_=>
       });
 
       _updateScore();
-      _checkGameStatus();
+      Game.checkStatus();
     });
-  }
-
-  function _checkGameStatus()
-  {
-    switch(Game.status())
-    {
-      case 'lost': _message(false); break;
-      case 'won': _message(true);
-    }
   }
 
   function _message(won)
@@ -479,28 +487,15 @@ var Display = (_=>
       type = won ? 'game-won' : 'game-over',
       message = won ? 'You win!' : 'Game over!';
 
-    _$messageContainer.addClass(type);
-    _$messageContainer.children('p').text(message);
+    _$gameMsg.addClass(type);
+    _$gameMsg.children('p').text(message);
   }
 
   function _updateScore()
   {
-    _$scoreContainer.empty();
-
-    let difference = Game.score() - _score;
+    _$gameScore.empty();
     _score = Game.score();
-
-    _$scoreContainer.text(_score);
-
-    if (difference > 0)
-    {
-      let $addition = $(`
-        <div class="score-addition">
-          +${difference}
-        </div>
-      `);
-      _$scoreContainer.append($addition);
-    }
+    _$gameScore.text(_score);
   }
 
   function _positionClass(position)
@@ -517,6 +512,8 @@ var Display = (_=>
     let $tile = $(_newTile).eq(0);
 
 		if (!$tile.length) return;
+
+    _$gameMsg.css('display', 'none');
 
 		let
       min = 1, max = 40.9999,
@@ -539,6 +536,8 @@ var Display = (_=>
       intValue % 2 === 0 ? 'tile-even' : 'tile-odd'
     );
     $tile.removeClass('tile-new');
+
+    Game.checkStatus();
   }
 
   function _addTile(tile)
@@ -584,13 +583,11 @@ var Display = (_=>
   }
 
   return {
-    $retryBtn: _$retryBtn,
     openTile: _openTile,
-    newTile: _newTile,
     refresh: _refresh,
     restart: _restart,
-    tilesValuesAreSet: _tilesValuesAreSet,
-    checkGameStatus: _checkGameStatus
+    message: _message,
+    tilesValuesAreSet: _tilesValuesAreSet
   }
 })();
 

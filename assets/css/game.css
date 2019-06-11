@@ -1,12 +1,55 @@
 #game-stats {
   font-family: 'Righteous', cursive;
-  font-size: 2rem;
+  font-size: 2.2rem;
   width: 500px;
   padding: 0 15px 0 15px;
 }
 
 #game-section {
   padding-top: 123px;
+}
+
+#game-container #game-message {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(234, 234, 234, 0.92);
+  z-index: 100;
+  text-align: center;
+  border-radius: 7px;
+}
+
+#game-container #game-message p {
+  font-size: 44px;
+  font-weight: bold;
+  height: 60px;
+  line-height: 60px;
+  margin-top: 175px;
+  color: #343A40;
+}
+
+#game-container #game-message .lower {
+  display: block;
+  margin-top: 59px;
+}
+
+#game-container #game-message a {
+  display: inline-block;
+  background: #343A40;
+  border-radius: 3px;
+  padding: 0 20px;
+  text-decoration: none;
+  color: #fff;
+  height: 40px;
+  line-height: 42px;
+  margin-left: 9px;
+  font-family: 'Righteous', cursive;
+}
+
+#game-mobile-msg {
+  display: none;
 }
 
 @-webkit-keyframes move-up {
@@ -69,7 +112,7 @@
   }
 }
 
-.game-container {
+#game-container {
   margin-top: 20px;
   position: relative;
   padding: 15px;
@@ -86,7 +129,7 @@
   box-sizing: border-box;
 }
 
-.grid-container {
+#grid-container {
   position: absolute;
   z-index: 1;
 }
@@ -118,7 +161,7 @@
   margin-right: 0;
 }
 
-.tile-container {
+#tile-container {
   position: absolute;
   z-index: 2;
 }
@@ -220,6 +263,7 @@
 }
 
 .tile {
+  font-family: 'Hind', sans-serif;
   border-radius: 3px;
   background: #eee4da;
   text-align: center;
@@ -228,7 +272,7 @@
   height: 106.5px;
   line-height: 116.5px;
   z-index: 10;
-  font-size: 40px;
+  font-size: 2rem;
   -webkit-transition: 100ms ease-in-out;
   -moz-transition: 100ms ease-in-out;
   -webkit-transition-property: top, left;
@@ -361,16 +405,28 @@
 }
 
 @media screen and (max-width: 480px) {
-  .game-container {
+  #game-container {
     padding: 10px;
     width: 280px;
     height: 280px;
   }
+  #game-container #game-message p {
+    font-size: 30px;
+    height: 30px;
+    line-height: 30px;
+    margin-top: 90px;
+  }
+  #game-mobile-msg {
+    display: block;
+  }
+  #game-desktop-msg {
+    display: none;
+  }
   #game-stats {
     width: 280px;
-    font-size: 1.5rem;
+    font-size: 1.8rem;
   }
-  .grid-container {
+  #grid-container {
     position: absolute;
     z-index: 1;
   }
@@ -396,7 +452,7 @@
   .grid-cell:last-child {
     margin-right: 0;
   }
-  .tile-container {
+  #tile-container {
     position: absolute;
     z-index: 2;
   }
@@ -486,7 +542,7 @@
     left: 203px;
     top: 203px;
   }
-  .game-container {
+  #game-container {
     margin-top: 20px;
   }
   .tile {
