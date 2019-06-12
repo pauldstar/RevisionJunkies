@@ -377,17 +377,17 @@ var Input = (_=>
     switch (e.type)
     {
       case 'keydown': _keydownInput(e); break;
-      case 'tap': Display.openTile(); break;
+      case 'tap': _clickInput(e); break;
       case 'panstart': _swipeInput(e);
     }
   }
-	
-	function click_input(e)
+
+	function _clickInput(e)
 	{
     let gameSection = document.getElementById('game-section'),
 			isGameClick = $(e.target).is('#game-section') ||
 				$.contains(gameSection, e.target);
-		
+
 		if (isGameClick) Display.openTile();
 	}
 
