@@ -1,4 +1,4 @@
-<div class="section shadow bg-dark" id="navbar-section">
+<div class="section shadow bg-dark <?= $title === 'game' ? 'fixed-top' : '' ?>" id="navbar-section">
   <div class="container">
   <nav class="navbar navbar-expand-lg navbar-dark">
     <a class="navbar-brand" href="#">
