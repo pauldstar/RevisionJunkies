@@ -381,6 +381,15 @@ var Input = (_=>
       case 'panstart': _swipeInput(e);
     }
   }
+	
+	function click_input(e)
+	{
+    let gameSection = document.getElementById('game-section'),
+			isGameClick = $(e.target).is('#game-section') ||
+				$.contains(gameSection, e.target);
+		
+		if (isGameClick) Display.openTile();
+	}
 
   function _swipeInput(e)
   {
