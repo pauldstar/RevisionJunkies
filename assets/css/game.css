@@ -35,7 +35,7 @@
   color: #343A40;
 }
 
-#game-container #game-message .lower {
+.lower {
   display: block;
   margin-top: 59px;
 }

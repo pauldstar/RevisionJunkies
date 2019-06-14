@@ -366,17 +366,46 @@ var Modal = (_=>
 {
   let _$modalBoolean = $('#modal-qtn-boolean'),
       _$modalOptions = $('#modal-qtn-options'),
-      _$modalGameOver = $('#modal-qtn-options'),
+      _$modalGameOver = $('#modal-game-over'),
       _$modalInstructions = $('#modal-instructions');
 
+  function _nextAnswerOption()
+  {
 
+  }
 
+  function _move(e)
+  {
+    let direction = Input.getDirection(e);
+
+    switch (direction)
+    {
+      case 0: direction = 'top'; break;
+      case 1: direction = 'right'; break;
+      case 2: direction = 'bottom'; break;
+      case 3: direction = 'left';
+    }
+
+    let hideAnimationObj = {}, undoAnimationObj = {};
+
+    hideAnimationObj[direction] = '-500px';
+    hideAnimationObj['opacity'] = '0';
+    undoAnimationObj[direction] = '0px';
+    undoAnimationObj['opacity'] = '100';
+
+    $('.modal-content').animate(hideAnimationObj, 'fast');
+    $('.modal').modal('hide');
+    $('.modal-content').animate(undoAnimationObj, 0);
+    $('.modal-content').removeAttr('style');
+  }
 
   return {
     $boolean: _$modalBoolean,
     $options: _$modalOptions,
     $gameOver: _$modalGameOver,
-    $instructions: _$modalInstructions
+    $instructions: _$modalInstructions,
+    nextAnswer: _nextAnswerOption,
+    move: _move
   }
 })();
 
@@ -458,21 +487,24 @@ var GridDisplay = (_=>
 
 		if (!$tile.length) return;
 
-    _$gameMsg.css('display', 'none');
+    if (_$gameMsg.css('display') === 'block')
+    {
+      _$gameMsg.css('display', 'none');
+      return;
+    }
 
     Modal.$boolean.modal('show');
 
-    Modal.$boolean.on('hide.bs.modal', e =>
+    Modal.$boolean.on('hide.bs.modal', _=>
     {
       let min = 1, max = 40.9999,
       floatValue = Math.random() * (max - min) + min;
 
       if (floatValue > 30) floatValue = 'X';
 
-      let
-      intValue = Math.floor(floatValue),
-      tileX = $tile.data('x'),
-      tileY = $tile.data('y');
+      let intValue = Math.floor(floatValue),
+          tileX = $tile.data('x'),
+          tileY = $tile.data('y');
 
       let tile = Grid.cells[tileX][tileY];
       tile.floatValue = floatValue;
@@ -480,8 +512,9 @@ var GridDisplay = (_=>
       $tile.text(isNaN(floatValue) ? 'X'  : intValue);
       $tile.data('val-set', '1');
       $tile.addClass(
-        isNaN(floatValue) ? 'tile-nan' :
-        intValue % 2 === 0 ? 'tile-even' : 'tile-odd'
+        isNaN(floatValue) ? 'tile-nan btn-light focus' :
+          intValue % 2 === 0 ? 'tile-even btn-primary focus' :
+            'tile-odd btn-danger focus'
       );
       $tile.removeClass('tile-new');
 
@@ -564,49 +597,63 @@ var Input = (_=>
 
 	function _clickInput(e)
 	{
-    let gameSection = document.getElementById('game-section'),
-			isGameClick = $(e.target).is('#game-section') ||
-				$.contains(gameSection, e.target);
+    let $target = $(e.target);
+    if ($target.is('#btn-instructions')) return;
 
-		if (isGameClick) GridDisplay.openTile();
+    let gameSection = document.getElementById('game-section'),
+        isModalClick = $(e.target).is('.modal'),
+        isGridClick = $target.is('#game-section') ||
+			    $.contains(gameSection, e.target);
+
+		if (isGridClick) GridDisplay.openTile();
+    else if (isModalClick) Modal.nextAnswer();
 	}
 
   function _swipeInput(e)
   {
-    let gameSection = document.getElementById('game-section');
-
-    let isModalGesture = $(e.target).is('.modal'),
-      isGridGesture = $(e.target).is('#game-section') ||
-        $.contains(gameSection, e.target);
+    let gameSection = document.getElementById('game-section'),
+        isModalGesture = $(e.target).is('.modal'),
+        isGridGesture = $(e.target).is('#game-section') ||
+          $.contains(gameSection, e.target);
 
     if (isGridGesture) Game.move(e);
-    else if (isModalGesture)
-    {
-      // answer question
-    }
+    else if (isModalGesture) Modal.move(e)
   }
 
   function _keydownInput(e)
   {
-    if ( $(e.target).is('.modal') ) return;
+    if ( $(e.target).is('.modal') )
+    {
+      switch(e.which)
+      {
+        case 32: Modal.nextAnswer(); break;
+        case 38: case 37: case 40: case 39: Modal.move(e);
+      }
+      return;
+    }
 
     switch(e.which)
     {
       case 32: GridDisplay.openTile(); break;
-      default: Game.move(e);
+      case 38: case 37: case 40: case 39: Game.move(e);
     }
+  }
+
+  function _getInputDirection(e)
+  { // up: 0, right: 1, down: 2, left: 3
+    let keyCodeMap = {
+      38: 0, 39: 1, 40: 2, 37: 3,
+      8: 0, 4: 1, 16: 2, 2: 3
+    };
+
+    return keyCodeMap[e.which || e.direction];
   }
 
   function _getInputVector(e, direction)
   {
     if (e)
-    { // up: 0, right: 1, down: 2, left: 3
-      let keyCodeMap = {
-        38: 0, 39: 1, 40: 2, 37: 3,
-        8: 0, 4: 1, 16: 2, 2: 3
-      };
-
-      direction = keyCodeMap[e.which || e.direction];
+    {
+      direction = _getInputDirection(e);
       if (direction === undefined) return null;
     }
     // Vectors representing tile movement
@@ -621,7 +668,8 @@ var Input = (_=>
   }
 
   return {
-    getVector: _getInputVector
+    getVector: _getInputVector,
+    getDirection: _getInputDirection
   }
 })();
 
