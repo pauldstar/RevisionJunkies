@@ -10,7 +10,7 @@
         <p id="game-desktop-msg">Press Space To Start</p>
         <p id="game-mobile-msg">Tap To Start</p>
         <div class="lower">
-          <a href="#">Instructions</a>
+          <a href="#" data-toggle="modal" data-target="#instructions-modal">Instructions</a>
         </div>
       </div>
 
@@ -51,16 +51,12 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Question</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
       </div>
       <div class="modal-body">
       	The scrapped Sonic the Hedgehog 2 level "Hidden Palace Zone" was later reused in the iOS port of the game.
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
       </div>
     </div>
   </div>
@@ -86,7 +82,7 @@
   </div>
 </div>
 
-<div class="modal fade" id="game-message-modal" tabindex="-1" role="dialog" aria-labelledby="game-message-modal" aria-hidden="true">
+<div class="modal fade" id="game-over-modal" tabindex="-1" role="dialog" aria-labelledby="game-message-modal" aria-hidden="true">
   <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">

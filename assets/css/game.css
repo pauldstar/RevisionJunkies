@@ -1,3 +1,7 @@
+.modal {
+  font-family: 'Hind', sans-serif;
+}
+
 #game-stats {
   font-family: 'Righteous', cursive;
   font-size: 2.2rem;
@@ -217,49 +221,49 @@
 
 .tile.tile-position-3-1 {
   position: absolute;
-  left: 243px;
+  left: 242.5px;
   top: 0px;
 }
 
 .tile.tile-position-3-2 {
   position: absolute;
-  left: 243px;
+  left: 242.5px;
   top: 121px;
 }
 
 .tile.tile-position-3-3 {
   position: absolute;
-  left: 243px;
+  left: 242.5px;
   top: 243px;
 }
 
 .tile.tile-position-3-4 {
   position: absolute;
-  left: 243px;
+  left: 242.5px;
   top: 364px;
 }
 
 .tile.tile-position-4-1 {
   position: absolute;
-  left: 364px;
+  left: 363.5px;
   top: 0px;
 }
 
 .tile.tile-position-4-2 {
   position: absolute;
-  left: 364px;
+  left: 363.5px;
   top: 121px;
 }
 
 .tile.tile-position-4-3 {
   position: absolute;
-  left: 364px;
+  left: 363.5px;
   top: 243px;
 }
 
 .tile.tile-position-4-4 {
   position: absolute;
-  left: 364px;
+  left: 363.5px;
   top: 364px;
 }
 

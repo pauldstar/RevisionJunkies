@@ -22,4 +22,8 @@ class Static_pages extends QP_Controller
     $this->load->view('html', $data);
 	}
 
+	public function leaderboard()
+	{
+
+	}
 }
