@@ -600,10 +600,11 @@ var Input = (_=>
     let $target = $(e.target);
     if ($target.is('#btn-instructions')) return;
 
-    let gameSection = document.getElementById('game-section'),
-        isModalClick = $(e.target).is('.modal'),
-        isGridClick = $target.is('#game-section') ||
-			    $.contains(gameSection, e.target);
+    let isGridClick = $target.is('#game-section') ||
+    $target.parents('#game-section').length !== 0;
+
+    let isModalClick = $target.is('.modal') ||
+      $target.parents('.modal').length !== 0;
 
 		if (isGridClick) GridDisplay.openTile();
     else if (isModalClick) Modal.nextAnswer();
@@ -611,13 +612,16 @@ var Input = (_=>
 
   function _swipeInput(e)
   {
-    let gameSection = document.getElementById('game-section'),
-        isModalGesture = $(e.target).is('.modal'),
-        isGridGesture = $(e.target).is('#game-section') ||
-          $.contains(gameSection, e.target);
+    let $target = $(e.target);
+
+    let isGridGesture = $target.is('#game-section') ||
+      $target.parents('#game-section').length !== 0;
+
+    let isModalGesture = $target.is('.modal') ||
+      $target.parents('.modal').length !== 0;
 
     if (isGridGesture) Game.move(e);
-    else if (isModalGesture) Modal.move(e)
+    else if (isModalGesture) Modal.move(e);
   }
 
   function _keydownInput(e)
