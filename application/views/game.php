@@ -46,7 +46,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="modal-qtn-boolean" tabindex="-1" role="dialog" aria-labelledby="true-false-modal" aria-hidden="true">
+<div class="modal fade modal-qtn" id="modal-qtn-boolean" tabindex="-1" role="dialog" aria-labelledby="true-false-modal" data-backdrop="static" aria-hidden="true">
   <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -55,16 +55,17 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body">
-        <p class="modal-body-text">
-          The scrapped Sonic the Hedgehog 2 level "Hidden Palace Zone" was later reused in the iOS port of the game.
-        </p>
+      <div class="modal-body text-center">
+        The scrapped Sonic the Hedgehog 2 level "Hidden Palace Zone" was later reused in the iOS port of the game.
+      </div>
+      <div class="modal-footer text-center">
+        &larr;&darr;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&uarr;&rarr;
       </div>
     </div>
   </div>
 </div>
 
-<div class="modal fade" id="modal-qtn-options" tabindex="-1" role="dialog" aria-labelledby="multiple-choice-modal" aria-hidden="true">
+<div class="modal fade modal-qtn" id="modal-qtn-options" tabindex="-1" role="dialog" aria-labelledby="multiple-choice-modal" data-backdrop="static" aria-hidden="true">
   <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -73,8 +74,46 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body">
-        Which stage was planned to be a part of "Sonic the Hedgehog 2", but was scrapped during development?
+      <div id="modal-qtn-carousel" class="carousel slide" data-ride="carousel">
+        <div class="carousel-inner text-center">
+          <ol class="carousel-indicators">
+            <li data-target="#modal-qtn-carousel" data-slide-to="0" class="active"></li>
+            <li data-target="#modal-qtn-carousel" data-slide-to="1"></li>
+            <li data-target="#modal-qtn-carousel" data-slide-to="2"></li>
+            <li data-target="#modal-qtn-carousel" data-slide-to="3"></li>
+            <li data-target="#modal-qtn-carousel" data-slide-to="4"></li>
+          </ol>
+          <div class="carousel-item active">
+            <div class="modal-body">
+              Which stage was planned to be a part of "Sonic the Hedgehog 2", but was scrapped during development?
+            </div>
+            <div class="modal-footer">Q</div>
+          </div>
+          <div class="carousel-item">
+            <div class="modal-body">
+              Which stage was planned to be a part of "Sonic the Hedgehog 2", but was scrapped during development?
+            </div>
+            <div class="modal-footer">&uarr;</div>
+          </div>
+          <div class="carousel-item">
+            <div class="modal-body">
+              Which stage was planned to be a part of "Sonic the Hedgehog 2", but was scrapped during development?
+            </div>
+            <div class="modal-footer">&rarr;</div>
+          </div>
+          <div class="carousel-item">
+            <div class="modal-body">
+              Which stage was planned to be a part of "Sonic the Hedgehog 2", but was scrapped during development?
+            </div>
+            <div class="modal-footer">&darr;</div>
+          </div>
+          <div class="carousel-item">
+            <div class="modal-body">
+              Which stage was planned to be a part of "Sonic the Hedgehog 2", but was scrapped during development?
+            </div>
+            <div class="modal-footer">&larr;</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -94,8 +133,8 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Instructions</button>
-        <button type="button" class="btn btn-primary btn-new-game">New Game</button>
+        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-instructions">Instructions</button>
+        <button type="button" class="btn btn-success btn-new-game">New Game</button>
       </div>
     </div>
   </div>

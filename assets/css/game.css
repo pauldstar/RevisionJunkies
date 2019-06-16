@@ -2,6 +2,24 @@
   font-family: 'Hind', sans-serif;
 }
 
+.carousel-item > .modal-body {
+  padding-top: 46px;
+}
+
+.modal-qtn .modal-footer {
+  display: block;
+}
+
+#modal-qtn-carousel .carousel-indicators {
+  margin-bottom: 0;
+  margin-top: 10px;
+  bottom: unset;
+}
+
+#modal-qtn-carousel .carousel-indicators > li {
+  background-color: #383d41;
+}
+
 #game-stats {
   font-family: 'Righteous', cursive;
   font-size: 2.2rem;

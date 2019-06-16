@@ -74,12 +74,10 @@ $active_group = 'default';
 $query_builder = TRUE;
 
 $db['default'] = array(
-	'dsn'	=> '',
-	'hostname' => 'localhost',
-	'username' => 'qp-dev',
-	'password' => 'Jm5NxIpj1PteK53E',
-	'database' => 'quepenny',
-	'dbdriver' => 'mysqli',
+	'dsn'	=> 'mysql:host=quepenny.com;dbname=quepenny',
+	'username' => 'qp-prod',
+	'password' => '@DYaXpuoz,s1',
+	'dbdriver' => 'pdo',
 	'dbprefix' => '',
 	'pconnect' => FALSE,
 	'db_debug' => (ENVIRONMENT !== 'production'),

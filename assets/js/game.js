@@ -364,18 +364,33 @@ var Grid = (_=>
 
 var Modal = (_=>
 {
-  let _$modalBoolean = $('#modal-qtn-boolean'),
-      _$modalOptions = $('#modal-qtn-options'),
+  let _modalQtns = '.modal-qtn',
+      _$modalQtns = $(_modalQtns),
+      _$modalQtnsContent = _$modalQtns.find('.modal-content'),
+      _$modalBoolean = $('#modal-qtn-boolean'),
+      _modalOptions = '#modal-qtn-options',
+      _$modalOptions = $(_modalOptions),
+      _$modalOptionsCarousel = $('#modal-qtn-carousel'),
       _$modalGameOver = $('#modal-game-over'),
       _$modalInstructions = $('#modal-instructions');
 
+  $(document).on('hidden.bs.modal', _modalQtns, _resetModalOptions);
+
   function _nextAnswerOption()
   {
+    _$modalOptionsCarousel.carousel('next');
+  }
 
+  function _resetModalOptions()
+  {
+    _$modalQtnsContent.removeAttr('style');
+    _$modalOptionsCarousel.carousel(0);
   }
 
   function _move(e)
   {
+    if (_$modalQtnsContent.attr('style')) return;
+
     let direction = Input.getDirection(e);
 
     switch (direction)
@@ -386,17 +401,15 @@ var Modal = (_=>
       case 3: direction = 'left';
     }
 
-    let hideAnimationObj = {}, undoAnimationObj = {};
+    let swipeAnimationObj = {}, resetAnimationObj = {};
 
-    hideAnimationObj[direction] = '-500px';
-    hideAnimationObj['opacity'] = '0';
-    undoAnimationObj[direction] = '0px';
-    undoAnimationObj['opacity'] = '100';
+    swipeAnimationObj[direction] = '-500px';
+    swipeAnimationObj['opacity'] = '0';
 
-    $('.modal-content').animate(hideAnimationObj, 'fast');
-    $('.modal').modal('hide');
-    $('.modal-content').animate(undoAnimationObj, 0);
-    $('.modal-content').removeAttr('style');
+    _$modalQtnsContent.animate(swipeAnimationObj, 'fast', _=>
+    {
+      _$modalQtns.modal('hide');
+    });
   }
 
   return {
@@ -418,6 +431,8 @@ var GridDisplay = (_=>
       _gameSection = '#game-section',
       _$gameMsg = $('#game-message'),
       _$gameScore = $('#game-score');
+
+  let _temp = false;
 
   function _restart()
   {
@@ -493,9 +508,7 @@ var GridDisplay = (_=>
       return;
     }
 
-    Modal.$boolean.modal('show');
-
-    Modal.$boolean.on('hide.bs.modal', _=>
+    var getValue = _=>
     {
       let min = 1, max = 40.9999,
       floatValue = Math.random() * (max - min) + min;
@@ -521,7 +534,21 @@ var GridDisplay = (_=>
       Game.checkStatus();
 
       Modal.$boolean.off('hide.bs.modal');
-    });
+      Modal.$options.off('hide.bs.modal');
+    };
+
+    if (_temp)
+    {
+      Modal.$boolean.modal('show');
+      Modal.$boolean.on('hide.bs.modal', getValue);
+    }
+    else
+    {
+      Modal.$options.modal('show');
+      Modal.$options.on('hide.bs.modal', getValue);
+    }
+
+    _temp = !_temp;
   }
 
   function _addTile(tile)
@@ -577,11 +604,11 @@ var GridDisplay = (_=>
 
 var Input = (_=>
 {
-  let _$retryBtn = $('.retry-button'),
-    _gestures = new Hammer(document);
+  let _$newGameBtn = $('.btn-new-game'),
+      _gestures = new Hammer(document);
 
   $(document).on('keydown', _input);
-  _$retryBtn.click(Game.restart);
+  _$newGameBtn.click(Game.restart);
   _gestures.get('pan').set({ direction: Hammer.DIRECTION_ALL });
   _gestures.on('panstart tap', _input);
 
