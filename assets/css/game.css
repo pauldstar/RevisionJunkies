@@ -27,7 +27,7 @@
 #game-stats {
   font-family: 'Righteous', cursive;
   font-size: 2.2rem;
-  width: 500px;
+  width: 378px;
   padding: 0 15px 0 15px;
 }
 
@@ -49,11 +49,11 @@
 }
 
 #game-container #game-message p {
-  font-size: 44px;
+  font-size: 34px;
   font-weight: bold;
   height: 60px;
   line-height: 60px;
-  margin-top: 175px;
+  margin-top: 105px;
   color: #343A40;
 }
 
@@ -149,8 +149,8 @@
   -moz-user-select: none;
   background: #272727;
   border-radius: 6px;
-  width: 500px;
-  height: 500px;
+  width: 378px;
+  height: 378px;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
@@ -211,12 +211,6 @@
   top: 243px;
 }
 
-.tile.tile-position-1-4 {
-  position: absolute;
-  left: 0px;
-  top: 364px;
-}
-
 .tile.tile-position-2-1 {
   position: absolute;
   left: 121px;
@@ -235,12 +229,6 @@
   top: 243px;
 }
 
-.tile.tile-position-2-4 {
-  position: absolute;
-  left: 121px;
-  top: 364px;
-}
-
 .tile.tile-position-3-1 {
   position: absolute;
   left: 242.5px;
@@ -257,36 +245,6 @@
   position: absolute;
   left: 242.5px;
   top: 243px;
-}
-
-.tile.tile-position-3-4 {
-  position: absolute;
-  left: 242.5px;
-  top: 364px;
-}
-
-.tile.tile-position-4-1 {
-  position: absolute;
-  left: 363.5px;
-  top: 0px;
-}
-
-.tile.tile-position-4-2 {
-  position: absolute;
-  left: 363.5px;
-  top: 121px;
-}
-
-.tile.tile-position-4-3 {
-  position: absolute;
-  left: 363.5px;
-  top: 243px;
-}
-
-.tile.tile-position-4-4 {
-  position: absolute;
-  left: 363.5px;
-  top: 364px;
 }
 
 .tile {
@@ -434,8 +392,8 @@
 @media screen and (max-width: 480px) {
   #game-container {
     padding: 10px;
-    width: 280px;
-    height: 280px;
+    width: 213px;
+    height: 213px;
   }
   #game-section {
     padding-top: 98px;
@@ -444,7 +402,7 @@
     font-size: 30px;
     height: 30px;
     line-height: 30px;
-    margin-top: 90px;
+    margin-top: 46px;
   }
   #game-mobile-msg {
     display: block;
@@ -453,8 +411,8 @@
     display: none;
   }
   #game-stats {
-    width: 280px;
-    font-size: 1.8rem;
+    width: 213px;
+    font-size: 1.4rem;
   }
   #grid-container {
     position: absolute;
@@ -506,11 +464,6 @@
     left: 0px;
     top: 135px;
   }
-  .tile.tile-position-1-4 {
-    position: absolute;
-    left: 0px;
-    top: 202.5px;
-  }
   .tile.tile-position-2-1 {
     position: absolute;
     left: 67.5px;
@@ -526,11 +479,6 @@
     left: 67.5px;
     top: 135px;
   }
-  .tile.tile-position-2-4 {
-    position: absolute;
-    left: 67.5px;
-    top: 202.5px;
-  }
   .tile.tile-position-3-1 {
     position: absolute;
     left: 135px;
@@ -545,31 +493,6 @@
     position: absolute;
     left: 135px;
     top: 135px;
-  }
-  .tile.tile-position-3-4 {
-    position: absolute;
-    left: 135px;
-    top: 202.5px;
-  }
-  .tile.tile-position-4-1 {
-    position: absolute;
-    left: 202.5px;
-    top: 0px;
-  }
-  .tile.tile-position-4-2 {
-    position: absolute;
-    left: 202.5px;
-    top: 67.5px;
-  }
-  .tile.tile-position-4-3 {
-    position: absolute;
-    left: 202.5px;
-    top: 135px;
-  }
-  .tile.tile-position-4-4 {
-    position: absolute;
-    left: 202.5px;
-    top: 202.5px;
   }
   #game-container {
     margin-top: 20px;

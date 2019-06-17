@@ -10,7 +10,7 @@ var Game = (_=>
 {
   let _score, _status,
     _numStartTiles = 2,
-    _gridSize = 4;
+    _gridSize = 3;
 
   function _gameScore(value)
   {
