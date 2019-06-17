@@ -32,7 +32,7 @@
 }
 
 #game-section {
-  padding-top: 123px;
+  padding-top: 180px;
   touch-action: none;
 }
 
@@ -49,6 +49,7 @@
 }
 
 #game-container #game-message p {
+  font-family: 'Hind', sans-serif;
   font-size: 34px;
   font-weight: bold;
   height: 60px;
@@ -396,13 +397,13 @@
     height: 213px;
   }
   #game-section {
-    padding-top: 98px;
+    padding-top: 135px;
   }
   #game-container #game-message p {
     font-size: 30px;
     height: 30px;
     line-height: 30px;
-    margin-top: 46px;
+    margin-top: 49px;
   }
   #game-mobile-msg {
     display: block;
