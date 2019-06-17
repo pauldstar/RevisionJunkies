@@ -1,8 +1,8 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Static_pages extends QP_Controller
+class Pages extends QP_Controller
 {
-	public function index()
+	public function game()
 	{
 		$this->load->helper('url');
 

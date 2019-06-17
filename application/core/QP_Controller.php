@@ -4,7 +4,6 @@ class QP_Controller extends Ci_Controller
 {
 	protected function load_asset($name, $ext)
   {
-		$this->load->helper('url');
 		$path = "./assets/{$ext}/{$name}.{$ext}";
 
 		switch ($ext)

@@ -1,6 +1,10 @@
 'use strict';
 
-$(document).ready(_=> Game.start());
+$(document).ready(_=>
+{
+  Game.start();
+  Questions.load();
+});
 
 var Game = (_=>
 {
@@ -367,9 +371,18 @@ var Modal = (_=>
   let _modalQtns = '.modal-qtn',
       _$modalQtns = $(_modalQtns),
       _$modalQtnsContent = _$modalQtns.find('.modal-content'),
+
       _$modalBoolean = $('#modal-qtn-boolean'),
+      _$modalBooleanQ = _$modalBoolean.find('.modal-body'),
+
       _modalOptions = '#modal-qtn-options',
       _$modalOptions = $(_modalOptions),
+      _$modalOptionsQ = _$modalOptions.find('.modal-body').eq(0),
+      _$modalOptions1 = _$modalOptions.find('.modal-body').eq(1),
+      _$modalOptions2 = _$modalOptions.find('.modal-body').eq(2),
+      _$modalOptions3 = _$modalOptions.find('.modal-body').eq(3),
+      _$modalOptions4 = _$modalOptions.find('.modal-body').eq(4),
+
       _$modalOptionsCarousel = $('#modal-qtn-carousel'),
       _$modalGameOver = $('#modal-game-over'),
       _$modalInstructions = $('#modal-instructions');
@@ -385,6 +398,38 @@ var Modal = (_=>
   {
     _$modalQtnsContent.removeAttr('style');
     _$modalOptionsCarousel.carousel(0);
+  }
+
+  function _showQuestion()
+  {
+    let question = Questions.get();
+
+    switch (question.type)
+    {
+      case 'multiple':
+        _setModalOptions(question);
+        _$modalOptions.modal('show');
+        break;
+
+      case 'boolean':
+        _setModalBoolean(question);
+        _$modalBoolean.modal('show');
+        break;
+    }
+  }
+
+  function _setModalBoolean(question)
+  {
+    _$modalBooleanQ.html(question.question);
+  }
+
+  function _setModalOptions(question)
+  {
+    _$modalOptionsQ.html(question.question);
+    _$modalOptions1.html(question.options[0]);
+    _$modalOptions2.html(question.options[1]);
+    _$modalOptions3.html(question.options[2]);
+    _$modalOptions4.html(question.options[3]);
   }
 
   function _move(e)
@@ -413,12 +458,48 @@ var Modal = (_=>
   }
 
   return {
+    $qtns: _$modalQtns,
     $boolean: _$modalBoolean,
     $options: _$modalOptions,
     $gameOver: _$modalGameOver,
     $instructions: _$modalInstructions,
     nextAnswer: _nextAnswerOption,
-    move: _move
+    move: _move,
+    showQuestion: _showQuestion
+  }
+})();
+
+var Questions = (_=>
+{
+  let _gameLevel = 0, _questions = [];
+
+  function _loadQuestions()
+  {
+    _gameLevel++;
+
+    $.ajax({
+      url: `${SITE_URL}/game/get_questions/${_gameLevel}`,
+      dataType: 'JSON',
+      success: data =>
+      {
+        data.forEach(question =>
+        {
+          _questions.push(question);
+        });
+      },
+      error: e => { console.log(e) }
+    });
+  }
+
+  function _getQuestion()
+  {
+    _questions.length === 2 && _loadQuestions();
+    return _questions.shift();
+  }
+
+  return {
+    load: _loadQuestions,
+    get: _getQuestion
   }
 })();
 
@@ -431,8 +512,6 @@ var GridDisplay = (_=>
       _gameSection = '#game-section',
       _$gameMsg = $('#game-message'),
       _$gameScore = $('#game-score');
-
-  let _temp = false;
 
   function _restart()
   {
@@ -508,7 +587,7 @@ var GridDisplay = (_=>
       return;
     }
 
-    var getValue = _=>
+    Modal.$qtns.on('hide.bs.modal', _=>
     {
       let min = 1, max = 40.9999,
       floatValue = Math.random() * (max - min) + min;
@@ -516,39 +595,26 @@ var GridDisplay = (_=>
       if (floatValue > 30) floatValue = 'X';
 
       let intValue = Math.floor(floatValue),
-          tileX = $tile.data('x'),
-          tileY = $tile.data('y');
+      tileX = $tile.data('x'),
+      tileY = $tile.data('y');
 
       let tile = Grid.cells[tileX][tileY];
       tile.floatValue = floatValue;
 
       $tile.text(isNaN(floatValue) ? 'X'  : intValue);
       $tile.data('val-set', '1');
-      $tile.addClass(
-        isNaN(floatValue) ? 'tile-nan btn-light focus' :
-          intValue % 2 === 0 ? 'tile-even btn-primary focus' :
-            'tile-odd btn-danger focus'
+      $tile.addClass(isNaN(floatValue) ? 'tile-nan btn-light focus' :
+        intValue % 2 === 0 ? 'tile-even btn-primary focus' :
+          'tile-odd btn-danger focus'
       );
       $tile.removeClass('tile-new');
 
       Game.checkStatus();
 
-      Modal.$boolean.off('hide.bs.modal');
-      Modal.$options.off('hide.bs.modal');
-    };
+      Modal.$qtns.off('hide.bs.modal');
+    });
 
-    if (_temp)
-    {
-      Modal.$boolean.modal('show');
-      Modal.$boolean.on('hide.bs.modal', getValue);
-    }
-    else
-    {
-      Modal.$options.modal('show');
-      Modal.$options.on('hide.bs.modal', getValue);
-    }
-
-    _temp = !_temp;
+    Modal.showQuestion();
   }
 
   function _addTile(tile)

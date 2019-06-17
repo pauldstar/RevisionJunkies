@@ -32,6 +32,8 @@
       }
     </script>
 
+    <script> const SITE_URL = '<?= site_url() ?>' </script>
+
     <?= $scripts ?>
 
   </body>

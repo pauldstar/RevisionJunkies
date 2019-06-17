@@ -55,11 +55,13 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body text-center">
-        The scrapped Sonic the Hedgehog 2 level "Hidden Palace Zone" was later reused in the iOS port of the game.
-      </div>
+      <div class="modal-body text-center">...</div>
       <div class="modal-footer text-center">
-        &larr;&darr;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&uarr;&rarr;
+        <h4>
+          <span class="text-danger">&larr;&darr;</span>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <span class="text-success">&uarr;&rarr;</span>
+        </h4>
       </div>
     </div>
   </div>
@@ -84,34 +86,24 @@
             <li data-target="#modal-qtn-carousel" data-slide-to="4"></li>
           </ol>
           <div class="carousel-item active">
-            <div class="modal-body">
-              Which stage was planned to be a part of "Sonic the Hedgehog 2", but was scrapped during development?
-            </div>
-            <div class="modal-footer">Q</div>
+            <div class="modal-body">...</div>
+            <div class="modal-footer"><h4 class="text-danger">Q</h4></div>
           </div>
           <div class="carousel-item">
-            <div class="modal-body">
-              Which stage was planned to be a part of "Sonic the Hedgehog 2", but was scrapped during development?
-            </div>
-            <div class="modal-footer">&uarr;</div>
+            <div class="modal-body">...</div>
+            <div class="modal-footer"><h4 class="text-success">&uarr;</h4></div>
           </div>
           <div class="carousel-item">
-            <div class="modal-body">
-              Which stage was planned to be a part of "Sonic the Hedgehog 2", but was scrapped during development?
-            </div>
-            <div class="modal-footer">&rarr;</div>
+            <div class="modal-body">...</div>
+            <div class="modal-footer"><h4 class="text-success">&rarr;</h4></div>
           </div>
           <div class="carousel-item">
-            <div class="modal-body">
-              Which stage was planned to be a part of "Sonic the Hedgehog 2", but was scrapped during development?
-            </div>
-            <div class="modal-footer">&darr;</div>
+            <div class="modal-body">...</div>
+            <div class="modal-footer"><h4 class="text-success">&darr;</h4></div>
           </div>
           <div class="carousel-item">
-            <div class="modal-body">
-              Which stage was planned to be a part of "Sonic the Hedgehog 2", but was scrapped during development?
-            </div>
-            <div class="modal-footer">&larr;</div>
+            <div class="modal-body">...</div>
+            <div class="modal-footer"><h4 class="text-success">&larr;</h4></div>
           </div>
         </div>
       </div>
