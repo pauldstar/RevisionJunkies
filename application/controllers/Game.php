@@ -17,7 +17,7 @@ class Game extends QP_Controller
 	public function get_questions($game_level)
 	{
 		self::$game_level = $game_level;
-		$game_level == 1 AND self::clear_questions();
+		$game_level == 1 AND self::clear_old_questions();
 
 		$api_urls = self::get_api_urls();
 		$svr_questions = [];
@@ -70,8 +70,15 @@ class Game extends QP_Controller
 		return $urls;
 	}
 
-	private function clear_questions()
+	private function clear_old_questions()
 	{
 		self::$questions = [];
+
+		switch (self::$game_level)
+		{
+			case 1: self::$questions = []; break;
+			case 2: break;
+			default: self::$questions[$game_level - 3] = NULL;
+		}
 	}
 }
