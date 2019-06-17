@@ -29,6 +29,8 @@ class Pages extends QP_Controller
 
 	public function server_info()
 	{
-		echo '<pre>'.var_dump($_SERVER).'</pre>'
+		echo '<pre>';
+		var_dump($_SERVER);
+		echo '</pre>';
 	}
 }
