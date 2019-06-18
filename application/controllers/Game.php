@@ -2,83 +2,87 @@
 
 class Game extends QP_Controller
 {
-	private static $game_level;
-	private static $questions;
-	private static $score;
-
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->library('session');
-		self::$questions = &$_SESSION['questions'];
-		self::$score = &$_SESSION['score'];
+		$this->load->model('question');
+	}
+
+	function get_question_score($answer_code, $question_id, $game_level)
+	{
+		$question = $this->question->get_session_question($question_id, $game_level);
+		$answer = self::get_answer($question, $answer_code);
+		$is_correct = $answer === $question->correct_answer;
+		$this->question->delete_session_question($question_id, $game_level);
+
+		$max = $min = 0;
+
+		switch ($question->difficulty)
+		{
+			case 'easy': $min = 1; $max = 33; break;
+			case 'medium': $min = 33; $max = 66; break;
+			case 'hard': $min = 66; $max = 100;
+		}
+
+		$rand_float = mt_rand() / mt_getrandmax();
+
+		if ($is_correct) $score = $rand_float * ($max - $min) + $min;
+		else $score = 0;
+
+		$this->question->set_session_max_score($score);
+
+		echo $score;
 	}
 
 	public function get_questions($game_level)
 	{
-		self::$game_level = $game_level;
-		$game_level == 1 AND self::clear_old_questions();
+		$this->question->clear_old_session_questions($game_level);
 
-		$api_urls = self::get_api_urls();
-		$svr_questions = [];
+		$questions = $this->question->load_questions($game_level);
+		$ssn_questions = [];
 		$usr_questions = [];
 		$id = 0;
 
-		foreach ($api_urls as $url)
+		foreach($questions as $qtn)
 		{
-			$data = json_decode(file_get_contents($url));
+			$usr_qtn = [];
+			$usr_qtn['id'] = $id;
+			$usr_qtn['lvl'] = $game_level;
+			$usr_qtn['question'] = $qtn->question;
+			$usr_qtn['type'] = $qtn->type;
+			$usr_qtn['correct'] = $qtn->correct_answer;
 
-			foreach($data->results as $qtn)
+			if ($qtn->type === 'multiple')
 			{
-				$svr_questions[] = $qtn;
-
-				$usr_qtn = [];
-				$usr_qtn['id'] = $id;
-				$usr_qtn['lvl'] = $game_level;
-				$usr_qtn['question'] = $qtn->question;
-				$usr_qtn['type'] = $qtn->type;
-
-				if ($qtn->type === 'multiple')
-				{
-					$usr_qtn['options'][] = $qtn->correct_answer;
-					foreach ($qtn->incorrect_answers as $ans) $usr_qtn['options'][] = $ans;
-					shuffle($usr_qtn['options']);
-				}
-
-				$usr_questions[] = $usr_qtn;
-				$id++;
+				$usr_qtn['options'][] = $qtn->correct_answer;
+				foreach ($qtn->incorrect_answers as $ans) $usr_qtn['options'][] = $ans;
+				shuffle($usr_qtn['options']);
+				$qtn->options = $usr_qtn['options'];
 			}
+
+			$ssn_questions[] = $qtn;
+			$usr_questions[] = $usr_qtn;
+			$id++;
 		}
 
-		self::$questions[$game_level] = $svr_questions;
+		$this->question->set_session_questions($ssn_questions, $game_level);
 
 		shuffle($usr_questions);
     echo json_encode($usr_questions);
 	}
 
-	private function get_api_urls()
+	private function get_answer($question, $answer_code)
 	{
-		$urls = [];
-
-		switch (self::$game_level)
+		switch($question->type)
 		{
-			default: $urls[] = 'https://opentdb.com/api.php?amount=10&difficulty=hard';
-			case 2: $urls[] = 'https://opentdb.com/api.php?amount=10&difficulty=medium';
-			case 1: $urls[] = 'https://opentdb.com/api.php?amount=10&difficulty=easy';
-		}
+			case 'multiple': return $question->options[$answer_code];
 
-		return $urls;
-	}
-
-	private function clear_old_questions()
-	{
-		self::$questions = [];
-
-		switch (self::$game_level)
-		{
-			case 1: self::$questions = []; break;
-			case 2: break;
-			default: self::$questions[$game_level - 3] = NULL;
+			case 'boolean':
+				switch ($answer_code)
+				{
+					case 0: return 'False';
+					case 1: return 'True';
+				}
 		}
 	}
 }

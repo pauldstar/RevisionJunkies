@@ -1,4 +1,6 @@
-.modal {
+.tile,
+.modal,
+#game-container #game-message p {
   font-family: 'Hind', sans-serif;
 }
 
@@ -22,6 +24,10 @@
 
 #modal-qtn-carousel .carousel-indicators > li {
   background-color: #383d41;
+}
+
+#modal-qtn-carousel .carousel-indicators > li.active {
+  background-color: #dc3545!important;
 }
 
 #game-stats {
@@ -275,7 +281,7 @@
   background: #d65c5c;
 }
 
-.tile.tile-nan {
+.tile.tile-zero {
   color: #776E65;
   background: #333;
 }

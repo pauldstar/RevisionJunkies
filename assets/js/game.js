@@ -3,7 +3,7 @@
 $(document).ready(_=>
 {
   Game.start();
-  Questions.load();
+  Question.load();
 });
 
 var Game = (_=>
@@ -139,7 +139,7 @@ var Grid = (_=>
 
   function _isSameNumberClass(val1, val2)
   {
-    if (isNaN(val1) || isNaN(val2)) return false;
+    if (val1 === 0 || val2 === 0) return false;
 
     let mod1 = val1 % 2 === 0,
       mod2 = val2 % 2 === 0;
@@ -153,7 +153,7 @@ var Grid = (_=>
 
     _eachCell((x, y, tile) =>
     { // all cells have tiles
-      if (!tile.floatValue) matchesAvailable = true;
+      if (tile.floatValue === undefined) matchesAvailable = true;
 
       for (let direction = 0; direction < 4; direction++)
       {
@@ -164,7 +164,7 @@ var Grid = (_=>
         };
 
         let otherTile = _cellContent(cell),
-          isMergeable = otherTile && ( !otherTile.floatValue ||
+          isMergeable = otherTile && ( otherTile.floatValue === undefined ||
             _isSameNumberClass(otherTile.getIntValue(), tile.getIntValue()) );
 
         if (isMergeable) matchesAvailable = true;
@@ -250,7 +250,6 @@ var Grid = (_=>
         if (returnBoolean) availableCells = true;
         else availableCells.push({x: x, y: y});
       }
-
     });
 
     return availableCells;
@@ -387,7 +386,7 @@ var Modal = (_=>
       _$modalGameOver = $('#modal-game-over'),
       _$modalInstructions = $('#modal-instructions');
 
-  $(document).on('hidden.bs.modal', _modalQtns, _resetModalOptions);
+  $(document).on('show.bs.modal', _modalQtns, _resetModalOptions);
 
   function _nextAnswerOption()
   {
@@ -402,7 +401,7 @@ var Modal = (_=>
 
   function _showQuestion()
   {
-    let question = Questions.get();
+    let question = Question.get();
 
     switch (question.type)
     {
@@ -446,14 +445,13 @@ var Modal = (_=>
       case 3: direction = 'left';
     }
 
-    let swipeAnimationObj = {}, resetAnimationObj = {};
+    let swipeAnimation = {};
+    swipeAnimation[direction] = '-500px';
+    swipeAnimation['opacity'] = '0';
 
-    swipeAnimationObj[direction] = '-500px';
-    swipeAnimationObj['opacity'] = '0';
-
-    _$modalQtnsContent.animate(swipeAnimationObj, 'fast', _=>
+    _$modalQtnsContent.animate(swipeAnimation, 'fast').promise().then(_=>
     {
-      _$modalQtns.modal('hide');
+      Question.getScore(direction);
     });
   }
 
@@ -469,9 +467,9 @@ var Modal = (_=>
   }
 })();
 
-var Questions = (_=>
+var Question = (_=>
 {
-  let _gameLevel = 0, _questions = [];
+  let _gameLevel = 0, _questions = [], _currentQuestion;
 
   function _loadQuestions()
   {
@@ -487,19 +485,62 @@ var Questions = (_=>
           _questions.push(question);
         });
       },
-      error: e => { console.log(e) }
+      error: e => console.log(e)
     });
   }
 
   function _getQuestion()
   {
     _questions.length === 2 && _loadQuestions();
-    return _questions.shift();
+    _currentQuestion = _questions.shift();
+    return _currentQuestion;
+  }
+
+  function _getAnswerCode(direction)
+  {
+    switch (_currentQuestion.type)
+    {
+      case 'boolean':
+        switch (direction)
+        {
+          case 'top': case 'right': return 1;
+          case 'bottom': case 'left': return 0;
+        }
+
+      case 'multiple':
+        switch (direction)
+        {
+          case 'top': return 0;
+          case 'right': return 1;
+          case 'bottom': return 2;
+          case 'left': return 3;
+        }
+    }
+  }
+
+  function _getQuestionScore(direction)
+  {
+    let ansCode = _getAnswerCode(direction),
+        id = _currentQuestion.id,
+        diff = _currentQuestion.difficulty,
+        lvl = _currentQuestion.lvl;
+
+    $.ajax({
+      url: `${SITE_URL}/game/get_question_score/${ansCode}/${id}/${lvl}`,
+      dataType: 'JSON',
+      success: data =>
+      {
+        Modal.$qtns.modal('hide');
+        GridDisplay.setTileValue(parseFloat(data));
+      },
+      error: e => console.log(e)
+    });
   }
 
   return {
     load: _loadQuestions,
-    get: _getQuestion
+    get: _getQuestion,
+    getScore: _getQuestionScore
   }
 })();
 
@@ -511,7 +552,8 @@ var GridDisplay = (_=>
       _$gameSection = $('#game-section'),
       _gameSection = '#game-section',
       _$gameMsg = $('#game-message'),
-      _$gameScore = $('#game-score');
+      _$gameScore = $('#game-score'),
+      _$currentNewTile;
 
   function _restart()
   {
@@ -577,9 +619,9 @@ var GridDisplay = (_=>
 
   function _openTile()
   {
-    let $tile = $(_newTile).eq(0);
+    _$currentNewTile = $(_newTile).eq(0);
 
-		if (!$tile.length) return;
+		if (!_$currentNewTile.length) return;
 
     if (_$gameMsg.css('display') === 'block')
     {
@@ -587,46 +629,40 @@ var GridDisplay = (_=>
       return;
     }
 
-    Modal.$qtns.on('hide.bs.modal', _=>
-    {
-      let min = 1, max = 40.9999,
-      floatValue = Math.random() * (max - min) + min;
-
-      if (floatValue > 30) floatValue = 'X';
-
-      let intValue = Math.floor(floatValue),
-      tileX = $tile.data('x'),
-      tileY = $tile.data('y');
-
-      let tile = Grid.cells[tileX][tileY];
-      tile.floatValue = floatValue;
-
-      $tile.text(isNaN(floatValue) ? 'X'  : intValue);
-      $tile.data('val-set', '1');
-      $tile.addClass(isNaN(floatValue) ? 'tile-nan btn-light focus' :
-        intValue % 2 === 0 ? 'tile-even btn-primary focus' :
-          'tile-odd btn-danger focus'
-      );
-      $tile.removeClass('tile-new');
-
-      Game.checkStatus();
-
-      Modal.$qtns.off('hide.bs.modal');
-    });
-
     Modal.showQuestion();
+  }
+
+  function _setTileValue(score)
+  {
+    let intValue = Math.floor(score),
+        tileX = _$currentNewTile.data('x'),
+        tileY = _$currentNewTile.data('y');
+
+    let tile = Grid.cells[tileX][tileY];
+    tile.floatValue = score;
+
+    _$currentNewTile.text(score === 0 ? 'X' : intValue);
+    _$currentNewTile.data('val-set', '1');
+    _$currentNewTile.addClass(score === 0 ? 'tile-zero btn-light focus disabled' :
+      intValue % 2 === 0 ? 'tile-even btn-primary focus disabled' :
+        'tile-odd btn-danger focus disabled'
+    );
+    _$currentNewTile.removeClass('tile-new');
+
+    Game.checkStatus();
   }
 
   function _addTile(tile)
   {
-    let positionClass = _positionClass(tile.previousPosition || tile),
+    let positionClass = _positionClass(tile.previousPosition || tile);
 
-      statusClass = !tile.floatValue ? 'tile-new' :
-        isNaN(tile.floatValue) ? 'tile-nan' :
-        tile.getIntValue() % 2 === 0 ? 'tile-even' : 'tile-odd',
+    let statusClass = tile.floatValue === undefined ? 'tile-new' :
+      tile.floatValue === 0 ? 'tile-zero' :
+      tile.getIntValue() % 2 === 0 ? 'tile-even' : 'tile-odd';
 
-      classes = ['tile', statusClass, positionClass],
-      textContent = tile.floatValue ? tile.getIntValue() : '?';
+    let classes = ['tile', statusClass, positionClass],
+        textContent = tile.floatValue === undefined ? '?' :
+          tile.floatValue === 0 ? 'X' : tile.getIntValue();
 
     if (tile.isMaxMerge) classes.push('tile-max');
 
@@ -664,7 +700,8 @@ var GridDisplay = (_=>
     refresh: _refresh,
     restart: _restart,
     message: _message,
-    tilesValuesAreSet: _tilesValuesAreSet
+    tilesValuesAreSet: _tilesValuesAreSet,
+    setTileValue: _setTileValue
   }
 })();
 
@@ -700,7 +737,10 @@ var Input = (_=>
       $target.parents('.modal').length !== 0;
 
 		if (isGridClick) GridDisplay.openTile();
-    else if (isModalClick) Modal.nextAnswer();
+    else if (isModalClick)
+    {
+      $(e.target).is('.carousel-indicators li') || Modal.nextAnswer();
+    }
 	}
 
   function _swipeInput(e)
@@ -792,7 +832,6 @@ function Tile(position, value)
 
   this.getIntValue = function()
   {
-    let val = Math.floor(this.floatValue);
-    return isNaN(val) ? 'X' : val;
+    return Math.floor(this.floatValue);
   };
 }

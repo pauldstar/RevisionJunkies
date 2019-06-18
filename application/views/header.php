@@ -1,6 +1,6 @@
 <div class="section shadow bg-dark <?= $title === 'game' ? 'fixed-top' : '' ?>" id="navbar-section">
   <div class="container">
-  <nav class="navbar navbar-expand-lg navbar-dark">
+  <nav class="navbar navbar-expand-lg navbar-dark right-font">
     <a class="navbar-brand" href="#">
       <img src="./assets/images/logo-white-min.png" height="37px" alt="quepenny" />
       <span id="nav-hi-score">0000</span>

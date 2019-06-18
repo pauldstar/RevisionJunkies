@@ -1,12 +1,12 @@
 <div class="section bg-dark fixed-top w-100 h-100" id="game-section">
 
-    <div class="text-white ml-auto mr-auto" id="game-stats">
+    <div class="text-white ml-auto mr-auto right-font" id="game-stats">
       <span id="game-score">0</span>
       <span class="float-right" id="game-timer">00:00</span>
     </div>
 
     <div class="ml-auto mr-auto" id="game-container">
-      <div id="game-message">
+      <div class="hind-font" id="game-message">
         <p id="game-desktop-msg">Press Space To Start</p>
         <p id="game-mobile-msg">Tap To Start</p>
         <div class="lower">
@@ -78,7 +78,7 @@
           </ol>
           <div class="carousel-item active">
             <div class="modal-body">...</div>
-            <div class="modal-footer"><h4 class="text-danger">Q</h4></div>
+            <div class="modal-footer"><h4>Q</h4></div>
           </div>
           <div class="carousel-item">
             <div class="modal-body">...</div>

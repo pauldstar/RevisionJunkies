@@ -1,12 +1,11 @@
-/*  NAVBAR */
-
-.navbar-brand,
-.nav-item {
+.right-font {
   font-family: 'Righteous', cursive;
+}
+
+.hind-font {
+  font-family: 'Hind', sans-serif;
 }
 
 #navbar-section {
   z-index: 1031;
 }
-
-/* GAME */
