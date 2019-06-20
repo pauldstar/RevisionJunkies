@@ -19,13 +19,22 @@
           <div class="grid-cell"></div>
           <div class="grid-cell"></div>
           <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+        </div>
+        <div class="grid-row">
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
         </div>
         <div class="grid-row">
           <div class="grid-cell"></div>
           <div class="grid-cell"></div>
           <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
         </div>
         <div class="grid-row">
+          <div class="grid-cell"></div>
           <div class="grid-cell"></div>
           <div class="grid-cell"></div>
           <div class="grid-cell"></div>
@@ -45,6 +54,9 @@
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
+      </div>
+      <div class="progress" style="height: 2px;">
+        <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
       </div>
       <div class="modal-body text-center">...</div>
       <div class="modal-footer text-center">
@@ -66,6 +78,9 @@
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
+      </div>
+      <div class="progress" style="height: 2px;">
+        <div class="progress-bar bg-danger" role="progressbar" style="width: 71%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
       </div>
       <div id="modal-qtn-carousel" class="carousel slide" data-ride="carousel">
         <div class="carousel-inner text-center">
@@ -112,7 +127,18 @@
         </button>
       </div>
       <div class="modal-body">
-        Better luck next time. Your stats:
+        Better luck next time...
+        <!-- Your ranking:<br>
+        <br>
+        First Place<br>
+        <br>
+        Two Above<br>
+        One Above<br>
+        Your Rank<br>
+        One Below<br>
+        Two Below<br>
+        <br>
+        Last Place -->
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -123,20 +149,50 @@
   </div>
 </div>
 
-<div class="modal fade" id="modal-instructions" tabindex="-1" role="dialog" aria-labelledby="game-message-modal" aria-hidden="true">
+<div class="modal fade" id="modal-game-won" tabindex="-1" role="dialog" aria-labelledby="game-message-modal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="">You Won!</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Your ranking:<br>
+        <br>
+        First Place<br>
+        <br>
+        Two Above<br>
+        One Above<br>
+        Your Rank<br>
+        One Below<br>
+        Two Below<br>
+        <br>
+        Last Place
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-success btn-new-game">New Game</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal-instructions" tabindex="-1" role="dialog" aria-labelledby="game-instructions-modal" aria-hidden="true">
   <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="">Instructions</h5>
       </div>
       <div class="modal-body">
-        Figure out the game and aim for the highest score & rank.<br/>
-        <br/>
-        Easy Right? Let's go!<br/>
-        </br>
-        <strong>Mobile:</strong> Tap & Swipe.<br/>
-        <strong>Desktop:</strong> Space & Arrow keys.<br/>
-        <br/>
+        Figure out the game and aim for the highest score & rank.<br>
+        <br>
+        Easy Right? Let's go!<br>
+        <br>
+        <strong>Mobile:</strong> Tap & Swipe.<br>
+        <strong>Desktop:</strong> Space & Arrow keys.<br>
+        <br>
         Simples!
       </div>
       <div class="modal-footer">
