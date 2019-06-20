@@ -10,7 +10,7 @@ var Game = (_=>
 {
   let _score, _status,
     _numStartTiles = 2,
-    _gridSize = 3;
+    _gridSize = 4;
 
   function _gameScore(value)
   {
@@ -18,16 +18,19 @@ var Game = (_=>
     else return _score;
   }
 
-  function _gameStatus()
+  function _gameOver()
   {
-    let gameOver = _status['lost'] || _status['won'];
-    return !gameOver;
+    return  _status['lost'] || _status['won'];
   }
 
   function _checkGameStatus()
   {
     if (!Grid.movesAvailable()) _status['lost'] = true;
-    if (!_gameStatus()) GridDisplay.message(false);
+    if (_gameOver())
+    {
+      let status = _status['lost'] ? 'lost' : 'won';
+      Modal.gameOverAlert(status);
+    }
   }
 
   function _startGame()
@@ -39,15 +42,9 @@ var Game = (_=>
     GridDisplay.refresh();
   }
 
-  function _restartGame()
-  {
-    _startGame();
-    GridDisplay.restart();
-  }
-
   function _move(e)
   {
-    let preventMove = !_gameStatus() || !GridDisplay.tilesValuesAreSet();
+    let preventMove = _gameOver() || !GridDisplay.tilesValuesAreSet();
     if (preventMove) return;
 
     let vector = Input.getVector(e);
@@ -304,9 +301,8 @@ var Grid = (_=>
 
   function _move(vector)
   {
-    let
-      cell, tile, moved = false,
-      traversals = _buildTraversals(vector);
+    let cell, tile, moved = false,
+        traversals = _buildTraversals(vector);
 
     _prepareTiles();
     // Traverse the grid in the right direction and move tiles
@@ -384,6 +380,7 @@ var Modal = (_=>
 
       _$modalOptionsCarousel = $('#modal-qtn-carousel'),
       _$modalGameOver = $('#modal-game-over'),
+      _$modalGameWon = $('#modal-game-won'),
       _$modalInstructions = $('#modal-instructions');
 
   $(document).on('show.bs.modal', _modalQtns, _resetModalOptions);
@@ -431,6 +428,15 @@ var Modal = (_=>
     _$modalOptions4.html(question.options[3]);
   }
 
+  function _gameOverAlert(status)
+  {
+    switch (status)
+    {
+      case 'lost': _$modalGameOver.modal('show'); break;
+      case 'won': _$modalGameWon.modal('show');
+    }
+  }
+
   function _move(e)
   {
     if (_$modalQtnsContent.attr('style')) return;
@@ -463,13 +469,17 @@ var Modal = (_=>
     $instructions: _$modalInstructions,
     nextAnswer: _nextAnswerOption,
     move: _move,
-    showQuestion: _showQuestion
+    showQuestion: _showQuestion,
+    gameOverAlert: _gameOverAlert
   }
 })();
 
 var Question = (_=>
 {
-  let _gameLevel = 0, _questions = [], _currentQuestion;
+  let _gameLevel = 0,
+      _questions = [],
+      _currentQuestion,
+      _questionAnswered = true;
 
   function _loadQuestions()
   {
@@ -491,8 +501,12 @@ var Question = (_=>
 
   function _getQuestion()
   {
-    _questions.length === 2 && _loadQuestions();
-    _currentQuestion = _questions.shift();
+    if (_questionAnswered)
+    {
+      _questions.length === 2 && _loadQuestions();
+      _currentQuestion = _questions.shift();
+      _questionAnswered = false;
+    }
     return _currentQuestion;
   }
 
@@ -535,6 +549,8 @@ var Question = (_=>
       },
       error: e => console.log(e)
     });
+
+    _questionAnswered = true;
   }
 
   return {
@@ -554,13 +570,6 @@ var GridDisplay = (_=>
       _$gameMsg = $('#game-message'),
       _$gameScore = $('#game-score'),
       _$currentNewTile;
-
-  function _restart()
-  {
-    _$gameMsg.removeClass('game-won');
-    _$gameMsg.removeClass('game-over');
-    _updateScore();
-  }
 
   function _tilesValuesAreSet()
   {
@@ -698,8 +707,8 @@ var GridDisplay = (_=>
   return {
     openTile: _openTile,
     refresh: _refresh,
-    restart: _restart,
     message: _message,
+    updateScore: _updateScore,
     tilesValuesAreSet: _tilesValuesAreSet,
     setTileValue: _setTileValue
   }
