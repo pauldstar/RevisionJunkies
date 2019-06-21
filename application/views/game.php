@@ -43,7 +43,7 @@
 
   <div class="text-white ml-auto mr-auto right-font w-500" id="game-footer">
     <button class="btn btn-success btn-new-game" >New Game</button>
-    <button class="btn btn-warning float-right" data-toggle="modal" data-target="#modal-instructions">Instructions</button>
+    <button class="btn btn-info float-right" data-toggle="modal" data-target="#modal-instructions">Instructions</button>
   </div>
 
 </div>
