@@ -42,7 +42,7 @@
   </div>
 
   <div class="text-white ml-auto mr-auto right-font w-500" id="game-footer">
-    <button class="btn btn-success btn-new-game">New Game</button>
+    <button class="btn btn-success btn-new-game" >New Game</button>
     <button class="btn btn-warning float-right" data-toggle="modal" data-target="#modal-instructions">Instructions</button>
   </div>
 
@@ -145,7 +145,7 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
         <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-instructions">Instructions</button>
-        <button type="button" class="btn btn-success btn-new-game">New Game</button>
+        <button type="button" class="btn btn-success btn-new-game" data-dismiss="modal" aria-label="Close">New Game</button>
       </div>
     </div>
   </div>
