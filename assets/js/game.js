@@ -29,7 +29,7 @@ var Game = (_=>
     if (_gameOver())
     {
       let status = _status['lost'] ? 'lost' : 'won';
-      Modal.gameOverAlert(status);
+      setTimeout(_=> Modal.gameOverAlert(status), 1500);
     }
   }
 
@@ -315,9 +315,8 @@ var Grid = (_=>
 
         if (tile)
         {
-          let
-            positions = _findFarthestPosition(cell, vector),
-            next = _cellContent(positions.next);
+          let positions = _findFarthestPosition(cell, vector),
+              next = _cellContent(positions.next);
           // Only one merger per row traversal?
           let isMergeable = next && !next.parentTiles &&
             _isSameNumberClass(next.getIntValue(), tile.getIntValue());
@@ -569,7 +568,10 @@ var GridDisplay = (_=>
       _gameSection = '#game-section',
       _$gameMsg = $('#game-message'),
       _$gameScore = $('#game-score'),
+      _$newGameBtn = $('.btn-new-game'),
       _$currentNewTile;
+
+  _$newGameBtn.click(Game.start);
 
   function _tilesValuesAreSet()
   {
@@ -632,9 +634,9 @@ var GridDisplay = (_=>
 
 		if (!_$currentNewTile.length) return;
 
-    if (_$gameMsg.css('display') === 'block')
+    if (_$gameMsg.css('visibility') === 'visible')
     {
-      _$gameMsg.css('display', 'none');
+      _$gameMsg.css('visibility', 'hidden');
       return;
     }
 
@@ -716,11 +718,9 @@ var GridDisplay = (_=>
 
 var Input = (_=>
 {
-  let _$newGameBtn = $('.btn-new-game'),
-      _gestures = new Hammer(document);
+  let _gestures = new Hammer(document);
 
   $(document).on('keydown', _input);
-  _$newGameBtn.click(Game.restart);
   _gestures.get('pan').set({ direction: Hammer.DIRECTION_ALL });
   _gestures.on('panstart tap', _input);
 
@@ -737,10 +737,9 @@ var Input = (_=>
 	function _clickInput(e)
 	{
     let $target = $(e.target);
-    if ($target.is('#btn-instructions')) return;
 
-    let isGridClick = $target.is('#game-section') ||
-    $target.parents('#game-section').length !== 0;
+    let isGridClick = $target.is('#game-container') ||
+    $target.parents('#game-container').length !== 0;
 
     let isModalClick = $target.is('.modal') ||
       $target.parents('.modal').length !== 0;

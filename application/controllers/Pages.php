@@ -4,8 +4,6 @@ class Pages extends QP_Controller
 {
 	public function game()
 	{
-		$this->load->helper('url');
-
 	  $data['title'] = 'game';
 
     $data['styles'] = self::load_asset('game', 'css');

@@ -29,15 +29,19 @@
   background-color: #dc3545!important;
 }
 
-#game-stats {
-  font-family: 'Righteous', cursive;
+#game-header {
   font-size: 2.2rem;
   width: 500px;
   padding: 0 15px 0 15px;
 }
 
+#game-footer {
+  width: 500px;
+  padding-top: 7px;
+}
+
 #game-section {
-  padding-top: 180px;
+  padding-top: 123px;
   touch-action: none;
 }
 
@@ -54,31 +58,11 @@
 }
 
 #game-container #game-message p {
-  font-family: 'Hind', sans-serif;
   font-size: 44px;
   font-weight: bold;
   height: 60px;
   line-height: 60px;
-  margin-top: 175px;
   color: #343A40;
-}
-
-.lower {
-  display: block;
-  margin-top: 59px;
-}
-
-#game-container #game-message a {
-  display: inline-block;
-  background: #343A40;
-  border-radius: 3px;
-  padding: 0 20px;
-  text-decoration: none;
-  color: #fff;
-  height: 40px;
-  line-height: 42px;
-  margin-left: 9px;
-  font-family: 'Righteous', cursive;
 }
 
 #game-mobile-msg {
@@ -147,6 +131,7 @@
 
 #game-container {
   margin-top: 20px;
+  margin-bottom: 20px;
   position: relative;
   padding: 15px;
   cursor: default;
@@ -444,13 +429,12 @@
     height: 280px;
   }
   #game-section {
-    padding-top: 135px;
+    padding-top: 98px;
   }
   #game-container #game-message p {
     font-size: 30px;
     height: 30px;
     line-height: 30px;
-    margin-top: 90px;
   }
   #game-mobile-msg {
     display: block;
@@ -458,9 +442,12 @@
   #game-desktop-msg {
     display: none;
   }
-  #game-stats {
+  #game-header {
     width: 280px;
     font-size: 1.8rem;
+  }
+  #game-footer {
+    width: 280px;
   }
   #grid-container {
     position: absolute;

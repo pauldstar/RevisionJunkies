@@ -2,7 +2,7 @@
   <div class="container">
   <nav class="navbar navbar-expand-lg navbar-dark right-font">
     <a class="navbar-brand" href="#">
-      <img src="./assets/images/logo-white-min.png" height="37px" alt="quepenny" />
+      <img src="<?= base_url('assets/images/logo-white-min.png') ?>" height="37px" alt="quepenny" />
       <span id="nav-hi-score">0000</span>
     </a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -19,14 +19,14 @@
           foreach ($nav_items as $item):
             $active = $title === $item;
         ?>
-          <li class="nav-item <?= $active ? 'active' : '' ?>">
-            <a class="nav-link" href="<?= site_url($item) ?>">
-              <?= ucfirst($item) ?>
-              <?php if ($active): ?>
-                <span class="sr-only">(current)</span>
-              <?php endif; ?>
-            </a>
-          </li>
+            <li class="nav-item <?= $active ? 'active' : '' ?>">
+              <a class="nav-link" href="<?= site_url($item) ?>">
+                <?= ucfirst($item) ?>
+                <?php if ($active): ?>
+                  <span class="sr-only">(current)</span>
+                <?php endif; ?>
+              </a>
+            </li>
         <?php endforeach; ?>
       </ul>
     </div>
