@@ -429,7 +429,7 @@
     height: 280px;
   }
   #game-section {
-    padding-top: 98px;
+    padding-top: 83px;
   }
   #game-container #game-message p {
     font-size: 30px;
@@ -444,7 +444,7 @@
   }
   #game-header {
     width: 280px;
-    font-size: 1.8rem;
+    font-size: 1.5rem;
   }
   #game-footer {
     width: 280px;
