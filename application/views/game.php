@@ -1,51 +1,53 @@
-<div class="section bg-dark fixed-top w-100 h-100" id="game-section">
+<div class="d-flex fixed-top h-100 justify-content-center align-items-center" id="game-section">
+  <div>
 
-  <div class="text-white ml-auto mr-auto right-font" id="game-header">
-    <span id="game-score">0</span>
-    <span class="float-right" id="game-timer">00:00</span>
-  </div>
-
-  <div class="ml-auto mr-auto" id="game-container">
-    <div class="hind-font d-flex justify-content-center" id="game-message">
-      <p class="align-self-center" id="game-desktop-msg">Press Space To Start</p>
-      <p class="align-self-center" id="game-mobile-msg">Tap To Start</p>
+    <div class="text-white ml-auto mr-auto right-font" id="game-header">
+      <span id="game-score">0</span>
+      <span class="float-right" id="game-timer">00:00</span>
     </div>
 
-    <div id="grid-container">
-      <div class="grid-row">
-        <div class="grid-cell"></div>
-        <div class="grid-cell"></div>
-        <div class="grid-cell"></div>
-        <div class="grid-cell"></div>
+    <div class="ml-auto mr-auto" id="game-container">
+      <div class="hind-font d-flex justify-content-center" id="game-message">
+        <p class="align-self-center" id="game-desktop-msg">Press Space To Start</p>
+        <p class="align-self-center" id="game-mobile-msg">Tap To Start</p>
       </div>
-      <div class="grid-row">
-        <div class="grid-cell"></div>
-        <div class="grid-cell"></div>
-        <div class="grid-cell"></div>
-        <div class="grid-cell"></div>
+
+      <div id="grid-container">
+        <div class="grid-row">
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+        </div>
+        <div class="grid-row">
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+        </div>
+        <div class="grid-row">
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+        </div>
+        <div class="grid-row">
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+        </div>
       </div>
-      <div class="grid-row">
-        <div class="grid-cell"></div>
-        <div class="grid-cell"></div>
-        <div class="grid-cell"></div>
-        <div class="grid-cell"></div>
-      </div>
-      <div class="grid-row">
-        <div class="grid-cell"></div>
-        <div class="grid-cell"></div>
-        <div class="grid-cell"></div>
-        <div class="grid-cell"></div>
-      </div>
+
+      <div id="tile-container"></div>
     </div>
 
-    <div id="tile-container"></div>
-  </div>
+    <div class="text-white ml-auto mr-auto right-font" id="game-footer">
+      <button class="btn btn-success btn-new-game">New Game</button>
+      <button class="btn btn-warning float-right" data-toggle="modal" data-target="#modal-instructions">Instructions</button>
+    </div>
 
-  <div class="text-white ml-auto mr-auto right-font w-500" id="game-footer">
-    <button class="btn btn-success btn-new-game" >New Game</button>
-    <button class="btn btn-info float-right" data-toggle="modal" data-target="#modal-instructions">Instructions</button>
   </div>
-
 </div>
 
 <div class="modal fade modal-qtn" id="modal-qtn-boolean" tabindex="-1" role="dialog" aria-labelledby="true-false-modal" data-backdrop="static" aria-hidden="true">

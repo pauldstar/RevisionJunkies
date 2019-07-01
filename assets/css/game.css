@@ -41,7 +41,6 @@
 }
 
 #game-section {
-  padding-top: 123px;
   touch-action: none;
 }
 
@@ -427,9 +426,6 @@
     padding: 10px;
     width: 280px;
     height: 280px;
-  }
-  #game-section {
-    padding-top: 83px;
   }
   #game-container #game-message p {
     font-size: 30px;

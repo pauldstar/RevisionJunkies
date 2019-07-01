@@ -35,7 +35,7 @@ $config['base_url'] = "{$_SERVER['REQUEST_SCHEME']}://{$_SERVER['SERVER_NAME']}/
 | variable so that it is blank.
 |
 */
-$config['index_page'] = isset($_SERVER['CI_ENV']) && $_SERVER['CI_ENV'] === 'production' ? '' : 'index.php';
+$config['index_page'] = '';
 
 /*
 |--------------------------------------------------------------------------

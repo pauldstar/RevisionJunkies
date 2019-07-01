@@ -11,7 +11,7 @@ class Game extends QP_Controller
 	function get_question_score($answer_code, $question_id, $game_level)
 	{
 		$question = $this->question->get_session_question($question_id, $game_level);
-		$answer = self::get_answer($question, $answer_code);
+		$answer = self::get_user_answer($question, $answer_code);
 		$is_correct = $answer === $question->correct_answer;
 		$this->question->delete_session_question($question_id, $game_level);
 
@@ -71,7 +71,7 @@ class Game extends QP_Controller
     echo json_encode($usr_questions);
 	}
 
-	private function get_answer($question, $answer_code)
+	private function get_user_answer($question, $answer_code)
 	{
 		switch($question->type)
 		{
