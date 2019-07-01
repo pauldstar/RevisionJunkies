@@ -1,5 +1,4 @@
-.tile, .modal,
-#game-container #game-message p {
+.tile, .modal {
   font-family: 'Hind', sans-serif;
 }
 
