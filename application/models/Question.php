@@ -55,9 +55,9 @@ class Question extends CI_Model
 
 		switch ($game_level)
 		{
-			default: $urls[] = 'https://opentdb.com/api.php?amount=10&difficulty=hard';
-			case 2: $urls[] = 'https://opentdb.com/api.php?amount=10&difficulty=medium';
-			case 1: $urls[] = 'https://opentdb.com/api.php?amount=10&difficulty=easy';
+			default: $urls[] = 'https://opentdb.com/api.php?amount=5&difficulty=hard';
+			case 2: $urls[] = 'https://opentdb.com/api.php?amount=5&difficulty=medium';
+			case 1: $urls[] = 'https://opentdb.com/api.php?amount=5&difficulty=easy';
 		}
 
 		return $urls;
