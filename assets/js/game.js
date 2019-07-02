@@ -456,7 +456,7 @@ var Modal = (_=>
 
     _$modalQtnsContent.animate(swipeAnimation, 'fast').promise().then(_=>
     {
-      Question.getScore(direction);
+      Question.scoreAnswer(direction);
     });
   }
 
@@ -531,15 +531,14 @@ var Question = (_=>
     }
   }
 
-  function _getQuestionScore(direction)
+  function _scoreAnswer(direction)
   {
     let ansCode = _getAnswerCode(direction),
         id = _currentQuestion.id,
-        diff = _currentQuestion.difficulty,
         lvl = _currentQuestion.lvl;
 
     $.ajax({
-      url: `${SITE_URL}/game/get_question_score/${ansCode}/${id}/${lvl}`,
+      url: `${SITE_URL}/game/score_user_answer/${ansCode}/${id}/${lvl}`,
       dataType: 'JSON',
       success: data =>
       {
@@ -555,7 +554,7 @@ var Question = (_=>
   return {
     load: _loadQuestions,
     get: _getQuestion,
-    getScore: _getQuestionScore
+    scoreAnswer: _scoreAnswer
   }
 })();
 

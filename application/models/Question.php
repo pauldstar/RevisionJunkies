@@ -3,14 +3,12 @@
 class Question extends CI_Model
 {
   private static $questions;
-  private static $max_score;
 
   public function __construct()
   {
     parent::__construct();
     $this->load->library('session');
     self::$questions = &$_SESSION['questions'];
-    self::$max_score = &$_SESSION['score'];
   }
 
   public function get_session_question($question_id, $game_level)
@@ -42,11 +40,6 @@ class Question extends CI_Model
     }
 
     return $questions;
-  }
-
-  public function set_session_max_score($score)
-  {
-    self::$max_score += $score;
   }
 
   private function get_api_urls($game_level)

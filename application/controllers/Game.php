@@ -5,40 +5,35 @@ class Game extends QP_Controller
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->model('question');
+		$this->load->model('question', 'qtn_mod');
+		$this->load->model('score', 'sc_mod');
 	}
 
-	function get_question_score($answer_code, $question_id, $game_level)
+	function score_user_answer($answer_code, $question_id, $game_level)
 	{
-		$question = $this->question->get_session_question($question_id, $game_level);
+		$question = $this->qtn_mod->get_session_question($question_id, $game_level);
 		$answer = self::get_user_answer($question, $answer_code);
 		$is_correct = $answer === $question->correct_answer;
-		$this->question->delete_session_question($question_id, $game_level);
+		$this->qtn_mod->delete_session_question($question_id, $game_level);
 
-		$max = $min = 0;
-
-		switch ($question->difficulty)
-		{
-			case 'easy': $min = 1; $max = 33; break;
-			case 'medium': $min = 33; $max = 66; break;
-			case 'hard': $min = 66; $max = 100;
-		}
+		$max = $game_level * 33;
+		$min = 1;
 
 		$rand_float = mt_rand() / mt_getrandmax();
 
 		if ($is_correct) $score = $rand_float * ($max - $min) + $min;
 		else $score = 0;
 
-		$this->question->set_session_max_score($score);
+		$this->sc_mod->set_session_score($score);
 
 		echo $score;
 	}
 
 	public function get_questions($game_level)
 	{
-		$this->question->clear_old_session_questions($game_level);
+		$this->qtn_mod->clear_old_session_questions($game_level);
 
-		$questions = $this->question->load_questions($game_level);
+		$questions = $this->qtn_mod->load_questions($game_level);
 		$ssn_questions = [];
 		$usr_questions = [];
 		$id = 0;
@@ -50,7 +45,6 @@ class Game extends QP_Controller
 			$usr_qtn['lvl'] = $game_level;
 			$usr_qtn['question'] = $qtn->question;
 			$usr_qtn['type'] = $qtn->type;
-			$usr_qtn['correct'] = $qtn->correct_answer;
 
 			if ($qtn->type === 'multiple')
 			{
@@ -65,7 +59,7 @@ class Game extends QP_Controller
 			$id++;
 		}
 
-		$this->question->set_session_questions($ssn_questions, $game_level);
+		$this->qtn_mod->set_session_questions($ssn_questions, $game_level);
 
 		shuffle($usr_questions);
     echo json_encode($usr_questions);
