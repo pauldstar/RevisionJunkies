@@ -11,20 +11,24 @@ class Game extends QP_Controller
 
 	function score_user_answer($answer_code, $question_id, $game_level)
 	{
+		$score = 0;
 		$question = $this->qtn_mod->get_session_question($question_id, $game_level);
-		$answer = self::get_user_answer($question, $answer_code);
-		$is_correct = $answer === $question->correct_answer;
-		$this->qtn_mod->delete_session_question($question_id, $game_level);
 
-		$max = $game_level * 33;
-		$min = 1;
+		if (isset($question))
+		{
+			$answer = self::get_user_answer($question, $answer_code);
+			$is_correct = $answer === $question->correct_answer;
+			$this->qtn_mod->delete_session_question($question_id, $game_level);
 
-		$rand_float = mt_rand() / mt_getrandmax();
+			$max = $game_level * 33;
+			$min = 1;
 
-		if ($is_correct) $score = $rand_float * ($max - $min) + $min;
-		else $score = 0;
+			$rand_float = mt_rand() / mt_getrandmax();
 
-		$this->sc_mod->set_session_score($score);
+			if ($is_correct) $score = $rand_float * ($max - $min) + $min;
+
+			$this->sc_mod->set_session_score($score);
+		}
 
 		echo $score;
 	}

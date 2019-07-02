@@ -13,7 +13,10 @@ class Question extends CI_Model
 
   public function get_session_question($question_id, $game_level)
   {
-    return self::$questions[$game_level][$question_id];
+    if ( isset(self::$questions[$game_level][$question_id]) )
+      return self::$questions[$game_level][$question_id];
+    
+    return NULL;
   }
 
   public function set_session_questions($questions, $game_level)
