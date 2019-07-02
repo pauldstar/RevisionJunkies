@@ -41,6 +41,8 @@
 
 #game-section {
   touch-action: none;
+  height: calc(100% - 63px);
+  top: 63px;
 }
 
 #game-container #game-message {
@@ -58,7 +60,6 @@
 #game-container #game-message p {
   font-size: 44px;
   font-weight: bold;
-  height: 60px;
   line-height: 60px;
   color: #343A40;
 }
@@ -428,7 +429,6 @@
   }
   #game-container #game-message p {
     font-size: 30px;
-    height: 30px;
     line-height: 30px;
   }
   #game-mobile-msg {

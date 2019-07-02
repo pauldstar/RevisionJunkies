@@ -1,4 +1,4 @@
-<div class="d-flex fixed-top h-100 justify-content-center align-items-center" id="game-section">
+<div class="d-flex fixed-top justify-content-center align-items-center" id="game-section">
   <div>
 
     <div class="text-white ml-auto mr-auto right-font" id="game-header">
@@ -7,9 +7,9 @@
     </div>
 
     <div class="ml-auto mr-auto" id="game-container">
-      <div class="hind-font d-flex justify-content-center" id="game-message">
-        <p class="align-self-center" id="game-desktop-msg">Press Space To Start</p>
-        <p class="align-self-center" id="game-mobile-msg">Tap To Start</p>
+      <div class="hind-font d-flex justify-content-center align-items-center" id="game-message">
+        <p id="game-desktop-msg">Level 1<br />Press Space To Start</p>
+        <p id="game-mobile-msg">Level 1<br />Tap To Start</p>
       </div>
 
       <div id="grid-container">
@@ -44,7 +44,7 @@
 
     <div class="text-white ml-auto mr-auto right-font" id="game-footer">
       <button class="btn btn-success btn-new-game">New Game</button>
-      <button class="btn btn-warning float-right" data-toggle="modal" data-target="#modal-instructions">Instructions</button>
+      <button class="btn btn-info float-right" data-toggle="modal" data-target="#modal-instructions">Instructions</button>
     </div>
 
   </div>
@@ -146,7 +146,6 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-instructions">Instructions</button>
         <button type="button" class="btn btn-success btn-new-game" data-dismiss="modal" aria-label="Close">New Game</button>
       </div>
     </div>
