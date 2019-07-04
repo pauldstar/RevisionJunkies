@@ -3,14 +3,14 @@
 $(document).ready(_=>
 {
   Game.start();
-  Question.load();
 });
 
 var Game = (_=>
 {
-  let _score, _status,
-    _numStartTiles = 2,
-    _gridSize = 4;
+  let _score,
+      _status,
+      _numStartTiles = 2,
+      _gridSize = 4;
 
   function _gameScore(value)
   {
@@ -37,6 +37,7 @@ var Game = (_=>
   {
     _score = 0;
     _status = { lost: false, won: false };
+    Question.load(1);
     Grid.build(_gridSize);
     Grid.addStartTiles(_numStartTiles);
     GridDisplay.refresh();
@@ -475,17 +476,21 @@ var Modal = (_=>
 
 var Question = (_=>
 {
-  let _gameLevel = 0,
-      _questions = [],
+  let _level = 1,
+      _questions,
       _currentQuestion,
       _questionAnswered = true;
 
-  function _loadQuestions()
+  function _loadQuestions(level)
   {
-    _gameLevel++;
+    if (level === 1)
+    {
+      _questions = [];
+      _level = level;
+    }
 
     $.ajax({
-      url: `${SITE_URL}game/get_questions/${_gameLevel}`,
+      url: `${SITE_URL}game/get_questions/${_level}`,
       dataType: 'JSON',
       success: data =>
       {
@@ -496,6 +501,8 @@ var Question = (_=>
       },
       error: e => console.log(e)
     });
+
+    _level++;
   }
 
   function _getQuestion()
@@ -554,7 +561,7 @@ var Question = (_=>
     let ansCode = _getAnswerCode(direction),
         ansHash = _getAnswerHash(ansCode),
         id = _currentQuestion.id,
-        lvl = _currentQuestion.lvl,
+        lvl = _currentQuestion.level,
         score = 0;
 
     $.ajax({
