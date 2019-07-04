@@ -3,20 +3,42 @@
 class Question extends CI_Model
 {
   private static $questions;
+  private static $next_answer_chain_hash;
+  private static $prev_answer_chain_hash;
 
   public function __construct()
   {
     parent::__construct();
     $this->load->library('session');
     self::$questions = &$_SESSION['questions'];
+    self::$next_answer_chain_hash = &$_SESSION['next_answer_chain_hash'];
+    self::$prev_answer_chain_hash = &$_SESSION['prev_answer_chain_hash'];
   }
 
   public function get_session_question($question_id, $game_level)
   {
     if ( isset(self::$questions[$game_level][$question_id]) )
       return self::$questions[$game_level][$question_id];
-    
+
     return NULL;
+  }
+
+  public function get_next_answer_chain_hash($answer)
+  {
+    $answer = str_replace(['"', "'", " "], '', $answer);
+
+    $old_hash = self::$next_answer_chain_hash ?? '';
+    $new_hash = md5($answer);
+    self::$next_answer_chain_hash = md5($old_hash.$new_hash);
+
+    return self::$next_answer_chain_hash;
+  }
+
+  public function get_prev_answer_chain_hash($answer_hash)
+  {
+    $hash = self::$prev_answer_chain_hash ?? '';
+    self::$prev_answer_chain_hash = $answer_hash;
+    return $hash;
   }
 
   public function set_session_questions($questions, $game_level)
@@ -24,15 +46,13 @@ class Question extends CI_Model
     self::$questions[$game_level] = $questions;
   }
 
-  public function delete_session_question($question_id, $game_level)
+  public function unset_session_question($question_id, $game_level)
   {
     unset(self::$questions[$game_level][$question_id]);
   }
 
   public function load_questions($game_level)
   {
-    self::clear_old_session_questions($game_level);
-
     $api_urls = self::get_api_urls($game_level);
     $questions = [];
 
@@ -41,6 +61,8 @@ class Question extends CI_Model
       $data = json_decode(file_get_contents($url));
       foreach($data->results as $qtn) $questions[] = $qtn;
     }
+
+    shuffle($questions);
 
     return $questions;
   }
@@ -59,13 +81,15 @@ class Question extends CI_Model
 		return $urls;
 	}
 
-  public function clear_old_session_questions($game_level)
+  public function clear_old_level_questions($game_level)
   {
-    switch ($game_level)
-    {
-      case 1: self::$questions = []; break;
-      case 2: break;
-      default: self::$questions[$game_level - 3] = NULL;
-    }
+    $game_level > 2 AND self::$questions[$game_level - 3] = NULL;
+  }
+
+  public function reset()
+  {
+    self::$questions = [];
+    self::$next_answer_chain_hash = NULL;
+    self::$prev_answer_chain_hash = NULL;
   }
 }

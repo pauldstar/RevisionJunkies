@@ -16,4 +16,9 @@ class Score extends CI_Model
   {
     self::$score += $score;
   }
+
+  public function reset()
+  {
+    self::$score = 0;
+  }
 }

@@ -485,7 +485,7 @@ var Question = (_=>
     _gameLevel++;
 
     $.ajax({
-      url: `${SITE_URL}/game/get_questions/${_gameLevel}`,
+      url: `${SITE_URL}game/get_questions/${_gameLevel}`,
       dataType: 'JSON',
       success: data =>
       {
@@ -507,6 +507,24 @@ var Question = (_=>
       _questionAnswered = false;
     }
     return _currentQuestion;
+  }
+
+  function _getAnswerHash(ansCode)
+  {
+    let ansHash = _currentQuestion.answerHash;
+
+    switch (_currentQuestion.type)
+    {
+      case 'boolean':
+        switch (ansCode)
+        {
+          case 1: return md5('True', ansHash);
+          case 0: return md5('False', ansHash);
+        }
+
+      case 'multiple':
+        return md5(_currentQuestion.optionsTrim[ansCode], ansHash);
+    }
   }
 
   function _getAnswerCode(direction)
@@ -534,19 +552,20 @@ var Question = (_=>
   function _scoreAnswer(direction)
   {
     let ansCode = _getAnswerCode(direction),
+        ansHash = _getAnswerHash(ansCode),
         id = _currentQuestion.id,
-        lvl = _currentQuestion.lvl;
+        lvl = _currentQuestion.lvl,
+        score = 0;
 
     $.ajax({
-      url: `${SITE_URL}/game/score_user_answer/${ansCode}/${id}/${lvl}`,
-      dataType: 'JSON',
-      success: data =>
-      {
-        Modal.$qtns.modal('hide');
-        GridDisplay.setTileValue(parseFloat(data));
-      },
+      url: `${SITE_URL}game/score_user_answer/${ansCode}/${id}/${lvl}`,
       error: e => console.log(e)
     });
+
+    Modal.$qtns.modal('hide');
+
+    if (ansHash === _currentQuestion.answerHash) score = _currentQuestion.score;
+    GridDisplay.setTileValue(parseFloat(score));
 
     _questionAnswered = true;
   }
