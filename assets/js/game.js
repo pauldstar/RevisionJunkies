@@ -1,9 +1,6 @@
 'use strict';
 
-$(document).ready(_=>
-{
-  Game.start();
-});
+$(document).ready(_=> Game.start());
 
 var Game = (_=>
 {
