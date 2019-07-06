@@ -5,40 +5,41 @@ class Game extends QP_Controller
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->model('question', 'qtn_mod');
-		$this->load->model('score', 'sc_mod');
+		$this->load->model('game_model');
+		$this->load->model('questions');
 	}
 
 	public function get_questions($game_level)
 	{
 		if ($game_level == 1) self::reset_game();
-		else $this->qtn_mod->clear_old_level_questions($game_level);
 
-		$questions = $this->qtn_mod->load_questions($game_level);
-		$ssn_questions = [];
-		$usr_questions = [];
-		$id = 0;
+		$questions = $this->questions->load_questions();
+		$scores = self::get_calc_scores(count($questions));
+		$session_questions = [];
+		$user_questions = [];
 
-		foreach($questions as $qtn)
+		$game_level = $this->game_model->level();
+
+		foreach($questions as $index => $qtn)
 		{
 			$usr_qtn = [];
-			$usr_qtn['id'] = $id;
-			$usr_qtn['level'] = $game_level;
+			$usr_qtn['id'] = "{$game_level}{$index}";
 			$usr_qtn['question'] = $qtn->question;
 			$usr_qtn['type'] = $qtn->type;
-
+			$usr_qtn['score'] = $scores[$index];
 			$usr_qtn['correct'] = str_replace(['"', "'", " "], '', $qtn->correct_answer);
-			$usr_qtn['answerHash'] = $this->qtn_mod->get_next_answer_chain_hash($qtn->correct_answer);
-			$usr_qtn['score'] = self::calc_score($game_level);
+			$usr_qtn['answerHash'] =
+				$this->questions->get_next_answer_chain_hash($qtn->correct_answer);
 
+			$qtn->id = $usr_qtn['id'];
 			$qtn->score = $usr_qtn['score'];
 			$qtn->answer_hash = $usr_qtn['answerHash'];
 
 			if ($qtn->type === 'multiple')
 			{
 				$usr_qtn['options'][] = $qtn->correct_answer;
-
 				foreach ($qtn->incorrect_answers as $ans) $usr_qtn['options'][] = $ans;
+
 				shuffle($usr_qtn['options']);
 				$qtn->options = $usr_qtn['options'];
 
@@ -47,30 +48,30 @@ class Game extends QP_Controller
 				$qtn->options_trim = $usr_qtn['optionsTrim'];
 			}
 
-			$ssn_questions[] = $qtn;
-			$usr_questions[] = $usr_qtn;
-			$id++;
+			$session_questions[] = $qtn;
+			$user_questions[] = $usr_qtn;
 		}
 
-		$this->qtn_mod->set_session_questions($ssn_questions, $game_level);
+		$this->questions->set_session_questions($session_questions);
+		$this->game_model->level(TRUE);
 
-    echo json_encode($usr_questions);
+    echo json_encode($user_questions);
 	}
 
-	function score_user_answer($answer_code, $question_id, $game_level)
+	public function score_user_answer($answer_code, $question_id)
 	{
-		$question = $this->qtn_mod->get_session_question($question_id, $game_level);
+		$question = $this->questions->get_session_question($question_id);
 
 		if (isset($question))
 		{
-			$score = 0;
-			$this->qtn_mod->unset_session_question($question_id, $game_level);
+			$this->questions->unset_session_question($question_id);
 
 			$answer_hash = self::get_user_answer_hash($question, $answer_code);
 
+			$score = 0;
 			$is_correct = $answer_hash === $question->answer_hash;
 			if ($is_correct) $score = $question->score;
-			$this->sc_mod->set_session_score($score);
+			$this->game_model->set_session_score($score);
 
 			echo $score;
 		}
@@ -95,22 +96,32 @@ class Game extends QP_Controller
 				break;
 		}
 
-		$old_hash = $this->qtn_mod->get_prev_answer_chain_hash($question->answer_hash);
+		$old_hash =
+			$this->questions->get_prev_answer_chain_hash($question->answer_hash);
 
 		return md5($old_hash.$new_hash);
 	}
 
-	private function calc_score($game_level)
+	private function get_calc_scores($amount)
 	{
-		$max = $game_level * 33;
+		$game_level = $this->game_model->level();
+
+		$max = 33 * $game_level;
 		$min = 1;
-		$rand_float = mt_rand() / mt_getrandmax();
-		return $rand_float * ($max - $min) + $min;
+		$scores = [];
+
+		while ($amount-- > 0)
+		{
+			$rand_float = mt_rand() / mt_getrandmax();
+			$scores[] = $rand_float * ($max - $min) + $min;
+		}
+
+		return $scores;
 	}
 
 	private function reset_game()
 	{
-		$this->qtn_mod->reset();
-		$this->sc_mod->reset();
+		$this->game_model->reset();
+		$this->questions->reset();
 	}
 }

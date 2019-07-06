@@ -1,6 +1,6 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Question extends CI_Model
+class Questions extends CI_Model
 {
   private static $questions;
   private static $next_answer_chain_hash;
@@ -10,16 +10,16 @@ class Question extends CI_Model
   {
     parent::__construct();
     $this->load->library('session');
+    $this->load->model('game', 'game_model');
     self::$questions = &$_SESSION['questions'];
     self::$next_answer_chain_hash = &$_SESSION['next_answer_chain_hash'];
     self::$prev_answer_chain_hash = &$_SESSION['prev_answer_chain_hash'];
   }
 
-  public function get_session_question($question_id, $game_level)
+  public function get_session_question($question_id)
   {
-    if ( isset(self::$questions[$game_level][$question_id]) )
-      return self::$questions[$game_level][$question_id];
-
+    if (isset(self::$questions[$question_id]))
+      return self::$questions[$question_id];
     return NULL;
   }
 
@@ -41,19 +41,19 @@ class Question extends CI_Model
     return $hash;
   }
 
-  public function set_session_questions($questions, $game_level)
+  public function set_session_questions($questions)
   {
-    self::$questions[$game_level] = $questions;
+    foreach ($questions as $qtn) self::$questions[$qtn->id] = $qtn;
   }
 
-  public function unset_session_question($question_id, $game_level)
+  public function unset_session_question($question_id)
   {
-    unset(self::$questions[$game_level][$question_id]);
+    unset(self::$questions[$question_id]);
   }
 
-  public function load_questions($game_level)
+  public function load_questions()
   {
-    $api_urls = self::get_api_urls($game_level);
+    $api_urls = self::get_api_urls();
     $questions = [];
 
     foreach ($api_urls as $url)
@@ -67,11 +67,11 @@ class Question extends CI_Model
     return $questions;
   }
 
-  private function get_api_urls($game_level)
+  private function get_api_urls()
 	{
 		$urls = [];
 
-		switch ($game_level)
+		switch ($this->game_model->level())
 		{
 			default: $urls[] = 'https://opentdb.com/api.php?amount=5&difficulty=hard';
 			case 2: $urls[] = 'https://opentdb.com/api.php?amount=5&difficulty=medium';
@@ -80,11 +80,6 @@ class Question extends CI_Model
 
 		return $urls;
 	}
-
-  public function clear_old_level_questions($game_level)
-  {
-    $game_level > 2 AND self::$questions[$game_level - 3] = NULL;
-  }
 
   public function reset()
   {

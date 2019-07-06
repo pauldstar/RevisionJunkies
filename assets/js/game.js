@@ -4,10 +4,14 @@ $(document).ready(_=> Game.start());
 
 var Game = (_=>
 {
-  let _score,
-      _status,
-      _numStartTiles = 2,
-      _gridSize = 4;
+  let _score, _status, _level = 1;
+
+  function _gameLevel(value, increment)
+  {
+    if (increment) _level++;
+    else if (value) _level = value;
+    else return _level;
+  }
 
   function _gameScore(value)
   {
@@ -33,10 +37,11 @@ var Game = (_=>
   function _startGame()
   {
     _score = 0;
+    _level = 1;
     _status = { lost: false, won: false };
-    Question.load(1);
-    Grid.build(_gridSize);
-    Grid.addStartTiles(_numStartTiles);
+    Question.load();
+    Grid.build();
+    Grid.addStartTiles();
     GridDisplay.refresh();
   }
 
@@ -69,6 +74,7 @@ var Game = (_=>
     score: _gameScore,
     start: _startGame,
     move: _move,
+    level: _gameLevel,
     checkStatus: _checkGameStatus
   }
 })();
@@ -88,17 +94,17 @@ var Grid = (_=>
     }
   }
 
-  function _addStartTiles(numStartTiles)
+  function _addStartTiles()
   {
-    for (let i = 0; i < numStartTiles; i++)
+    for (let i = 0; i < 2; i++)
     {
       _addRandomTile();
     }
   }
 
-  function _buildGrid(size)
+  function _buildGrid()
   {
-    _size = size;
+    _size = 4;
 
     for (let x = 0; x < _size; x++)
     {
@@ -299,8 +305,9 @@ var Grid = (_=>
 
   function _move(vector)
   {
-    let cell, tile, moved = false,
-        traversals = _buildTraversals(vector);
+    let
+      cell, tile, moved = false,
+      traversals = _buildTraversals(vector);
 
     _prepareTiles();
     // Traverse the grid in the right direction and move tiles
@@ -360,25 +367,26 @@ var Grid = (_=>
 
 var Modal = (_=>
 {
-  let _modalQtns = '.modal-qtn',
-      _$modalQtns = $(_modalQtns),
-      _$modalQtnsContent = _$modalQtns.find('.modal-content'),
+  let
+    _modalQtns = '.modal-qtn',
+    _$modalQtns = $(_modalQtns),
+    _$modalQtnsContent = _$modalQtns.find('.modal-content'),
 
-      _$modalBoolean = $('#modal-qtn-boolean'),
-      _$modalBooleanQ = _$modalBoolean.find('.modal-body'),
+    _$modalBoolean = $('#modal-qtn-boolean'),
+    _$modalBooleanQ = _$modalBoolean.find('.modal-body'),
 
-      _modalOptions = '#modal-qtn-options',
-      _$modalOptions = $(_modalOptions),
-      _$modalOptionsQ = _$modalOptions.find('.modal-body').eq(0),
-      _$modalOptions1 = _$modalOptions.find('.modal-body').eq(1),
-      _$modalOptions2 = _$modalOptions.find('.modal-body').eq(2),
-      _$modalOptions3 = _$modalOptions.find('.modal-body').eq(3),
-      _$modalOptions4 = _$modalOptions.find('.modal-body').eq(4),
+    _modalOptions = '#modal-qtn-options',
+    _$modalOptions = $(_modalOptions),
+    _$modalOptionsQ = _$modalOptions.find('.modal-body').eq(0),
+    _$modalOptions1 = _$modalOptions.find('.modal-body').eq(1),
+    _$modalOptions2 = _$modalOptions.find('.modal-body').eq(2),
+    _$modalOptions3 = _$modalOptions.find('.modal-body').eq(3),
+    _$modalOptions4 = _$modalOptions.find('.modal-body').eq(4),
 
-      _$modalOptionsCarousel = $('#modal-qtn-carousel'),
-      _$modalGameOver = $('#modal-game-over'),
-      _$modalGameWon = $('#modal-game-won'),
-      _$modalInstructions = $('#modal-instructions');
+    _$modalOptionsCarousel = $('#modal-qtn-carousel'),
+    _$modalGameOver = $('#modal-game-over'),
+    _$modalGameWon = $('#modal-game-won'),
+    _$modalInstructions = $('#modal-instructions');
 
   $(document).on('show.bs.modal', _modalQtns, _resetModalOptions);
 
@@ -473,21 +481,17 @@ var Modal = (_=>
 
 var Question = (_=>
 {
-  let _level = 1,
-      _questions,
-      _currentQuestion,
-      _questionAnswered = true;
+  let
+    _questions,
+    _currentQuestion,
+    _questionAnswered = true;
 
   function _loadQuestions(level)
   {
-    if (level === 1)
-    {
-      _questions = [];
-      _level = level;
-    }
+    if (Game.level() === 1) _questions = [];
 
     $.ajax({
-      url: `${SITE_URL}game/get_questions/${_level}`,
+      url: `${SITE_URL}game/get_questions/${Game.level()}`,
       dataType: 'JSON',
       success: data =>
       {
@@ -499,7 +503,7 @@ var Question = (_=>
       error: e => console.log(e)
     });
 
-    _level++;
+    Game.level('', true);
   }
 
   function _getQuestion()
@@ -555,14 +559,14 @@ var Question = (_=>
 
   function _scoreAnswer(direction)
   {
-    let ansCode = _getAnswerCode(direction),
-        ansHash = _getAnswerHash(ansCode),
-        id = _currentQuestion.id,
-        lvl = _currentQuestion.level,
-        score = 0;
+    let
+      ansCode = _getAnswerCode(direction),
+      ansHash = _getAnswerHash(ansCode),
+      id = _currentQuestion.id,
+      score = 0;
 
     $.ajax({
-      url: `${SITE_URL}game/score_user_answer/${ansCode}/${id}/${lvl}`,
+      url: `${SITE_URL}game/score_user_answer/${ansCode}/${id}`,
       error: e => console.log(e)
     });
 
@@ -583,15 +587,16 @@ var Question = (_=>
 
 var GridDisplay = (_=>
 {
-  let _score = 0,
-      _newTile = '.tile-new',
-      _$tileContainer = $('#tile-container'),
-      _$gameSection = $('#game-section'),
-      _gameSection = '#game-section',
-      _$gameMsg = $('#game-message'),
-      _$gameScore = $('#game-score'),
-      _$newGameBtn = $('.btn-new-game'),
-      _$currentNewTile;
+  let
+    _score = 0,
+    _newTile = '.tile-new',
+    _$tileContainer = $('#tile-container'),
+    _$gameSection = $('#game-section'),
+    _gameSection = '#game-section',
+    _$gameMsg = $('#game-message'),
+    _$gameScore = $('#game-score'),
+    _$newGameBtn = $('.btn-new-game'),
+    _$currentNewTile;
 
   _$newGameBtn.click(Game.start);
 
@@ -667,9 +672,10 @@ var GridDisplay = (_=>
 
   function _setTileValue(score)
   {
-    let intValue = Math.floor(score),
-        tileX = _$currentNewTile.data('x'),
-        tileY = _$currentNewTile.data('y');
+    let
+      intValue = Math.floor(score),
+      tileX = _$currentNewTile.data('x'),
+      tileY = _$currentNewTile.data('y');
 
     let tile = Grid.cells[tileX][tileY];
     tile.floatValue = score;
