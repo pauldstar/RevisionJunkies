@@ -39,7 +39,7 @@ var Game = (_=>
     _score = 0;
     _level = 1;
     _status = { lost: false, won: false };
-    Question.load();
+    Questions.load();
     Grid.build();
     Grid.addStartTiles();
     GridDisplay.refresh();
@@ -403,7 +403,7 @@ var Modal = (_=>
 
   function _showQuestion()
   {
-    let question = Question.get();
+    let question = Questions.get();
 
     switch (question.type)
     {
@@ -462,7 +462,7 @@ var Modal = (_=>
 
     _$modalQtnsContent.animate(swipeAnimation, 'fast').promise().then(_=>
     {
-      Question.scoreAnswer(direction);
+      Questions.scoreAnswer(direction);
     });
   }
 
@@ -479,7 +479,7 @@ var Modal = (_=>
   }
 })();
 
-var Question = (_=>
+var Questions = (_=>
 {
   let
     _questions,

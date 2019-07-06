@@ -191,7 +191,7 @@
         <h5 class="modal-title" id="">Instructions</h5>
       </div>
       <div class="modal-body">
-        Figure out the game and aim for the highest score & rank.<br>
+        Figure out the game and aim for the highest score (9999) & rank in the shortest time.<br>
         <br>
         Easy Right? Let's go!<br>
         <br>

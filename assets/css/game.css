@@ -2,6 +2,10 @@
   font-family: 'Hind', sans-serif;
 }
 
+.modal {
+  touch-action: none;
+}
+
 .carousel-item > .modal-body {
   padding-top: 46px;
 }
