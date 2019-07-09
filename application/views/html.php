@@ -30,6 +30,7 @@
         document.write('<script src="<?= base_url('assets/js/bootstrap.min.js') ?>">\x3C/script>');
         $('head').append('<link rel="stylesheet" href="<?= base_url('assets/css/bootstrap.min.css') ?>">');
       }
+      $('[data-toggle="tooltip"]').tooltip();
     </script>
 
     <script> const SITE_URL = '<?= site_url() ?>' </script>

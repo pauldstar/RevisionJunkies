@@ -1,11 +1,12 @@
 .right-font {
   font-family: 'Righteous', cursive;
 }
-
 .hind-font {
   font-family: 'Hind', sans-serif;
 }
-
 #navbar-section {
   z-index: 1031;
+}
+.d-flex.d-none {
+  display: none !important;
 }

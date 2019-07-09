@@ -1,15 +1,20 @@
 <div class="d-flex fixed-top justify-content-center align-items-center" id="game-section">
   <div>
 
-    <div class="text-white ml-auto mr-auto right-font" id="game-header">
-      <span id="game-score">0</span>
-      <span class="float-right" id="game-timer">00:00</span>
+    <div class="d-flex justify-content-between text-white right-font" id="game-header">
+      <span id="game-score" data-toggle="tooltip" title="Score" data-placement="top">0000</span>
+      <span id="game-level" data-toggle="tooltip" title="Level" data-placement="top">1</span>
+      <span id="game-timer" data-toggle="tooltip" title="Timer" data-placement="top">00:00</span>
     </div>
 
-    <div class="ml-auto mr-auto" id="game-container">
+    <div id="game-container">
       <div class="hind-font d-flex justify-content-center align-items-center" id="game-message">
-        <p id="game-desktop-msg">Level 1<br />Press Space To Start</p>
-        <p id="game-mobile-msg">Level 1<br />Tap To Start</p>
+        <div class="d-flex flex-column align-items-center" id="loading-msg">
+          <img id="game-loader-image" src="<?= base_url('assets/images/logo-black-min.png') ?>" height="60px" alt="quepenny">
+          <div id="game-loader-spinner"></div>
+        </div>
+        <p class="start-msg d-none" id="game-desktop-msg">Level 1<br>Press Space To Start</p>
+        <p class="start-msg d-none" id="game-mobile-msg">Level 1<br>Tap To Start</p>
       </div>
 
       <div id="grid-container">

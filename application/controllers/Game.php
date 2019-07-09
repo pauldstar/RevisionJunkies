@@ -24,6 +24,7 @@ class Game extends QP_Controller
 		{
 			$usr_qtn = [];
 			$usr_qtn['id'] = "{$game_level}{$index}";
+			$usr_qtn['level'] = $game_level;
 			$usr_qtn['question'] = $qtn->question;
 			$usr_qtn['type'] = $qtn->type;
 			$usr_qtn['score'] = $scores[$index];

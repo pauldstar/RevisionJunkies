@@ -3,7 +3,7 @@
   <nav class="navbar navbar-expand-lg navbar-dark right-font">
     <a class="navbar-brand" href="#">
       <img src="<?= base_url('assets/images/logo-white-min.png') ?>" height="37px" alt="quepenny" />
-      <span id="nav-hi-score">0000</span>
+      <span id="nav-hi-score"  data-toggle="tooltip" title="Hi-Score" data-placement="bottom">0000</span>
     </a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -13,7 +13,7 @@
       <ul class="navbar-nav text-center ml-auto">
         <?php
           $nav_items = [
-            'game', 'leaderboard', 'contact', 'store', 'login' 
+            'game', 'leaderboard', 'contact', 'store', 'login'
           ];
 
           foreach ($nav_items as $item):

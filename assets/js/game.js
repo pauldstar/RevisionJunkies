@@ -4,13 +4,12 @@ $(document).ready(_=> Game.start());
 
 var Game = (_=>
 {
-  let _score, _status, _level = 1;
+  let _score, _status, _level;
 
-  function _gameLevel(value, increment)
+  function _gameLevel(increment)
   {
     if (increment) _level++;
-    else if (value) _level = value;
-    else return _level;
+    return _level;
   }
 
   function _gameScore(value)
@@ -24,21 +23,32 @@ var Game = (_=>
     return  _status['lost'] || _status['won'];
   }
 
-  function _checkGameStatus()
+  function _checkGameStatus(moved)
   {
     if (!Grid.movesAvailable()) _status['lost'] = true;
+
     if (_gameOver())
     {
       let status = _status['lost'] ? 'lost' : 'won';
       setTimeout(_=> Modal.gameOverAlert(status), 1500);
+    }
+    else if (moved)
+    {
+      // let
+      //   level = Game.level(),
+      //   isLevelUp = level > 1 && level === Questions.current().level;
+      //   console.log(level)
+      //   console.log(Questions.current().level)
+      // isLevelUp && GridDisplay.message('level-up');
     }
   }
 
   function _startGame()
   {
     _score = 0;
-    _level = 1;
+    _level = 0;
     _status = { lost: false, won: false };
+    md5();
     Questions.load();
     Grid.build();
     Grid.addStartTiles();
@@ -67,6 +77,7 @@ var Game = (_=>
       _score = _status['won'] ? 9999 : maxMergeValue;
 
       GridDisplay.refresh();
+      _checkGameStatus(moved);
     }
   }
 
@@ -484,14 +495,21 @@ var Questions = (_=>
   let
     _questions,
     _currentQuestion,
-    _questionAnswered = true;
+    _questionAnswered;
 
-  function _loadQuestions(level)
+  function _loadQuestions()
   {
-    if (Game.level() === 1) _questions = [];
+    let level = Game.level(true);
+
+    if (level === 1)
+    {
+      _questions = [];
+      _questionAnswered = true;
+      GridDisplay.message('load-on');
+    }
 
     $.ajax({
-      url: `${SITE_URL}game/get_questions/${Game.level()}`,
+      url: `${SITE_URL}game/get_questions/${level}`,
       dataType: 'JSON',
       success: data =>
       {
@@ -499,11 +517,15 @@ var Questions = (_=>
         {
           _questions.push(question);
         });
+
+        if (level === 1)
+        {
+          GridDisplay.message('load-off');
+          GridDisplay.message('start-on');
+        }
       },
       error: e => console.log(e)
     });
-
-    Game.level('', true);
   }
 
   function _getQuestion()
@@ -511,9 +533,27 @@ var Questions = (_=>
     if (_questionAnswered)
     {
       _questions.length === 2 && _loadQuestions();
+
       _currentQuestion = _questions.shift();
+
+      if (!_currentQuestion)
+      {
+        GridDisplay.message('load-on');
+
+        let getQuestion = setInterval(_=>
+        {
+          _currentQuestion = _questions.shift();
+          if (_currentQuestion)
+          {
+            clearInterval(getQuestion);
+            GridDisplay.message('load-off');
+          }
+        }, 100);
+      }
+
       _questionAnswered = false;
     }
+
     return _currentQuestion;
   }
 
@@ -579,6 +619,7 @@ var Questions = (_=>
   }
 
   return {
+    current: _=> _currentQuestion,
     load: _loadQuestions,
     get: _getQuestion,
     scoreAnswer: _scoreAnswer
@@ -589,11 +630,18 @@ var GridDisplay = (_=>
 {
   let
     _score = 0,
+    _loading = true,
     _newTile = '.tile-new',
     _$tileContainer = $('#tile-container'),
     _$gameSection = $('#game-section'),
     _gameSection = '#game-section',
-    _$gameMsg = $('#game-message'),
+
+    _$msgGame = $('#game-message'),
+    _$msgLoading = $('#loading-msg'),
+    _$msgStart = $('.start-msg'),
+    _$msgGameLevel = $('#game-level-msg'),
+    _$levelNumber = $('#level-number'),
+
     _$gameScore = $('#game-score'),
     _$newGameBtn = $('.btn-new-game'),
     _$currentNewTile;
@@ -625,25 +673,52 @@ var GridDisplay = (_=>
       });
 
       _updateScore();
-      Game.checkStatus();
     });
   }
 
-  function _message(won)
+  function _message(message)
   {
-    let
-      type = won ? 'game-won' : 'game-over',
-      message = won ? 'You win!' : 'Game over!';
+    switch (message)
+    {
+      case 'load-on':
+        _$msgLoading.removeClass('d-none');
+        _$msgGame.removeClass('d-none');
+        _loading = true;
+        break;
 
-    _$gameMsg.addClass(type);
-    _$gameMsg.children('p').text(message);
+      case 'load-off':
+        _$msgGame.addClass('d-none');
+        _$msgLoading.addClass('d-none');
+        _loading = false;
+        break;
+
+      case 'start-on':
+        _$msgGame.removeClass('d-none');
+        _$msgStart.removeClass('d-none');
+        break;
+
+      case 'start-off':
+        _$msgStart.addClass('d-none');
+        _$msgGame.addClass('d-none');
+        break;
+
+      case 'level-up':
+        _$msgGame.removeClass('d-none');
+        _$msgGameLevel.removeClass('d-none');
+        _$levelNumber.html(Game.level());
+        setTimeout(_=>
+        {
+          _$msgGameLevel.addClass('d-none');
+          _$msgGame.addClass('d-none');
+        }, 1500);
+    }
   }
 
   function _updateScore()
   {
     _$gameScore.empty();
     _score = Game.score();
-    _$gameScore.text(_score);
+    _$gameScore.text(_score.toString().padStart(4, '0'));
   }
 
   function _positionClass(position)
@@ -657,16 +732,12 @@ var GridDisplay = (_=>
 
   function _openTile()
   {
-    _$currentNewTile = $(_newTile).eq(0);
+    if (_loading) return;
 
+    _$currentNewTile = $(_newTile).eq(0);
 		if (!_$currentNewTile.length) return;
 
-    if (_$gameMsg.css('visibility') === 'visible')
-    {
-      _$gameMsg.css('visibility', 'hidden');
-      return;
-    }
-
+    _message('start-off');
     Modal.showQuestion();
   }
 
@@ -682,9 +753,10 @@ var GridDisplay = (_=>
 
     _$currentNewTile.text(score === 0 ? 'X' : intValue);
     _$currentNewTile.data('val-set', '1');
-    _$currentNewTile.addClass(score === 0 ? 'tile-zero btn-light focus disabled' :
-      intValue % 2 === 0 ? 'tile-even btn-primary focus disabled' :
-        'tile-odd btn-danger focus disabled'
+    _$currentNewTile.addClass(
+      score === 0 ? 'tile-zero btn-light focus disabled' :
+        intValue % 2 === 0 ? 'tile-even btn-primary focus disabled' :
+          'tile-odd btn-danger focus disabled'
     );
     _$currentNewTile.removeClass('tile-new');
 
