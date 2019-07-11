@@ -1,6 +1,6 @@
 'use strict';
 
-$(document).ready(_=> Game.start());
+$(_=> Game.start());
 
 var Game = (_=>
 {
@@ -30,7 +30,7 @@ var Game = (_=>
     if (_gameOver())
     {
       let status = _status['lost'] ? 'lost' : 'won';
-      setTimeout(_=> Modal.gameOverAlert(status), 1500);
+      setTimeout(_=> Modal.gameOver(status), 1500);
     }
     else if (moved)
     {
@@ -364,9 +364,6 @@ var Grid = (_=>
   return {
     cells: _cells,
     build: _buildGrid,
-    availableCells: _availableCells,
-    randomAvailableCell: _randomAvailableCell,
-    insertTile: _insertTile,
     getMaxMerge: _getMaxMerge,
     move: _move,
     movesAvailable: _movesAvailable,
@@ -444,7 +441,7 @@ var Modal = (_=>
     _$modalOptions4.html(question.options[3]);
   }
 
-  function _gameOverAlert(status)
+  function _gameOver(status)
   {
     switch (status)
     {
@@ -478,15 +475,11 @@ var Modal = (_=>
   }
 
   return {
-    $qtns: _$modalQtns,
-    $boolean: _$modalBoolean,
-    $options: _$modalOptions,
-    $gameOver: _$modalGameOver,
-    $instructions: _$modalInstructions,
+    $questions: _$modalQtns,
     nextAnswer: _nextAnswerOption,
     move: _move,
     showQuestion: _showQuestion,
-    gameOverAlert: _gameOverAlert
+    gameOver: _gameOver
   }
 })();
 
@@ -610,12 +603,14 @@ var Questions = (_=>
       error: e => console.log(e)
     });
 
-    Modal.$qtns.modal('hide');
+    Modal.$questions.modal('hide');
 
     if (ansHash === _currentQuestion.answerHash) score = _currentQuestion.score;
     GridDisplay.setTileValue(parseFloat(score));
 
     _questionAnswered = true;
+
+    Game.checkStatus();
   }
 
   return {
@@ -759,8 +754,6 @@ var GridDisplay = (_=>
           'tile-odd btn-danger focus disabled'
     );
     _$currentNewTile.removeClass('tile-new');
-
-    Game.checkStatus();
   }
 
   function _addTile(tile)
@@ -810,7 +803,6 @@ var GridDisplay = (_=>
     openTile: _openTile,
     refresh: _refresh,
     message: _message,
-    updateScore: _updateScore,
     tilesValuesAreSet: _tilesValuesAreSet,
     setTileValue: _setTileValue
   }
