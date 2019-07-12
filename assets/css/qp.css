@@ -1,8 +1,21 @@
+@font-face {
+font-family: 'Aetherfox';
+font-style: normal;
+font-weight: normal;
+src: local('Aetherfox'), url('aetherfox.woff') format('woff');
+}
+.aether-font {
+  font-family: 'aetherfox', cursive;
+}
 .right-font {
   font-family: 'Righteous', cursive;
 }
 .hind-font {
   font-family: 'Hind', sans-serif;
+}
+#site-logo {
+  display: inline-block;
+  margin-bottom: 0;
 }
 #navbar-section {
   z-index: 1031;

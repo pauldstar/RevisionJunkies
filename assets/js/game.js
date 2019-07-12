@@ -32,15 +32,6 @@ var Game = (_=>
       let status = _status['lost'] ? 'lost' : 'won';
       setTimeout(_=> Modal.gameOver(status), 1500);
     }
-    else if (moved)
-    {
-      // let
-      //   level = Game.level(),
-      //   isLevelUp = level > 1 && level === Questions.current().level;
-      //   console.log(level)
-      //   console.log(Questions.current().level)
-      // isLevelUp && GridDisplay.message('level-up');
-    }
   }
 
   function _startGame()
@@ -625,6 +616,7 @@ var GridDisplay = (_=>
 {
   let
     _score = 0,
+    _level = 1,
     _loading = true,
     _newTile = '.tile-new',
     _$tileContainer = $('#tile-container'),
@@ -635,8 +627,8 @@ var GridDisplay = (_=>
     _$msgLoading = $('#loading-msg'),
     _$msgStart = $('.start-msg'),
     _$msgGameLevel = $('#game-level-msg'),
-    _$levelNumber = $('#level-number'),
 
+    _$gameLevel = $('#game-level'),
     _$gameScore = $('#game-score'),
     _$newGameBtn = $('.btn-new-game'),
     _$currentNewTile;
@@ -664,10 +656,11 @@ var GridDisplay = (_=>
 
       Grid.eachCell((x, y, tile) =>
       {
-        if (tile) _addTile(tile);
+        tile && _addTile(tile);
       });
 
       _updateScore();
+      _updateLevel();
     });
   }
 
@@ -709,9 +702,29 @@ var GridDisplay = (_=>
     }
   }
 
+  function _bounce($element)
+  {
+    let interval = 100, distance = 20, times = 6, damping = 0.8;
+
+    for (let i = 0; i < (times + 1); i++)
+    {
+      let amt = Math.pow(-1, i) * distance / (i * damping);
+      $element.animate({ top: amt }, 100);
+    }
+
+    $element.animate({ top: 0 }, interval);
+  }
+
+  function _updateLevel()
+  {
+    if (Game.level() > _level) _bounce(_$gameLevel);
+    _level = Game.level();
+    _$gameLevel.text(_level);
+  }
+
   function _updateScore()
   {
-    _$gameScore.empty();
+    if (Game.score() > _score) _bounce(_$gameScore);
     _score = Game.score();
     _$gameScore.text(_score.toString().padStart(4, '0'));
   }
@@ -813,22 +826,28 @@ var Input = (_=>
   let _gestures = new Hammer(document);
 
   $(document).on('keydown', _input);
+  $(document).on('click', _input);
+
   _gestures.get('pan').set({ direction: Hammer.DIRECTION_ALL });
-  _gestures.on('panstart tap', _input);
+  _gestures.on('panstart', _input);
 
   function _input(e)
   {
     switch (e.type)
     {
       case 'keydown': _keydownInput(e); break;
-      case 'tap': _clickInput(e); break;
+      case 'click': _clickInput(e); break;
       case 'panstart': _swipeInput(e);
     }
   }
 
-	function _clickInput(e)
-	{
+  function _clickInput(e)
+  { // renable gestures on-click to fix pan bug
+    _togglePan;
+
     let $target = $(e.target);
+
+    if ($target.is('.instruction-btn')) return;
 
     let isGridClick = $target.is('#game-container') ||
     $target.parents('#game-container').length !== 0;
@@ -836,12 +855,12 @@ var Input = (_=>
     let isModalClick = $target.is('.modal') ||
       $target.parents('.modal').length !== 0;
 
-		if (isGridClick) GridDisplay.openTile();
+  	if (isGridClick) GridDisplay.openTile();
     else if (isModalClick)
     {
       $(e.target).is('.carousel-indicators li') || Modal.nextAnswer();
     }
-	}
+  }
 
   function _swipeInput(e)
   {
@@ -874,6 +893,12 @@ var Input = (_=>
       case 32: GridDisplay.openTile(); break;
       case 38: case 37: case 40: case 39: Game.move(e);
     }
+  }
+
+  function _togglePan()
+  {
+    _gestures.get('pan').set({ enable: false });
+    _gestures.get('pan').set({ enable: true });
   }
 
   function _getInputDirection(e)

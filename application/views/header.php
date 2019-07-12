@@ -2,8 +2,8 @@
   <div class="container">
   <nav class="navbar navbar-expand-lg navbar-dark right-font">
     <a class="navbar-brand" href="#">
-      <img src="<?= base_url('assets/images/logo-white-min.png') ?>" height="37px" alt="quepenny" />
-      <span id="nav-hi-score"  data-toggle="tooltip" title="Hi-Score" data-placement="bottom">0000</span>
+      <h2 class="aether-font" id="site-logo">9p</h2>
+      <span id="site-hiscore"  data-toggle="tooltip" title="Hi-Score" data-placement="bottom">0000</span>
     </a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>

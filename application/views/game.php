@@ -2,19 +2,27 @@
   <div>
 
     <div class="d-flex justify-content-between text-white right-font" id="game-header">
-      <span id="game-score" data-toggle="tooltip" title="Score" data-placement="top">0000</span>
-      <span id="game-level" data-toggle="tooltip" title="Level" data-placement="top">1</span>
-      <span id="game-timer" data-toggle="tooltip" title="Timer" data-placement="top">00:00</span>
+      <span class="position-relative" id="game-score" data-toggle="tooltip" title="Score" data-placement="top">0000</span>
+      <span class="position-relative" id="game-level" data-toggle="tooltip" title="Level" data-placement="top">1</span>
+      <span class="position-relative" id="game-timer" data-toggle="tooltip" title="Timer" data-placement="top">00:00</span>
     </div>
 
     <div id="game-container">
       <div class="hind-font d-flex justify-content-center align-items-center" id="game-message">
         <div class="d-flex flex-column align-items-center" id="loading-msg">
-          <img id="game-loader-image" src="<?= base_url('assets/images/logo-black-min.png') ?>" height="60px" alt="quepenny">
+          <h1 class="aether-font">9p</h1>
           <div id="game-loader-spinner"></div>
         </div>
-        <p class="start-msg d-none" id="game-desktop-msg">Level 1<br>Press Space To Start</p>
-        <p class="start-msg d-none" id="game-mobile-msg">Level 1<br>Tap To Start</p>
+        <p class="start-msg d-none" id="game-desktop-msg">
+          Level 1<br />
+          Press Space To Start<br /><br />
+          <button class="btn btn-dark instruction-btn right-font" data-toggle="modal" data-target="#modal-instructions">Instructions</button>
+        </p>
+        <p class="start-msg d-none" id="game-mobile-msg">
+          Level 1<br />
+          Tap To Start<br /><br />
+          <button class="btn btn-dark instruction-btn right-font" data-toggle="modal" data-target="#modal-instructions">Instructions</button>
+        </p>
       </div>
 
       <div id="grid-container">
@@ -49,7 +57,7 @@
 
     <div class="text-white ml-auto mr-auto right-font" id="game-footer">
       <button class="btn btn-success btn-new-game">New Game</button>
-      <button class="btn btn-info float-right" data-toggle="modal" data-target="#modal-instructions">Instructions</button>
+      <button class="btn btn-danger float-right" data-toggle="modal" data-target="#modal-select-mode">Select Mode</button>
     </div>
 
   </div>
@@ -93,7 +101,7 @@
       </div>
       <div id="modal-qtn-carousel" class="carousel slide" data-ride="carousel">
         <div class="carousel-inner text-center">
-          <ol class="carousel-indicators">
+          <ol class="carousel-indicators qtn-options">
             <li data-target="#modal-qtn-carousel" data-slide-to="0" class="active"></li>
             <li data-target="#modal-qtn-carousel" data-slide-to="1"></li>
             <li data-target="#modal-qtn-carousel" data-slide-to="2"></li>
@@ -151,6 +159,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-instructions">Instructions</button>
         <button type="button" class="btn btn-success btn-new-game" data-dismiss="modal" aria-label="Close">New Game</button>
       </div>
     </div>
@@ -206,6 +215,79 @@
         Simples!
       </div>
       <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal-select-mode" tabindex="-1" role="dialog" aria-labelledby="select-mode-modal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Select Mode</h5>
+        <h5 class="right-font"><span class="aether-font">9p</span> 2222</h5>
+      </div>
+      <div class="modal-body">
+        <div class="carousel slide" id="modal-select-mode-carousel">
+          <div class="carousel-inner text-center">
+            <div class="carousel-item active" data-price="1111">
+              <h4>1: Two Moves</h4>
+              <p class="mt-3">
+                Move twice for each correct answer.
+              </p>
+            </div>
+            <div class="carousel-item" data-price="2222">
+              <h4>2: 2nd Chance</h4>
+              <p class="mt-3">
+                Two chances to answer multiple choice questions.
+              </p>
+            </div>
+            <div class="carousel-item" data-price="3333">
+              <h4>3: Mix Two</h4>
+              <p class="mt-3">
+                Mix modes 1 and 2.
+              </p>
+            </div>
+            <div class="carousel-item" data-price="4444">
+              <h4>4: New Joiners</h4>
+              <p class="mt-3">
+                Merge any live tiles together.
+              </p>
+            </div>
+            <div class="carousel-item" data-price="5555">
+              <h4>5: Mix Three</h4>
+              <p class="mt-3">
+                Mix modes 1, 2, and 4.
+              </p>
+            </div>
+            <div class="carousel-item" data-price="7777">
+              <h4>6: Get Rid</h4>
+              <p class="mt-3">
+                Randomly remove a dead tile for each correct answer.
+              </p>
+            </div>
+            <div class="carousel-item" data-price="9999">
+              <h4>7: Mix All!</h4>
+              <p class="mt-3">
+                Mix modes 1, 2, 4, and 6.
+              </p>
+            </div>
+          </div>
+          <a class="carousel-control-prev select-mode" href="#modal-select-mode-carousel" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+          </a>
+          <a class="carousel-control-next select-mode" href="#modal-select-mode-carousel" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+          </a>
+        </div>
+      </div>
+      <div class="modal-footer select-mode">
+        <button type="button" class="btn btn-info disabled" data-toggle="tooltip" data-placement="top" title="Available in Race Mode">Select</button>
+        <button type="button" class="btn btn-success disabled" data-toggle="tooltip" data-placement="top" title="Available in Race Mode">Buy</button>
+        <button type="button" class="btn btn-danger">Refer</button>
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
       </div>
     </div>
