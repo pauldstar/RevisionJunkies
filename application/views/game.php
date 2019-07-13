@@ -8,7 +8,7 @@
     </div>
 
     <div id="game-container">
-      <div class="hind-font d-flex justify-content-center align-items-center" id="game-message">
+      <div class="hind-700-font d-flex justify-content-center align-items-center" id="game-message">
         <div class="d-flex flex-column align-items-center" id="loading-msg">
           <h1 class="aether-font">9p</h1>
           <div id="game-loader-spinner"></div>
