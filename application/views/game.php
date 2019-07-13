@@ -94,7 +94,7 @@
       <div class="progress" style="height: 2px;">
         <div class="progress-bar bg-danger" role="progressbar" style="width: 71%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
       </div>
-      <div id="modal-qtn-carousel" class="carousel slide" data-ride="carousel">
+      <div class="carousel slide" id="modal-qtn-carousel" data-ride="carousel" data-interval="false">
         <div class="carousel-inner text-center">
           <ol class="carousel-indicators qtn-options">
             <li data-target="#modal-qtn-carousel" data-slide-to="0" class="active"></li>
@@ -229,7 +229,7 @@
         <h5 class="right-font"><span class="aether-font">9p</span> 2222</h5>
       </div>
       <div class="modal-body">
-        <div class="carousel slide" id="modal-select-mode-carousel">
+        <div class="carousel slide" id="modal-select-mode-carousel" data-interval="false">
           <div class="carousel-inner text-center">
             <div class="carousel-item active" data-price="1111">
               <h4>1: Two Moves</h4>
