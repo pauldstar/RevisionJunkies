@@ -12,10 +12,8 @@ class Pages extends QP_Controller
     $data['page_content'] = $this->load->view('game', NULL, TRUE);
     $data['footer'] = $this->load->view('footer', NULL, TRUE);
 
-		$hammer_js = self::load_asset('hammer.min', 'js');
     $game_js = self::load_asset('game', 'js');
-
-    $data['scripts'] = $hammer_js.$game_js;
+    $data['scripts'] = $game_js;
 
     $this->load->view('html', $data);
 	}
