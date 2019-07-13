@@ -46,15 +46,10 @@ var Game = (_=>
     GridDisplay.refresh();
   }
 
-  function _move(e)
+  function _move(vector)
   {
     let preventMove = _gameOver() || !GridDisplay.tilesValuesAreSet();
     if (preventMove) return;
-
-    let vector = Input.getVector(e);
-    if (!vector) return;
-
-    e.preventDefault();
 
     let moved = Grid.move(vector);
 
@@ -160,7 +155,7 @@ var Grid = (_=>
 
       for (let direction = 0; direction < 4; direction++)
       {
-        let vector = Input.getVector(null, direction);
+        let vector = Input.getVector('', direction);
         let cell = {
           x: x + vector.x,
           y: y + vector.y
@@ -367,8 +362,7 @@ var Grid = (_=>
 var Modal = (_=>
 {
   let
-    _modalQtns = '.modal-qtn',
-    _$modalQtns = $(_modalQtns),
+    _$modalQtns = $('.modal-qtn'),
     _$modalQtnsContent = _$modalQtns.find('.modal-content'),
 
     _$modalBoolean = $('#modal-qtn-boolean'),
@@ -387,7 +381,7 @@ var Modal = (_=>
     _$modalGameWon = $('#modal-game-won'),
     _$modalInstructions = $('#modal-instructions');
 
-  $(document).on('show.bs.modal', _modalQtns, _resetModalOptions);
+  _$modalQtns.on('show.bs.modal', _resetModalOptions);
 
   function _nextAnswerOption()
   {
@@ -441,11 +435,9 @@ var Modal = (_=>
     }
   }
 
-  function _move(e)
+  function _move(direction)
   {
     if (_$modalQtnsContent.attr('style')) return;
-
-    let direction = Input.getDirection(e);
 
     switch (direction)
     {
@@ -489,6 +481,7 @@ var Questions = (_=>
     {
       _questions = [];
       _questionAnswered = true;
+      GridDisplay.message('start-off');
       GridDisplay.message('load-on');
     }
 
@@ -823,28 +816,48 @@ var GridDisplay = (_=>
 
 var Input = (_=>
 {
-  let _gestures = new Hammer(document);
+  let
+    _touchStartX,
+    _touchStartY,
+    _isSwipe = false,
+    _inputDirectionMap = {
+      up: 0, right: 1, down: 2, left: 3,
+      38: 0, 39: 1, 40: 2, 37: 3
+    },
+    _inputVectorMap = {
+      0: {x: 0,  y: -1}, 1: {x: 1,  y: 0},
+      2: {x: 0,  y: 1}, 3: {x: -1, y: 0}
+    };
 
-  $(document).on('keydown', _input);
-  $(document).on('click', _input);
-
-  _gestures.get('pan').set({ direction: Hammer.DIRECTION_ALL });
-  _gestures.on('panstart', _input);
+  $(document).on('keydown touchstart touchmove touchend', _input);
 
   function _input(e)
   {
     switch (e.type)
     {
       case 'keydown': _keydownInput(e); break;
-      case 'click': _clickInput(e); break;
-      case 'panstart': _swipeInput(e);
+
+      case 'touchstart':
+        let touchObj = e.changedTouches[0];
+        _touchStartX = touchObj.pageX;
+        _touchStartY = touchObj.pageY;
+        break;
+
+      case 'touchmove': _isSwipe = true; break;
+
+      case 'touchend':
+        if (_isSwipe)
+        {
+          _swipeInput(e);
+          _isSwipe = false;
+        }
+        else _clickInput(e);
+        break;
     }
   }
 
   function _clickInput(e)
-  { // reboot pan gestures on-click to fix pan bug
-    _rebootPanGesture();
-
+  {
     let $target = $(e.target);
 
     if ($target.is('.instruction-btn')) return;
@@ -872,8 +885,27 @@ var Input = (_=>
     let isModalGesture = $target.is('.modal') ||
       $target.parents('.modal').length !== 0;
 
-    if (isGridGesture) Game.move(e);
-    else if (isModalGesture) Modal.move(e);
+    let
+      threshold = 50, restraint = 25,
+      touchObj = e.changedTouches[0],
+      distX = touchObj.pageX - _touchStartX,
+      distY = touchObj.pageY - _touchStartY;
+
+    if (Math.abs(distX) >= threshold && Math.abs(distY) <= restraint)
+      e.swipeDirection = (distX < 0) ? 'left' : 'right';
+    else if (Math.abs(distY) >= threshold && Math.abs(distX) <= restraint)
+      e.swipeDirection = (distY < 0) ? 'up' : 'down';
+
+    if (isGridGesture)
+    {
+      let vector = _getInputVector(e);
+      vector && Game.move(vector);
+    }
+    else if (isModalGesture)
+    {
+      e.direction = _inputDirectionMap[e.swipeDirection];
+      e.direction !== undefined && Modal.move(e.direction);
+    }
   }
 
   function _keydownInput(e)
@@ -883,7 +915,10 @@ var Input = (_=>
       switch(e.which)
       {
         case 32: Modal.nextAnswer(); break;
-        case 38: case 37: case 40: case 39: Modal.move(e);
+
+        case 38: case 37: case 40: case 39:
+          let direction = _inputDirectionMap[e.which];
+          Modal.move(direction);
       }
       return;
     }
@@ -891,47 +926,26 @@ var Input = (_=>
     switch(e.which)
     {
       case 32: GridDisplay.openTile(); break;
-      case 38: case 37: case 40: case 39: Game.move(e);
+
+      case 38: case 37: case 40: case 39:
+        let vector = _getInputVector(e);
+        vector && Game.move(vector);
     }
-  }
-
-  function _rebootPanGesture()
-  {
-    _gestures.get('pan').set({ enable: false });
-    _gestures.get('pan').set({ enable: true });
-  }
-
-  function _getInputDirection(e)
-  { // up: 0, right: 1, down: 2, left: 3
-    let keyCodeMap = {
-      38: 0, 39: 1, 40: 2, 37: 3,
-      8: 0, 4: 1, 16: 2, 2: 3
-    };
-
-    return keyCodeMap[e.which || e.direction];
   }
 
   function _getInputVector(e, direction)
   {
     if (e)
     {
-      direction = _getInputDirection(e);
+      direction = _inputDirectionMap[e.which || e.swipeDirection];
       if (direction === undefined) return null;
     }
-    // Vectors representing tile movement
-    let vectorMap = {
-      0: {x: 0,  y: -1},
-      1: {x: 1,  y: 0},
-      2: {x: 0,  y: 1},
-      3: {x: -1, y: 0}
-    };
 
-    return vectorMap[direction];
+    return _inputVectorMap[direction];
   }
 
   return {
-    getVector: _getInputVector,
-    getDirection: _getInputDirection
+    getVector: _getInputVector
   }
 })();
 
@@ -965,12 +979,12 @@ var md5PrevHash = '';
 
 var md5 = function(string, answerHash)
 {
-  function RotateLeft(lValue, iShiftBits)
+  function rotateLeft(lValue, iShiftBits)
   {
     return (lValue << iShiftBits) | (lValue >>> (32 - iShiftBits));
   }
 
-  function AddUnsigned(lX, lY)
+  function addUnsigned(lX, lY)
   {
     let lX4, lY4, lX8, lY8, lResult;
     lX8 = (lX & 0x80000000);
@@ -994,26 +1008,26 @@ var md5 = function(string, answerHash)
 
   function FF(a, b, c, d, x, s, ac)
   {
-    a = AddUnsigned(a, AddUnsigned(AddUnsigned(F(b, c, d), x), ac));
-    return AddUnsigned(RotateLeft(a, s), b);
+    a = addUnsigned(a, addUnsigned(addUnsigned(F(b, c, d), x), ac));
+    return addUnsigned(rotateLeft(a, s), b);
   }
 
   function GG(a, b, c, d, x, s, ac)
   {
-    a = AddUnsigned(a, AddUnsigned(AddUnsigned(G(b, c, d), x), ac));
-    return AddUnsigned(RotateLeft(a, s), b);
+    a = addUnsigned(a, addUnsigned(addUnsigned(G(b, c, d), x), ac));
+    return addUnsigned(rotateLeft(a, s), b);
   }
 
   function HH(a, b, c, d, x, s, ac)
   {
-    a = AddUnsigned(a, AddUnsigned(AddUnsigned(H(b, c, d), x), ac));
-    return AddUnsigned(RotateLeft(a, s), b);
+    a = addUnsigned(a, addUnsigned(addUnsigned(H(b, c, d), x), ac));
+    return addUnsigned(rotateLeft(a, s), b);
   }
 
   function II(a, b, c, d, x, s, ac)
   {
-    a = AddUnsigned(a, AddUnsigned(AddUnsigned(I(b, c, d), x), ac));
-    return AddUnsigned(RotateLeft(a, s), b);
+    a = addUnsigned(a, addUnsigned(addUnsigned(I(b, c, d), x), ac));
+    return addUnsigned(rotateLeft(a, s), b);
   }
 
   let x = Array();
@@ -1104,10 +1118,10 @@ var md5 = function(string, answerHash)
     d = II(d, a, b, c, x[k + 11], S42, 0xBD3AF235);
     c = II(c, d, a, b, x[k + 2], S43, 0x2AD7D2BB);
     b = II(b, c, d, a, x[k + 9], S44, 0xEB86D391);
-    a = AddUnsigned(a, AA);
-    b = AddUnsigned(b, BB);
-    c = AddUnsigned(c, CC);
-    d = AddUnsigned(d, DD);
+    a = addUnsigned(a, AA);
+    b = addUnsigned(b, BB);
+    c = addUnsigned(c, CC);
+    d = addUnsigned(d, DD);
   }
 
   let temp = WordToHex(a) + WordToHex(b) + WordToHex(c) + WordToHex(d);

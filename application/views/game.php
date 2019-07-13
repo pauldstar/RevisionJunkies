@@ -13,14 +13,9 @@
           <h1 class="aether-font">9p</h1>
           <div id="game-loader-spinner"></div>
         </div>
-        <p class="start-msg d-none" id="game-desktop-msg">
+        <p class="start-msg d-none">
           Level 1<br />
-          Press Space To Start<br /><br />
-          <button class="btn btn-dark instruction-btn right-font" data-toggle="modal" data-target="#modal-instructions">Instructions</button>
-        </p>
-        <p class="start-msg d-none" id="game-mobile-msg">
-          Level 1<br />
-          Tap To Start<br /><br />
+          Start Game<br /><br />
           <button class="btn btn-dark instruction-btn right-font" data-toggle="modal" data-target="#modal-instructions">Instructions</button>
         </p>
       </div>
@@ -159,7 +154,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-instructions">Instructions</button>
+        <button type="button" class="btn btn-danger" onclick="location.href='<?= site_url('leaderboard') ?>'">Leaderboard</button>
         <button type="button" class="btn btn-success btn-new-game" data-dismiss="modal" aria-label="Close">New Game</button>
       </div>
     </div>
@@ -212,9 +207,12 @@
         <strong>Mobile:</strong> Tap & Swipe.<br>
         <strong>Desktop:</strong> Space & Arrow keys.<br>
         <br>
-        Simples!
+        Simples!<br>
+        <br>
+        If you play the game, we'll assume you agree with our Terms & Conditions below.
       </div>
       <div class="modal-footer">
+        <button type="button" class="btn btn-warning">Terms & Conditions</button>
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
       </div>
     </div>
@@ -284,10 +282,8 @@
           </a>
         </div>
       </div>
-      <div class="modal-footer select-mode">
-        <button type="button" class="btn btn-info disabled" data-toggle="tooltip" data-placement="top" title="Available in Race Mode">Select</button>
-        <button type="button" class="btn btn-success disabled" data-toggle="tooltip" data-placement="top" title="Available in Race Mode">Buy</button>
-        <button type="button" class="btn btn-danger">Refer</button>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-info">Select</button>
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
       </div>
     </div>

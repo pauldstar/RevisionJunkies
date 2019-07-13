@@ -7,9 +7,6 @@
 .carousel-item > .modal-body {
   padding-top: 46px;
 }
-.modal-footer.select-mode {
-  justify-content: center;
-}
 .modal-qtn .modal-footer {
   display: block;
 }
@@ -88,9 +85,6 @@
   font-weight: bold;
   line-height: 60px;
   color: #343A40;
-}
-#game-mobile-msg {
-  display: none;
 }
 @-webkit-keyframes move-up {
   0% {
@@ -410,12 +404,6 @@
   #game-container #game-message p {
     font-size: 30px;
     line-height: 30px;
-  }
-  #game-mobile-msg {
-    display: block;
-  }
-  #game-desktop-msg {
-    display: none;
   }
   #game-header {
     width: 280px;
