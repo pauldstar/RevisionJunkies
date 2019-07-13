@@ -204,12 +204,14 @@
         <br>
         Easy Right? Let's go!<br>
         <br>
-        <strong>Mobile:</strong> Tap & Swipe.<br>
-        <strong>Desktop:</strong> Space & Arrow keys.<br>
+        <b>Mobile:</b> Tap & Swipe.<br>
+        <b>Desktop:</b> Space & Arrow keys.<br>
         <br>
         Simples!<br>
         <br>
-        If you play the game, we'll assume you agree with our Terms & Conditions below.
+        <span class="text-danger"><b>
+        If you play our game, we'll assume you agree with our Terms & Conditions below.</b>
+        </span>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-warning">Terms & Conditions</button>
