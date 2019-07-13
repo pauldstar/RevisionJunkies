@@ -27,9 +27,6 @@
   color: #343A40;
   font-size: 3.4rem;
 }
-.start-msg {
-  margin: 0;
-}
 #game-loader-spinner {
   border: 5px solid #f3f3f3;
   -webkit-animation: spin 1s linear infinite;

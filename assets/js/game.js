@@ -368,27 +368,30 @@ var Modal = (_=>
     _$modalBoolean = $('#modal-qtn-boolean'),
     _$modalBooleanQ = _$modalBoolean.find('.modal-body'),
 
-    _modalOptions = '#modal-qtn-options',
-    _$modalOptions = $(_modalOptions),
+    _$modalOptions = $('#modal-qtn-options'),
     _$modalOptionsQ = _$modalOptions.find('.modal-body').eq(0),
     _$modalOptions1 = _$modalOptions.find('.modal-body').eq(1),
     _$modalOptions2 = _$modalOptions.find('.modal-body').eq(2),
     _$modalOptions3 = _$modalOptions.find('.modal-body').eq(3),
     _$modalOptions4 = _$modalOptions.find('.modal-body').eq(4),
-
     _$modalOptionsCarousel = $('#modal-qtn-carousel'),
+
     _$modalGameOver = $('#modal-game-over'),
     _$modalGameWon = $('#modal-game-won'),
-    _$modalInstructions = $('#modal-instructions');
 
-  _$modalQtns.on('show.bs.modal', _resetModalOptions);
+    _$modalInstructions = $('#modal-instructions'),
+    _$modalSelectMode = $('#modal-select-mode'),
+    _$modalSelectModeCarousel = $('#modal-select-mode-carousel');
+
+  _$modalQtns.on('show.bs.modal', _resetModalQtnOptions);
+  _$modalSelectMode.on('show.bs.modal', _=> _$modalSelectModeCarousel.carousel(0));
 
   function _nextAnswerOption()
   {
     _$modalOptionsCarousel.carousel('next');
   }
 
-  function _resetModalOptions()
+  function _resetModalQtnOptions()
   {
     _$modalQtnsContent.removeAttr('style');
     _$modalOptionsCarousel.carousel(0);

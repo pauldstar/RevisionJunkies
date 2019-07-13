@@ -13,7 +13,7 @@
           <h1 class="aether-font">9p</h1>
           <div id="game-loader-spinner"></div>
         </div>
-        <p class="start-msg d-none">
+        <p class="start-msg m-0 d-none">
           Level 1<br />
           Start Game<br /><br />
           <button class="btn btn-dark instruction-btn right-font" data-toggle="modal" data-target="#modal-instructions">Instructions</button>
@@ -198,6 +198,9 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="">Instructions</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
       <div class="modal-body">
         Figure out the game and aim for the highest score (9999) & rank by winning in the shortest possible time.<br>
@@ -226,7 +229,9 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Select Mode</h5>
-        <h5 class="right-font"><span class="aether-font">9p</span> 2222</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
       <div class="modal-body">
         <div class="carousel slide" id="modal-select-mode-carousel" data-interval="false">
@@ -284,7 +289,8 @@
           </a>
         </div>
       </div>
-      <div class="modal-footer">
+      <div class="modal-footer justify-content-between">
+        <h5 class="right-font m-0"><span class="aether-font">9p</span> 2222</h5>
         <button type="button" class="btn btn-info">Select</button>
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
       </div>
