@@ -154,7 +154,7 @@
       </div>
       <div class="modal-footer justify-content-between">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-danger" onclick="location.href='<?= site_url('leaderboard') ?>'">Leaderboard</button>
+        <button class="btn btn-danger float-right" data-toggle="modal" data-target="#modal-select-mode" data-dismiss="modal">Select Mode</button>
         <button type="button" class="btn btn-success btn-new-game" data-dismiss="modal" aria-label="Close">New Game</button>
       </div>
     </div>
@@ -209,7 +209,7 @@
         <br>
         Figure out the game and aim for the highest score (9999) & rank by winning in the shortest possible time.<br>
         <br>
-        Easy Right? Play your card's right and you could win in less than 3 minutes, placing you in contention for this week's <a href="<?= site_url('races') ?>">cash prizes</a>.<br>
+        Easy Right? Play your card's right and you could win in less than 10 minutes, placing you in contention for this week's <a href="<?= site_url('races') ?>">cash prizes</a>.<br>
         <br>
         <b>Mobile:</b> Tap & Swipe.<br>
         <b>Desktop:</b> Space & Arrow keys.<br>
@@ -218,7 +218,7 @@
       </div>
       <div class="modal-footer justify-content-between">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-warning">Terms & Conditions</button>
+        <button type="button" class="btn btn-warning" data-dismiss="modal">Terms & Conditions</button>
       </div>
     </div>
   </div>
