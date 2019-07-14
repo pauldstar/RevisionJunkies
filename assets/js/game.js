@@ -155,7 +155,7 @@ var Grid = (_=>
 
       for (let direction = 0; direction < 4; direction++)
       {
-        let vector = Input.getVector('', direction);
+        let vector = Input.vectorMap[direction];
         let cell = {
           x: x + vector.x,
           y: y + vector.y
@@ -855,7 +855,6 @@ var Input = (_=>
           _isSwipe = false;
         }
         else _clickInput(e);
-        break;
     }
   }
 
@@ -873,9 +872,7 @@ var Input = (_=>
 
   	if (isGridClick) GridDisplay.openTile();
     else if (isModalClick)
-    {
       $(e.target).is('.carousel-indicators li') || Modal.nextAnswer();
-    }
   }
 
   function _swipeInput(e)
@@ -889,26 +886,23 @@ var Input = (_=>
       $target.parents('.modal').length !== 0;
 
     let
-      threshold = 50, restraint = 25,
+      threshold = 25, restraint = 12,
       touchObj = e.changedTouches[0],
       distX = touchObj.pageX - _touchStartX,
       distY = touchObj.pageY - _touchStartY;
 
     if (Math.abs(distX) >= threshold && Math.abs(distY) <= restraint)
-      e.swipeDirection = (distX < 0) ? 'left' : 'right';
+      e.direction = (distX < 0) ? 3 : 1; // left : right
     else if (Math.abs(distY) >= threshold && Math.abs(distX) <= restraint)
-      e.swipeDirection = (distY < 0) ? 'up' : 'down';
+      e.direction = (distY < 0) ? 0 : 2; // up : down
 
     if (isGridGesture)
     {
-      let vector = _getInputVector(e);
+      let vector = _getInputVector(e.direction);
       vector && Game.move(vector);
     }
     else if (isModalGesture)
-    {
-      e.direction = _inputDirectionMap[e.swipeDirection];
       e.direction !== undefined && Modal.move(e.direction);
-    }
   }
 
   function _keydownInput(e)
@@ -931,24 +925,20 @@ var Input = (_=>
       case 32: GridDisplay.openTile(); break;
 
       case 38: case 37: case 40: case 39:
-        let vector = _getInputVector(e);
+        let vector = _getInputVector(e.which);
         vector && Game.move(vector);
     }
   }
 
-  function _getInputVector(e, direction)
+  function _getInputVector(keycode)
   {
-    if (e)
-    {
-      direction = _inputDirectionMap[e.which || e.swipeDirection];
-      if (direction === undefined) return null;
-    }
-
+    let direction = _inputDirectionMap[keycode];
+    if (direction === undefined) return null;
     return _inputVectorMap[direction];
   }
 
   return {
-    getVector: _getInputVector
+    vectorMap: _inputVectorMap
   }
 })();
 

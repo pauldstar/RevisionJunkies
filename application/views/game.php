@@ -14,8 +14,8 @@
           <div id="game-loader-spinner"></div>
         </div>
         <p class="start-msg m-0 d-none">
-          Level 1<br />
-          Start Game<br /><br />
+          Level 1<br>
+          Start Game<br><br>
           <button class="btn btn-dark instruction-btn right-font" data-toggle="modal" data-target="#modal-instructions">Instructions</button>
         </p>
       </div>
@@ -153,8 +153,8 @@
         Last Place -->
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
         <button type="button" class="btn btn-danger" onclick="location.href='<?= site_url('leaderboard') ?>'">Leaderboard</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
         <button type="button" class="btn btn-success btn-new-game" data-dismiss="modal" aria-label="Close">New Game</button>
       </div>
     </div>
@@ -171,7 +171,7 @@
         </button>
       </div>
       <div class="modal-body">
-        Congratulations. You have achieved a rare feat!<br /><br />
+        Congratulations. You have achieved a rare feat!<br><br>
         You are truly awesome!
         <!-- Your ranking:<br>
         <br>
@@ -203,6 +203,10 @@
         </button>
       </div>
       <div class="modal-body">
+        <span class="text-danger"><b>
+          If you play quepenny, we'll assume you agree with our Terms & Conditions below.</b>
+        </span><br>
+        <br>
         Figure out the game and aim for the highest score (9999) & rank by winning in the shortest possible time.<br>
         <br>
         Easy Right? Let's go!<br>
@@ -212,13 +216,11 @@
         <br>
         Simples!<br>
         <br>
-        <span class="text-danger"><b>
-        If you play our game, we'll assume you agree with our Terms & Conditions below.</b>
-        </span>
+
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-warning">Terms & Conditions</button>
+      <div class="modal-footer justify-content-between">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-warning">Terms & Conditions</button>
       </div>
     </div>
   </div>
@@ -290,9 +292,9 @@
         </div>
       </div>
       <div class="modal-footer justify-content-between">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
         <h5 class="right-font m-0"><span class="aether-font">9p</span> 2222</h5>
         <button type="button" class="btn btn-info">Select</button>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
