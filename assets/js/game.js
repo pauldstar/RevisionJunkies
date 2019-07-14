@@ -825,10 +825,10 @@ var Input = (_=>
     _isSwipe = false,
     _inputDirectionMap = { 38: 0, 39: 1, 40: 2, 37: 3 },
     _inputVectorMap = {
-      0: {x: 0,  y: -1},
-      1: {x: 1,  y: 0},
-      2: {x: 0,  y: 1},
-      3: {x: -1, y: 0}
+      0: { x: 0,  y: -1 },
+      1: { x: 1,  y: 0 },
+      2: { x: 0,  y: 1 },
+      3: { x: -1, y: 0 }
     };
 
   $(document).on('keydown touchstart touchmove touchend', _input);
@@ -885,7 +885,8 @@ var Input = (_=>
       $target.parents('.modal').length !== 0;
 
     let
-      threshold = 25, restraint = 12,
+      threshold = 50, // min distance traveled to be considered swipe
+      restraint = 100, // max distance allowed in perpendicular direction
       touchObj = e.changedTouches[0],
       distX = touchObj.pageX - _touchStartX,
       distY = touchObj.pageY - _touchStartY;
@@ -930,9 +931,7 @@ var Input = (_=>
     }
   }
 
-  return {
-    vectorMap: _inputVectorMap
-  }
+  return { vectorMap: _inputVectorMap }
 })();
 
 function Tile(position, value)
