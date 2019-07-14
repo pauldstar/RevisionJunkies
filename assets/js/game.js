@@ -823,13 +823,12 @@ var Input = (_=>
     _touchStartX,
     _touchStartY,
     _isSwipe = false,
-    _inputDirectionMap = {
-      up: 0, right: 1, down: 2, left: 3,
-      38: 0, 39: 1, 40: 2, 37: 3
-    },
+    _inputDirectionMap = { 38: 0, 39: 1, 40: 2, 37: 3 },
     _inputVectorMap = {
-      0: {x: 0,  y: -1}, 1: {x: 1,  y: 0},
-      2: {x: 0,  y: 1}, 3: {x: -1, y: 0}
+      0: {x: 0,  y: -1},
+      1: {x: 1,  y: 0},
+      2: {x: 0,  y: 1},
+      3: {x: -1, y: 0}
     };
 
   $(document).on('keydown touchstart touchmove touchend', _input);
@@ -898,7 +897,7 @@ var Input = (_=>
 
     if (isGridGesture)
     {
-      let vector = _getInputVector(e.direction);
+      let vector = _inputVectorMap[e.direction];
       vector && Game.move(vector);
     }
     else if (isModalGesture)
@@ -925,16 +924,10 @@ var Input = (_=>
       case 32: GridDisplay.openTile(); break;
 
       case 38: case 37: case 40: case 39:
-        let vector = _getInputVector(e.which);
+        let direction = _inputDirectionMap[e.which],
+            vector = _inputVectorMap[direction];
         vector && Game.move(vector);
     }
-  }
-
-  function _getInputVector(keycode)
-  {
-    let direction = _inputDirectionMap[keycode];
-    if (direction === undefined) return null;
-    return _inputVectorMap[direction];
   }
 
   return {

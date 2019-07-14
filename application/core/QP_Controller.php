@@ -10,7 +10,6 @@ class QP_Controller extends Ci_Controller
 
 	protected function load_asset($name, $ext)
   {
-
 		$path = base_url("assets/{$ext}/{$name}.{$ext}");
 
 		switch ($ext)

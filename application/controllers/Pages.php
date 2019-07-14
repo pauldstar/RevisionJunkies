@@ -20,7 +20,7 @@ class Pages extends QP_Controller
 
 	public function prizes()
 	{
-		$data['title'] = 'prizes';
+		$data['title'] = 'races';
 
     $data['styles'] = '';
 
