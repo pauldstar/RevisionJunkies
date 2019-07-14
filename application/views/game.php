@@ -152,9 +152,9 @@
         <br>
         Last Place -->
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-danger" onclick="location.href='<?= site_url('leaderboard') ?>'">Leaderboard</button>
+      <div class="modal-footer justify-content-between">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger" onclick="location.href='<?= site_url('leaderboard') ?>'">Leaderboard</button>
         <button type="button" class="btn btn-success btn-new-game" data-dismiss="modal" aria-label="Close">New Game</button>
       </div>
     </div>
@@ -203,20 +203,18 @@
         </button>
       </div>
       <div class="modal-body">
-        <span class="text-danger"><b>
-          If you play quepenny, we'll assume you agree with our Terms & Conditions below.</b>
+        <span class="text-danger">
+          <b>If you play quepenny, we'll assume you agree with our Terms & Conditions below.</b>
         </span><br>
         <br>
         Figure out the game and aim for the highest score (9999) & rank by winning in the shortest possible time.<br>
         <br>
-        Easy Right? Let's go!<br>
+        Easy Right? Play your card's right and you could win in less than 3 minutes, placing you in contention for this week's <a href="<?= site_url('prizes') ?>">cash prizes</a>.<br>
         <br>
         <b>Mobile:</b> Tap & Swipe.<br>
         <b>Desktop:</b> Space & Arrow keys.<br>
         <br>
-        Simples!<br>
-        <br>
-
+        Simples. Let's go!<br>
       </div>
       <div class="modal-footer justify-content-between">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

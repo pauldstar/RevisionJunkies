@@ -2,9 +2,14 @@
 
 class QP_Controller extends Ci_Controller
 {
+	public function __construct()
+	{
+		parent::__construct();
+		$this->load->helper('url');
+	}
+
 	protected function load_asset($name, $ext)
   {
-		$this->load->helper('url');
 
 		$path = base_url("assets/{$ext}/{$name}.{$ext}");
 
@@ -12,7 +17,7 @@ class QP_Controller extends Ci_Controller
 		{
 			case 'css':
 				return "<link href='{$path}' rel='stylesheet' type='text/css'>";
-				
+
 			case 'js':
 				return "<script src='{$path}'></script>";
 		}

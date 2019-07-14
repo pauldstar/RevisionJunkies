@@ -18,9 +18,64 @@ class Pages extends QP_Controller
     $this->load->view('html', $data);
 	}
 
+	public function prizes()
+	{
+		$data['title'] = 'prizes';
+
+    $data['styles'] = '';
+
+    $data['header'] = $this->load->view('header', $data, TRUE);
+    $data['page_content'] = '';
+    $data['footer'] = $this->load->view('footer', NULL, TRUE);
+
+    $data['scripts'] = '';
+
+		$this->load->view('html', $data);
+	}
+
 	public function leaderboard()
 	{
+		$data['title'] = 'leaderboard';
 
+    $data['styles'] = '';
+
+    $data['header'] = $this->load->view('header', $data, TRUE);
+    $data['page_content'] = '';
+    $data['footer'] = $this->load->view('footer', NULL, TRUE);
+
+    $data['scripts'] = '';
+
+		$this->load->view('html', $data);
+	}
+
+	public function contact()
+	{
+		$data['title'] = 'contact';
+
+    $data['styles'] = '';
+
+    $data['header'] = $this->load->view('header', $data, TRUE);
+    $data['page_content'] = '';
+    $data['footer'] = $this->load->view('footer', NULL, TRUE);
+
+    $data['scripts'] = '';
+
+		$this->load->view('html', $data);
+	}
+
+	public function login()
+	{
+		$data['title'] = 'login';
+
+    $data['styles'] = '';
+
+    $data['header'] = $this->load->view('header', $data, TRUE);
+    $data['page_content'] = '';
+    $data['footer'] = $this->load->view('footer', NULL, TRUE);
+
+    $data['scripts'] = '';
+
+		$this->load->view('html', $data);
 	}
 
 	public function server_info()
