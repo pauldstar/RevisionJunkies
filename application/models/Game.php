@@ -1,6 +1,6 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Game_model extends CI_Model
+class Game extends CI_Model
 {
   private static $score;
   private static $level;

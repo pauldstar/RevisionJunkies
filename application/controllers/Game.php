@@ -5,7 +5,7 @@ class Game extends QP_Controller
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->model('game_model');
+		$this->load->model('game', 'state');
 		$this->load->model('questions');
 	}
 
@@ -18,7 +18,7 @@ class Game extends QP_Controller
 		$session_questions = [];
 		$user_questions = [];
 
-		$game_level = $this->game_model->level();
+		$game_level = $this->state->level();
 
 		foreach($questions as $index => $qtn)
 		{
@@ -54,7 +54,7 @@ class Game extends QP_Controller
 		}
 
 		$this->questions->set_session_questions($session_questions);
-		$this->game_model->level(TRUE);
+		$this->state->level(TRUE);
 
     echo json_encode($user_questions);
 	}
@@ -72,7 +72,7 @@ class Game extends QP_Controller
 			$score = 0;
 			$is_correct = $answer_hash === $question->answer_hash;
 			if ($is_correct) $score = $question->score;
-			$this->game_model->set_session_score($score);
+			$this->state->set_session_score($score);
 
 			echo $score;
 		}
@@ -105,7 +105,7 @@ class Game extends QP_Controller
 
 	private function get_calc_scores($amount)
 	{
-		$game_level = $this->game_model->level();
+		$game_level = $this->state->level();
 
 		$max = 33 * $game_level;
 		$min = 1;
@@ -122,7 +122,7 @@ class Game extends QP_Controller
 
 	private function reset_game()
 	{
-		$this->game_model->reset();
+		$this->state->reset();
 		$this->questions->reset();
 	}
 }
