@@ -5,7 +5,7 @@ class Game extends QP_Controller
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->model('game', 'state');
+		$this->load->model('state');
 		$this->load->model('questions');
 	}
 
@@ -59,7 +59,7 @@ class Game extends QP_Controller
     echo json_encode($user_questions);
 	}
 
-	public function score_user_answer($answer_code, $question_id)
+	public function score_user_answer($question_id, $answer_code = NULL)
 	{
 		$question = $this->questions->get_session_question($question_id);
 
@@ -67,11 +67,15 @@ class Game extends QP_Controller
 		{
 			$this->questions->unset_session_question($question_id);
 
-			$answer_hash = self::get_user_answer_hash($question, $answer_code);
-
 			$score = 0;
-			$is_correct = $answer_hash === $question->answer_hash;
-			if ($is_correct) $score = $question->score;
+
+			if (isset($answer_code))
+			{
+				$answer_hash = self::get_user_answer_hash($question, $answer_code);
+				$is_correct = $answer_hash === $question->answer_hash;
+				if ($is_correct) $score = $question->score;
+			}
+
 			$this->state->set_session_score($score);
 
 			echo $score;

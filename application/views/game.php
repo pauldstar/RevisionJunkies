@@ -63,12 +63,9 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Question</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
       </div>
       <div class="progress" style="height: 2px;">
-        <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+        <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
       </div>
       <div class="modal-body text-center">...</div>
       <div class="modal-footer text-center">
@@ -87,9 +84,6 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Question</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
       </div>
       <div class="progress" style="height: 2px;">
         <div class="progress-bar bg-danger" role="progressbar" style="width: 71%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>

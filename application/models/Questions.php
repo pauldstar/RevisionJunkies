@@ -10,7 +10,6 @@ class Questions extends CI_Model
   {
     parent::__construct();
     $this->load->library('session');
-    $this->load->model('game', 'game_model');
     self::$questions = &$_SESSION['questions'];
     self::$next_answer_chain_hash = &$_SESSION['next_answer_chain_hash'];
     self::$prev_answer_chain_hash = &$_SESSION['prev_answer_chain_hash'];
@@ -71,7 +70,9 @@ class Questions extends CI_Model
 	{
 		$urls = [];
 
-		switch ($this->game_model->level())
+    $this->load->model('state');
+
+		switch ($this->state->level())
 		{
 			default: $urls[] = 'https://opentdb.com/api.php?amount=5&difficulty=hard';
 			case 2: $urls[] = 'https://opentdb.com/api.php?amount=5&difficulty=medium';
