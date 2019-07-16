@@ -4,11 +4,7 @@ window.requestAnimationFrame =
   window.requestAnimationFrame || window.mozRequestAnimationFrame ||
   window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
 
-window.cancelAnimationFrame =
-  window.cancelAnimationFrame || window.mozCancelAnimationFrame;
-
 $(_=> Game.start());
-
 
 var Game = (_=>
 {
@@ -373,6 +369,7 @@ var Modal = (_=>
       _$modalQtnsContent = _$modalQtns.find('.modal-content'),
 
       _modalSwiped = false,
+      _modalProgressTimerFinished = false,
       _$modalProgress = $('.progress-bar'),
 
       _$modalBoolean = $('#modal-qtn-boolean'),
@@ -441,9 +438,12 @@ var Modal = (_=>
         progressMod = 0;
 
     _modalSwiped = false;
+    _modalProgressTimerFinished = false;
 
     let progressTimer = _=>
     {
+      if (_modalSwiped) return;
+
       progress++;
       progressMod = progress % 6;
 
@@ -454,10 +454,9 @@ var Modal = (_=>
         timeStamp = Date.now();
       }
 
-      if (_modalSwiped) return;
-
       if (timeStamp >= timeEnd)
       {
+        _modalProgressTimerFinished = true;
         Questions.scoreAnswer();
         _$modalQtns.modal('hide');
         _$modalProgress.css('width', 0);
@@ -479,6 +478,10 @@ var Modal = (_=>
 
   function _move(direction)
   {
+    if (_modalProgressTimerFinished) return;
+
+    _modalSwiped = true;
+
     if (_$modalQtnsContent.attr('style')) return;
 
     switch (direction)
@@ -497,7 +500,6 @@ var Modal = (_=>
     {
       Questions.scoreAnswer(direction);
       _$modalQtns.modal('hide');
-      _modalSwiped = true;
     });
   }
 
@@ -634,7 +636,7 @@ var Questions = (_=>
       error: e => console.log(e)
     });
 
-    let ans = _currentQuestion.type === 'boolean' ? ( ansCode === 1 ? 'True' : ansCode === 0 ?  'False' : 'Fail' ) :
+    let ans = _currentQuestion.type === 'boolean' ? ( ansCode === 1 ? 'True' : ansCode === 0 ?  'False' : undefined ) :
       _currentQuestion.optionsTrim[ansCode];
 
     console.log('chose: '+ans);
