@@ -1,5 +1,17 @@
 'use strict';
 
+/*
+ * quepenny v1.0
+ *
+ * Copyright (c) 2019 Paul Ogbeiwi;
+ *
+ * This uncompressed file is only viewable by quepenny developers; it contains
+ *  vital game secrets.
+ *
+ * Note: The properties of modules have been stored in object variables on
+ *  purpose; it enables their obfuscation.
+ */
+
 window.requestAnimationFrame =
   window.requestAnimationFrame || window.mozRequestAnimationFrame ||
   window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
@@ -71,13 +83,15 @@ var Game = (_=>
     }
   }
 
-  return {
+  let _Game = {
     score: _gameScore,
     start: _startGame,
     move: _move,
     level: _gameLevel,
     checkStatus: _checkGameStatus
   }
+
+  return _Game;
 })();
 
 var Grid = (_=>
@@ -351,7 +365,7 @@ var Grid = (_=>
     return moved;
   }
 
-  return {
+  let _Grid = {
     cells: _cells,
     build: _buildGrid,
     getMaxMerge: _getMaxMerge,
@@ -360,7 +374,9 @@ var Grid = (_=>
     eachCell: _eachCell,
     addRandomTile: _addRandomTile,
     addStartTiles: _addStartTiles
-  }
+  };
+
+  return _Grid;
 })();
 
 var Modal = (_=>
@@ -503,12 +519,14 @@ var Modal = (_=>
     });
   }
 
-  return {
+  let _Modal = {
     nextAnswer: _nextAnswerOption,
     move: _move,
     showQuestion: _showQuestion,
     gameOver: _gameOver
-  }
+  };
+
+  return _Modal;
 })();
 
 var Questions = (_=>
@@ -665,12 +683,14 @@ var Questions = (_=>
     Game.checkStatus();
   }
 
-  return {
+  let _Questions = {
     current: _=> _currentQuestion,
     load: _loadQuestions,
     get: _getQuestion,
     scoreAnswer: _scoreAnswer
-  }
+  };
+
+  return _Questions;
 })();
 
 var GridDisplay = (_=>
@@ -841,12 +861,11 @@ var GridDisplay = (_=>
 
     if (tile.isMaxMerge) classes.push('tile-max');
 
-    let $element = $(`
-      <div class="${classes.join(' ')}"
-        data-x="${tile.x}" data-y="${tile.y}" data-val-set="">
-        ${textContent}
-      </div>
-    `);
+    let $element = $('#tile-template').clone();
+    $element.attr('class', classes.join(' '));
+    $element.data('x', tile.x);
+    $element.data('y', tile.y);
+    $element.text(textContent);
 
     if (tile.previousPosition)
     { // After rendering tile in previous position...
@@ -870,13 +889,15 @@ var GridDisplay = (_=>
     _$tileContainer.append($element);
   }
 
-  return {
+  let _GridDisplay = {
     openTile: _openTile,
     refresh: _refresh,
     message: _message,
     tilesValuesAreSet: _tilesValuesAreSet,
     setTileValue: _setTileValue
-  }
+  };
+
+  return _GridDisplay;
 })();
 
 var Input = (_=>
@@ -892,9 +913,9 @@ var Input = (_=>
         3: { x: -1, y: 0 }
       };
 
-  $(document).on('keydown touchstart touchmove touchend', _input);
+  $(document).on('keydown touchstart touchmove touchend', _inputHandler);
 
-  function _input(e)
+  function _inputHandler(e)
   {
     switch (e.type)
     {
@@ -991,7 +1012,9 @@ var Input = (_=>
     }
   }
 
-  return { vectorMap: _inputVectorMap }
+  let _Input = { vectorMap: _inputVectorMap };
+
+  return _Input;
 })();
 
 function Tile(position, value)

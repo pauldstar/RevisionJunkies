@@ -48,6 +48,7 @@
       </div>
 
       <div id="tile-container"></div>
+      <div class="d-none" id="tile-template" data-x="" data-y="" data-val-set=""></div>
     </div>
 
     <div class="text-white ml-auto mr-auto right-font" id="game-footer">
