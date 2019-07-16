@@ -65,7 +65,7 @@
         <h5 class="modal-title">Question</h5>
       </div>
       <div class="progress" style="height: 2px;">
-        <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+        <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
       </div>
       <div class="modal-body text-center">...</div>
       <div class="modal-footer text-center">
@@ -86,7 +86,7 @@
         <h5 class="modal-title">Question</h5>
       </div>
       <div class="progress" style="height: 2px;">
-        <div class="progress-bar bg-danger" role="progressbar" style="width: 71%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+        <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
       </div>
       <div class="carousel slide" id="modal-qtn-carousel" data-ride="carousel" data-interval="false">
         <div class="carousel-inner text-center">
