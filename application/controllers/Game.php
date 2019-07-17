@@ -22,19 +22,19 @@ class Game extends QP_Controller
 
 		foreach($questions as $index => $qtn)
 		{
+			$qtn->id = "{$game_level}{$index}";
+			$qtn->score = $scores[$index];
+			$qtn->answer_hash =
+				$this->questions->get_next_answer_chain_hash($qtn->correct_answer);
+
 			$usr_qtn = [];
-			$usr_qtn['id'] = "{$game_level}{$index}";
+			$usr_qtn['id'] = $qtn->id;
 			$usr_qtn['level'] = $game_level;
 			$usr_qtn['question'] = $qtn->question;
 			$usr_qtn['type'] = $qtn->type;
-			$usr_qtn['score'] = $scores[$index];
+			$usr_qtn['score'] = $qtn->score;
 			$usr_qtn['correct'] = str_replace(['"', "'", " "], '', $qtn->correct_answer);
-			$usr_qtn['answerHash'] =
-				$this->questions->get_next_answer_chain_hash($qtn->correct_answer);
-
-			$qtn->id = $usr_qtn['id'];
-			$qtn->score = $usr_qtn['score'];
-			$qtn->answer_hash = $usr_qtn['answerHash'];
+			$usr_qtn['ah'] = $qtn->answer_hash;
 
 			if ($qtn->type === 'multiple')
 			{
@@ -42,7 +42,6 @@ class Game extends QP_Controller
 				foreach ($qtn->incorrect_answers as $ans) $usr_qtn['options'][] = $ans;
 
 				shuffle($usr_qtn['options']);
-				$qtn->options = $usr_qtn['options'];
 
 				foreach ($usr_qtn['options'] as $opt)
 					$usr_qtn['optionsTrim'][] = str_replace(['"', "'", " "], '', $opt);

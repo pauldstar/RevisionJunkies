@@ -21,7 +21,7 @@ class Pages extends QP_Controller
     $this->load->view('html', $data);
 	}
 
-	public function prizes()
+	public function races()
 	{
 		$data['title'] = 'races';
 

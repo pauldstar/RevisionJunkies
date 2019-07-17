@@ -52,7 +52,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $route['login'] = 'pages/login';
 $route['contact'] = 'pages/contact';
 $route['leaderboard'] = 'pages/leaderboard';
-$route['prizes'] = 'pages/prizes';
+$route['races'] = 'pages/races';
 $route['game'] = 'pages/game';
 $route['default_controller'] = 'pages/game';
 $route['404_override'] = '';

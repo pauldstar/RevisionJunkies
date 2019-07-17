@@ -598,7 +598,7 @@ var Questions = (_=>
 
   function _getAnswerHash(ansCode)
   {
-    let ansHash = _currentQuestion.answerHash;
+    let ansHash = _currentQuestion.ah;
 
     switch (_currentQuestion.type)
     {
@@ -660,22 +660,22 @@ var Questions = (_=>
     console.log('chose: '+ans);
     console.log('right: '+_currentQuestion.correct);
     console.log('nhash: '+ansHash);
-    console.log('ahash: '+_currentQuestion.answerHash);
+    console.log('ahash: '+_currentQuestion.ah);
     if (ans === _currentQuestion.correct)
     {
-      if (ansHash === _currentQuestion.answerHash)
+      if (ansHash === _currentQuestion.ah)
         console.log(true);
       else alert(false);
     }
     else
     {
-      if (ansHash === _currentQuestion.answerHash)
+      if (ansHash === _currentQuestion.ah)
         alert(false);
       else console.log(true);
     }
     console.log('-------------');
 
-    if (ansHash === _currentQuestion.answerHash) score = _currentQuestion.score;
+    if (ansHash === _currentQuestion.ah) score = _currentQuestion.score;
     GridDisplay.setTileValue(parseFloat(score));
 
     _questionAnswered = true;
