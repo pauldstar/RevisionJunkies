@@ -1,7 +1,7 @@
 'use strict';
 
 /*
- * quepenny v1.0
+ * QuePenny v1.0
  *
  * Copyright (c) 2019 Paul Ogbeiwi;
  *
