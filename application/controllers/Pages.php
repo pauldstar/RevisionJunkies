@@ -12,7 +12,10 @@ class Pages extends QP_Controller
     $data['page_content'] = $this->load->view('game', NULL, TRUE);
     $data['footer'] = $this->load->view('footer', NULL, TRUE);
 
-    $game_js = self::load_asset('game', 'js');
+    if (ENVIRONMENT === 'development')
+			$game_js = self::load_asset('game', 'js');
+		else $game_js = self::load_asset('game.min', 'js');
+
     $data['scripts'] = $game_js;
 
     $this->load->view('html', $data);
