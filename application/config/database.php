@@ -73,8 +73,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $active_group = 'default';
 $query_builder = TRUE;
 
+$hostname = ENVIRONMENT === 'production' ? 'localhost' : 'quepenny.com';
+
 $db['default'] = array(
-	'dsn'	=> 'mysql:host=quepenny.com;dbname=quepenny',
+	'dsn'	=> "mysql:host={$hostname};dbname=quepenny",
 	'username' => 'qp-prod',
 	'password' => 'wSPr@bktNDl#',
 	'dbdriver' => 'pdo',
