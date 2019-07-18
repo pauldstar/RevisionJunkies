@@ -404,11 +404,11 @@ var Modal = (_=>
       _$modalGameWon = $('#modal-game-won'),
 
       _$modalInstructions = $('#modal-instructions'),
-      _$modalSelectMode = $('#modal-select-mode'),
-      _$modalSelectModeCarousel = $('#modal-select-mode-carousel');
+      _$modalMode = $('#modal-select-mode'),
+      _$modalModeCarousel = $('#modal-select-mode-carousel');
 
   _$modalQtns.on('show.bs.modal', _resetModalQtnOptions);
-  _$modalSelectMode.on('show.bs.modal', _=> _$modalSelectModeCarousel.carousel(0));
+  _$modalMode.on('show.bs.modal', _=> _$modalModeCarousel.carousel(0));
 
   function _nextAnswerOption()
   {

@@ -52,35 +52,37 @@ class Questions extends CI_Model
 
   public function load_questions()
   {
-    $api_urls = self::get_api_urls();
-    $questions = [];
-
-    foreach ($api_urls as $url)
-    {
-      $data = json_decode(file_get_contents($url));
-      foreach($data->results as $qtn) $questions[] = $qtn;
-    }
-
-    shuffle($questions);
-
-    return $questions;
-  }
-
-  private function get_api_urls()
-	{
-		$urls = [];
-
+    $this->load->database();
     $this->load->model('state');
 
-		switch ($this->state->level())
-		{
-			default: $urls[] = 'https://opentdb.com/api.php?amount=5&difficulty=hard';
-			case 2: $urls[] = 'https://opentdb.com/api.php?amount=5&difficulty=medium';
-			case 1: $urls[] = 'https://opentdb.com/api.php?amount=5&difficulty=easy';
-		}
+    $where = '';
+    $limit = 0;
 
-		return $urls;
-	}
+    switch ($this->state->level())
+    {
+      default:
+        $where .= 'difficulty = "hard" OR ';
+        $limit += 3;
+      case 2:
+        $where .= 'difficulty = "medium" OR ';
+        $limit += 3;
+      case 1:
+        $where .= 'difficulty = "easy"';
+        $limit += 4;
+    }
+
+    $this->db->select('question, type, correct_answer, incorrect_answers');
+    $this->db->where($where);
+    $this->db->order_by(NULL, 'RANDOM');
+    $query = $this->db->get('questions', $limit);
+
+    return $query->result();
+  }
+
+  public function save_questions_db()
+  {
+
+  }
 
   public function reset()
   {

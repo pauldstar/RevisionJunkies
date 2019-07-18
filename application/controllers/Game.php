@@ -39,7 +39,9 @@ class Game extends QP_Controller
 			if ($qtn->type === 'multiple')
 			{
 				$usr_qtn['options'][] = $qtn->correct_answer;
-				foreach ($qtn->incorrect_answers as $ans) $usr_qtn['options'][] = $ans;
+
+				$incorrect_answers = explode(',', $qtn->incorrect_answers);
+				foreach ($incorrect_answers as $ans) $usr_qtn['options'][] = $ans;
 
 				shuffle($usr_qtn['options']);
 
@@ -56,6 +58,39 @@ class Game extends QP_Controller
 		$this->state->level(TRUE);
 
     echo json_encode($user_questions);
+	}
+
+	public function test()
+	{
+		$this->load->database();
+
+		$insert_query = NULL;
+
+		while (true)
+		{
+			$data = json_decode(
+				file_get_contents('https://opentdb.com/api.php?amount=50')
+			);
+
+      foreach($data->results as $qtn)
+			{
+				$insert_query = [
+					'question_hash' => md5($qtn->question),
+					'question' => $qtn->question,
+					'category' => $qtn->category,
+					'type' => $qtn->type,
+					'difficulty' => $qtn->difficulty,
+					'correct_answer' => $qtn->correct_answer,
+					'incorrect_answers' => implode(',', $qtn->incorrect_answers)
+				];
+
+				$insert_query = $this->db->insert_string('questions', $insert_query);
+				$insert_query = str_replace('INSERT INTO','INSERT IGNORE INTO',$insert_query);
+				$this->db->query($insert_query);
+			}
+
+			// sleep(2);
+		}
 	}
 
 	public function score_user_answer($question_id, $answer_code = NULL)

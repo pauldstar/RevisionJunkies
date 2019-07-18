@@ -148,9 +148,8 @@
         Last Place -->
       </div>
       <div class="modal-footer justify-content-between">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button class="btn btn-danger float-right" data-toggle="modal" data-target="#modal-select-mode" data-dismiss="modal">Select Mode</button>
-        <button type="button" class="btn btn-success btn-new-game" data-dismiss="modal" aria-label="Close">New Game</button>
+        <button class="btn btn-danger" data-toggle="modal" data-target="#modal-select-mode" data-dismiss="modal">Select Mode</button>
+        <button type="button" class="btn btn-success btn-new-game ml-1" data-dismiss="modal" aria-label="Close">New Game</button>
       </div>
     </div>
   </div>

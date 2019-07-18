@@ -76,7 +76,7 @@ $query_builder = TRUE;
 $db['default'] = array(
 	'dsn'	=> 'mysql:host=quepenny.com;dbname=quepenny',
 	'username' => 'qp-prod',
-	'password' => '@DYaXpuoz,s1',
+	'password' => 'wSPr@bktNDl#',
 	'dbdriver' => 'pdo',
 	'dbprefix' => '',
 	'pconnect' => FALSE,
