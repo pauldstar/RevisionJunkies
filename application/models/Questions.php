@@ -73,15 +73,10 @@ class Questions extends CI_Model
 
     $this->db->select('question, type, correct_answer, incorrect_answers');
     $this->db->where($where);
-    $this->db->order_by(NULL, 'RANDOM');
+    $this->db->order_by(NULL, 'random');
     $query = $this->db->get('questions', $limit);
 
     return $query->result();
-  }
-
-  public function save_questions_db()
-  {
-
   }
 
   public function reset()

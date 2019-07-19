@@ -60,39 +60,6 @@ class Game extends QP_Controller
     echo json_encode($user_questions);
 	}
 
-	public function test()
-	{
-		$this->load->database();
-
-		$insert_query = NULL;
-
-		while (true)
-		{
-			$data = json_decode(
-				file_get_contents('https://opentdb.com/api.php?amount=50')
-			);
-
-      foreach($data->results as $qtn)
-			{
-				$insert_query = [
-					'question_hash' => md5($qtn->question),
-					'question' => $qtn->question,
-					'category' => $qtn->category,
-					'type' => $qtn->type,
-					'difficulty' => $qtn->difficulty,
-					'correct_answer' => $qtn->correct_answer,
-					'incorrect_answers' => implode(',', $qtn->incorrect_answers)
-				];
-
-				$insert_query = $this->db->insert_string('questions', $insert_query);
-				$insert_query = str_replace('INSERT INTO','INSERT IGNORE INTO',$insert_query);
-				$this->db->query($insert_query);
-			}
-
-			// sleep(2);
-		}
-	}
-
 	public function score_user_answer($question_id, $answer_code = NULL)
 	{
 		$question = $this->questions->get_session_question($question_id);
