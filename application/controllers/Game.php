@@ -11,7 +11,7 @@ class Game extends QP_Controller
 
 	public function get_questions($game_level)
 	{
-		if ($game_level == 1) self::reset_game();
+		if ($game_level === '1') self::reset_game();
 
 		$questions = $this->questions->load_questions();
 		$scores = self::get_calc_scores(count($questions));

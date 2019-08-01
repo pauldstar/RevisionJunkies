@@ -55,24 +55,24 @@ class Questions extends CI_Model
     $this->load->database();
     $this->load->model('state');
 
-    $where = '';
-    $limit = 0;
+    $this->db->select('question, type, correct_answer, incorrect_answers');
 
     switch ($this->state->level())
     {
-      default:
-        $where .= 'difficulty = "hard" OR ';
-        $limit += 3;
-      case 2:
-        $where .= 'difficulty = "medium" OR ';
-        $limit += 3;
       case 1:
-        $where .= 'difficulty = "easy"';
-        $limit += 4;
+        $this->db->where('difficulty = "easy"');
+        $limit = 4;
+        break;
+      case 2:
+        $this->db->where('difficulty', 'medium');
+        $this->db->or_where('difficulty', 'easy');
+        $limit = 7;
+        break;
+      default:
+        $limit = 10;
+        break;
     }
 
-    $this->db->select('question, type, correct_answer, incorrect_answers');
-    $this->db->where($where);
     $this->db->order_by(NULL, 'random');
     $query = $this->db->get('questions', $limit);
 

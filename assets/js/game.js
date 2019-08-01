@@ -10,17 +10,28 @@
  *
  * Note: The properties of modules have been stored in object variables on
  *  purpose; it enables their obfuscation.
+ *
+ * Coding Guidelines
+ *
+ * - There are two master modules: Game first, then Input (inside the Game
+ *   module). Game is the master coordinator/mediator between modules. Input
+ *   only triggers other module functions to handle events.
+ *
+ * - The other modules are helpers; they don't call functions in other
+ *   modules. They only have functions that help the masters store, retrieve,
+ *   update, and display game data.
  */
 
 window.requestAnimationFrame =
   window.requestAnimationFrame || window.mozRequestAnimationFrame ||
   window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
 
-$(_=> Game.start());
+$(_=> Game.load());
 
 var Game = (_=>
 {
-  let _score, _status, _level;
+  let _score, _status, _level, _startTime, _gameStarted, _loading,
+      _timerInterval, _questionInterval;
 
   function _gameLevel(increment)
   {
@@ -36,35 +47,69 @@ var Game = (_=>
 
   function _gameOver()
   {
-    return  _status['lost'] || _status['won'];
+    return _status['lost'] || _status['won'];
   }
 
   function _checkGameStatus(moved)
   {
-    if (!Grid.movesAvailable()) _status['lost'] = true;
+    if (!Grid.movesAvailable(Input.vectorMap)) _status['lost'] = true;
 
     if (_gameOver())
     {
       let status = _status['lost'] ? 'lost' : 'won';
-      setTimeout(_=> Modal.gameOver(status), 1500);
+      setTimeout(_=> QuestionsDisplay.gameOver(status), 1500);
+      clearInterval(_timerInterval);
+      clearInterval(_questionInterval);
     }
+  }
+
+  function _loadGame()
+  {
+    _score = 0;
+    _level = 1;
+    _status = { lost: false, won: false };
+    _gameStarted = false;
+    Md5();
+    clearInterval(_timerInterval);
+    clearInterval(_questionInterval);
+    GridDisplay.updateTimer();
+    Grid.build();
+    Grid.addStartTiles();
+    GridDisplay.refresh(Grid.eachCell, _level, _score);
+    GridDisplay.message('start-off');
+    _loading = GridDisplay.message('load-on');
+    Questions.array(false);
+
+    let getQuestionsAjax = Questions.load(_level++);
+
+    getQuestionsAjax.done(data =>
+    {
+      _loading = GridDisplay.message('load-off');
+      GridDisplay.message('start-on');
+    });
   }
 
   function _startGame()
   {
-    _score = 0;
-    _level = 0;
-    _status = { lost: false, won: false };
-    Md5();
-    Questions.load();
-    Grid.build();
-    Grid.addStartTiles();
-    GridDisplay.refresh();
+    if (_gameStarted) return true;
+
+    GridDisplay.message('start-off');
+
+    _startTime = Date.now();
+    let timeDelta;
+
+    _timerInterval = setInterval(_=>
+    {
+      timeDelta = Date.now() - _startTime;
+      GridDisplay.updateTimer(timeDelta);
+    }, 1000);
+
+    _gameStarted = true;
   }
 
   function _move(vector)
   {
-    let preventMove = _gameOver() || !GridDisplay.tilesValuesAreSet();
+    let preventMove = _gameOver() || !Grid.allTileValuesSet();
     if (preventMove) return;
 
     let moved = Grid.move(vector);
@@ -78,18 +123,178 @@ var Game = (_=>
       if (maxMergeValue >= 9999) _status['won'] = true;
       _score = _status['won'] ? 9999 : maxMergeValue;
 
-      GridDisplay.refresh();
+      GridDisplay.refresh(Grid.eachCell, _level, _score);
       _checkGameStatus(moved);
     }
   }
 
-  let _Game = {
-    score: _gameScore,
-    start: _startGame,
-    move: _move,
-    level: _gameLevel,
-    checkStatus: _checkGameStatus
+  function _showQuestion()
+  {
+    if (_loading || _gameOver() || Grid.allTileValuesSet()) return;
+
+    if (Questions.array().length === 2) Questions.load(_level++);
+
+    let question = Questions.get();
+
+    let displayQuestionModal = _=>
+    {
+      QuestionsDisplay.showQuestion(question);
+      QuestionsDisplay.onAnswer(direction =>
+      {
+        let score = Questions.scoreAnswer(direction, Md5);
+        GridDisplay.setTileValue(parseFloat(score), Grid.cells);
+        _checkGameStatus();
+      });
+    };
+
+    if (question) displayQuestionModal();
+    else
+    {
+      _loading = GridDisplay.message('load-on');
+
+      _questionInterval = setInterval(_=>
+      {
+        question = Questions.get();
+
+        if (question)
+        {
+          clearInterval(_questionInterval);
+          _loading = GridDisplay.message('load-off');
+          displayQuestionModal();
+        }
+      }, 500);
+    }
   }
+
+  var Input = (_=>
+  {
+    let _touchStartX,
+        _touchStartY,
+        _isSwipe = false,
+        _$newGameBtn = $('.btn-new-game'),
+        _inputDirectionMap = { 38: 0, 39: 1, 40: 2, 37: 3 },
+        _inputVectorMap = {
+          0: { x: 0,  y: -1 },
+          1: { x: 1,  y: 0 },
+          2: { x: 0,  y: 1 },
+          3: { x: -1, y: 0 }
+        };
+
+    _$newGameBtn.click(e =>
+    {
+      $('#game-section').focus();
+      _loadGame()
+    });
+
+    $('.modal').on('hidden.bs.modal', _=> $('#game-section').focus());
+
+    $(document).on('keydown touchstart touchmove touchend', _inputHandler);
+
+    function _inputHandler(e)
+    {
+      switch (e.type)
+      {
+        case 'keydown': _keydownInput(e); break;
+
+        case 'touchstart':
+          let touchObj = e.changedTouches[0];
+          _touchStartX = touchObj.pageX;
+          _touchStartY = touchObj.pageY;
+          break;
+
+        case 'touchmove': _isSwipe = true; break;
+
+        case 'touchend':
+          if (_isSwipe)
+          {
+            _swipeInput(e);
+            _isSwipe = false;
+          }
+          else _clickInput(e);
+      }
+    }
+
+    function _clickInput(e)
+    {
+      let $target = $(e.target);
+
+      if ($target.is('.instruction-btn')) return;
+
+      let isGridClick = $target.is('#game-container') ||
+      $target.parents('#game-container').length !== 0;
+
+      let isModalClick = $target.is('.modal') ||
+        $target.parents('.modal').length !== 0;
+
+    	if (isGridClick) _startGame() && _showQuestion();
+      else if (isModalClick)
+        $(e.target).is('.carousel-indicators li') || QuestionsDisplay.nextAnswer();
+    }
+
+    function _swipeInput(e)
+    {
+      let $target = $(e.target);
+
+      let isGridGesture = $target.is('#game-section') ||
+        $target.parents('#game-section').length !== 0;
+
+      let isModalGesture = $target.is('.modal') ||
+        $target.parents('.modal').length !== 0;
+
+      let threshold = 50, // min distance traveled to be considered swipe
+          restraint = 100, // max distance allowed in perpendicular direction
+          touchObj = e.changedTouches[0],
+          distX = touchObj.pageX - _touchStartX,
+          distY = touchObj.pageY - _touchStartY;
+
+      if (Math.abs(distX) >= threshold && Math.abs(distY) <= restraint)
+        e.direction = (distX < 0) ? 3 : 1; // left : right
+      else if (Math.abs(distY) >= threshold && Math.abs(distX) <= restraint)
+        e.direction = (distY < 0) ? 0 : 2; // up : down
+
+      if (isGridGesture)
+      {
+        let vector = _inputVectorMap[e.direction];
+        vector && _move(vector);
+      }
+      else if (isModalGesture)
+        e.direction !== undefined && QuestionsDisplay.move(e.direction);
+    }
+
+    function _keydownInput(e)
+    {
+      if ( $(e.target).is('.modal') )
+      {
+        switch(e.which)
+        {
+          case 32: QuestionsDisplay.nextAnswer(); break;
+
+          case 38: case 37: case 40: case 39:
+            let direction = _inputDirectionMap[e.which];
+            QuestionsDisplay.move(direction);
+        }
+        return;
+      }
+
+      switch(e.which)
+      {
+        case 32:
+          if ($(e.target).is('button')) break;
+          _startGame() && _showQuestion(); break;
+
+        case 38: case 37: case 40: case 39:
+          let direction = _inputDirectionMap[e.which],
+              vector = _inputVectorMap[direction];
+          vector && _move(vector);
+      }
+    }
+
+    let _Input = { vectorMap: _inputVectorMap };
+
+    return _Input;
+  })();
+
+  let _Game = { load: _loadGame };
 
   return _Game;
 })();
@@ -97,6 +302,48 @@ var Game = (_=>
 var Grid = (_=>
 {
   let _size, _cells = [];
+
+  function Tile(position, value)
+  {
+    this.x = position.x;
+    this.y = position.y;
+    this.floatValue = value;
+    this.isMaxMerge = false;
+    this.previousPosition = null;
+    this.parentTiles = null;
+  }
+
+  Tile.prototype.savePosition = function()
+  {
+    this.previousPosition = {x: this.x, y: this.y};
+  };
+
+  Tile.prototype.updatePosition = function(position)
+  {
+    this.x = position.x;
+    this.y = position.y;
+  };
+
+  Tile.prototype.getIntValue = function()
+  {
+    return Math.floor(this.floatValue);
+  };
+
+  function _allTileValuesSet()
+  {
+    let valuesAreSet = true;
+
+    _eachCell((x, y, tile) =>
+    {
+      if (tile && tile.floatValue === undefined)
+      {
+        valuesAreSet = false;
+        return false;
+      }
+    });
+
+    return valuesAreSet;
+  }
 
   function _addRandomTile()
   {
@@ -148,46 +395,49 @@ var Grid = (_=>
     return traversals;
   }
 
-  function _movesAvailable()
+  function _movesAvailable(inputVectorMap)
   {
-  	return _availableCells(true) || _tileMatchesAvailable();
-  }
+  	if (_availableCells(true)) return true;
 
-  function _isSameNumberClass(val1, val2)
-  {
-    if (val1 === 0 || val2 === 0) return false;
-
-    let mod1 = val1 % 2 === 0,
-      mod2 = val2 % 2 === 0;
-
-    return mod1 === mod2;
-  }
-
-  function _tileMatchesAvailable()
-  { // only gets called if no space is available
-    let tile, matchesAvailable = false;
+    let cell, tile, otherTile, tileIntValue,
+        vector, isMergeable, matchesAvailable = false;
 
     _eachCell((x, y, tile) =>
-    { // all cells have tiles
-      if (tile.floatValue === undefined) matchesAvailable = true;
+    {
+      tileIntValue = tile.getIntValue();
 
       for (let direction = 0; direction < 4; direction++)
       {
-        let vector = Input.vectorMap[direction];
-        let cell = {
+        vector = inputVectorMap[direction];
+        cell = {
           x: x + vector.x,
           y: y + vector.y
         };
 
-        let otherTile = _cellContent(cell),
-          isMergeable = otherTile && ( otherTile.floatValue === undefined ||
-            _isSameNumberClass(otherTile.getIntValue(), tile.getIntValue()) );
+        otherTile = _cellContent(cell);
+
+        if (tile.floatValue) isMergeable = otherTile &&
+          _isSameNumberClass(tileIntValue, otherTile.getIntValue());
+        else if (tile.floatValue === undefined)
+           isMergeable = otherTile && otherTile.floatValue;
 
         if (isMergeable) matchesAvailable = true;
       }
+
+      if (matchesAvailable) return false;
     });
 
     return matchesAvailable;
+  }
+
+  function _isSameNumberClass(val1, val2)
+  {
+    if (!val1 || !val2) return false;
+
+    let mod1 = val1 % 2 === 0,
+        mod2 = val2 % 2 === 0;
+
+    return mod1 === mod2;
   }
 
   function _withinBounds(position)
@@ -246,11 +496,14 @@ var Grid = (_=>
 
   function _eachCell(callback)
   {
+    let result;
+
     for (let x = 0; x < _size; x++)
     {
       for (let y = 0; y < _size; y++)
       {
-        callback(x, y, _cells[x][y]);
+        result = callback(x, y, _cells[x][y]);
+        if (result === false) return;
       }
     }
   }
@@ -265,6 +518,7 @@ var Grid = (_=>
       {
         if (returnBoolean) availableCells = true;
         else availableCells.push({x: x, y: y});
+        return false;
       }
     });
 
@@ -320,9 +574,8 @@ var Grid = (_=>
 
   function _move(vector)
   {
-    let
-      cell, tile, moved = false,
-      traversals = _buildTraversals(vector);
+    let cell, tile, moved = false,
+        traversals = _buildTraversals(vector);
 
     _prepareTiles();
     // Traverse the grid in the right direction and move tiles
@@ -373,18 +626,337 @@ var Grid = (_=>
     movesAvailable: _movesAvailable,
     eachCell: _eachCell,
     addRandomTile: _addRandomTile,
-    addStartTiles: _addStartTiles
+    addStartTiles: _addStartTiles,
+    allTileValuesSet: _allTileValuesSet
   };
 
   return _Grid;
 })();
 
-var Modal = (_=>
+var GridDisplay = (_=>
+{
+  let _score = 0,
+      _level = 1,
+      _newTile = '.tile-new',
+      _$tileTemplate = $('#tile-template'),
+      _$tileContainer = $('#tile-container'),
+      _$gameSection = $('#game-section'),
+      _gameSection = '#game-section',
+
+      _$msgGame = $('#game-message'),
+      _$msgLoading = $('#loading-msg'),
+      _$msgStart = $('.start-msg'),
+      _$msgGameLevel = $('#game-level-msg'),
+
+      _$gameLevel = $('#game-level'),
+      _$gameScore = $('#game-score'),
+      _$gameTimer = $('#game-timer'),
+      _$currentNewTile;
+
+  function _refresh(gridIterator, gameLevel, gameScore)
+  {
+    window.requestAnimationFrame(_=>
+    {
+      _$tileContainer.empty();
+
+      gridIterator((x, y, tile) =>
+      {
+        tile && _addTile(tile);
+      });
+
+      _updateLevel(gameLevel);
+      _updateScore(gameScore);
+    });
+  }
+
+  function _message(message, param)
+  {
+    switch (message)
+    {
+      case 'load-on':
+        _$msgLoading.removeClass('d-none');
+        _$msgGame.removeClass('d-none');
+        return true;
+
+      case 'load-off':
+        _$msgGame.addClass('d-none');
+        _$msgLoading.addClass('d-none');
+        return false;
+
+      case 'start-on':
+        _$msgGame.removeClass('d-none');
+        _$msgStart.removeClass('d-none');
+        break;
+
+      case 'start-off':
+        _$msgStart.addClass('d-none');
+        _$msgGame.addClass('d-none');
+        break;
+    }
+  }
+
+  function _bounce($element)
+  {
+    let interval = 100, distance = 20, times = 6, damping = 0.8;
+
+    for (let i = 0; i < (times + 1); i++)
+    {
+      let amt = Math.pow(-1, i) * distance / (i * damping);
+      $element.animate({ top: amt }, 100);
+    }
+
+    $element.animate({ top: 0 }, interval);
+  }
+
+  function _updateLevel(gameLevel)
+  {
+    if (gameLevel > _level) _bounce(_$gameLevel);
+    _level = gameLevel;
+    _$gameLevel.text(_level);
+  }
+
+  function _updateScore(gameScore)
+  {
+    if (gameScore > _score) _bounce(_$gameScore);
+    _score = gameScore;
+    _$gameScore.text(_score.toString().padStart(4, '0'));
+  }
+
+  function _updateTimer(timeDelta)
+  {
+    if (!timeDelta) return void(_$gameTimer.text('00:00'));
+
+    let seconds = Math.floor(timeDelta / 1000),
+        minutes = Math.floor(seconds / 60);
+    seconds = seconds - (minutes * 60);
+
+    seconds = seconds.toString().padStart(2, '0');
+    minutes = minutes.toString().padStart(2, '0');
+
+    _$gameTimer.text(`${minutes}:${seconds}`);
+  }
+
+  function _positionClass(position)
+  {
+    let positionX = position.x + 1,
+        positionY = position.y + 1;
+
+    return 'tile-position-' + positionX + '-' + positionY;
+  }
+
+  function _setTileValue(score, gridCells)
+  {
+    let intValue = Math.floor(score),
+        $newTile = $(_newTile).eq(0),
+        tileX = $newTile.data('x'),
+        tileY = $newTile.data('y');
+
+    let tile = gridCells[tileX][tileY];
+    tile.floatValue = score;
+
+    $newTile.text(score === 0 ? 'X' : intValue);
+    $newTile.data('val-set', '1');
+    $newTile.addClass(
+      score === 0 ? 'tile-zero btn-light focus disabled' :
+        intValue % 2 === 0 ? 'tile-even btn-primary focus disabled' :
+          'tile-odd btn-danger focus disabled'
+    );
+    $newTile.removeClass('tile-new');
+  }
+
+  function _addTile(tile)
+  {
+    let positionClass = _positionClass(tile.previousPosition || tile);
+
+    let statusClass = tile.floatValue === undefined ? 'tile-new' :
+      tile.floatValue === 0 ? 'tile-zero' :
+      tile.getIntValue() % 2 === 0 ? 'tile-even' : 'tile-odd';
+
+    let classes = ['tile', statusClass, positionClass],
+        textContent = tile.floatValue === undefined ? '?' :
+          tile.floatValue === 0 ? 'X' : tile.getIntValue();
+
+    if (tile.isMaxMerge) classes.push('tile-max');
+
+    let $newTile = _$tileTemplate.clone();
+    $newTile.attr('class', classes.join(' '));
+    $newTile.data('x', tile.x);
+    $newTile.data('y', tile.y);
+    $newTile.text(textContent);
+
+    if (tile.previousPosition)
+    { // After rendering tile in previous position...
+      window.requestAnimationFrame(_=>
+      {
+        classes[2] = _positionClass(tile);
+        $newTile.attr('class', classes.join(' '));
+      });
+    }
+    else if (tile.parentTiles)
+    {
+      classes.push('tile-merged');
+      $newTile.attr('class', classes.join(' '));
+      // Render the tiles that merged
+      tile.parentTiles.forEach(tile =>
+      {
+        _addTile(tile);
+      });
+    }
+
+    _$tileContainer.append($newTile);
+  }
+
+  let _GridDisplay = {
+    refresh: _refresh,
+    message: _message,
+    updateTimer: _updateTimer,
+    setTileValue: _setTileValue
+  };
+
+  return _GridDisplay;
+})();
+
+var Questions = (_=>
+{
+  let _questions,
+      _currentQuestion,
+      _questionAnswered;
+
+  function _loadQuestions(level)
+  {
+    if (level === 1) _questionAnswered = true;
+
+    let getQuestionsAjax = $.ajax({
+      url: `${SITE_URL}game/get_questions/${level}`,
+      dataType: 'JSON',
+      success: data => data.forEach(question => _questions.push(question)),
+      error: e => console.log(e)
+    });
+
+    return getQuestionsAjax;
+  }
+
+  function _getQuestion()
+  {
+    if (_questionAnswered)
+    {
+      _currentQuestion = _questions.shift();
+      if (_currentQuestion) _questionAnswered = false;
+    }
+
+    return _currentQuestion;
+  }
+
+  function _getAnswerHash(ansCode, hashFn)
+  {
+    let ansHash = _currentQuestion.ah;
+
+    switch (_currentQuestion.type)
+    {
+      case 'boolean':
+        switch (ansCode)
+        {
+          case 1: return hashFn(ansHash, 'True');
+          case 0: return hashFn(ansHash, 'False');
+          default: return hashFn(ansHash);
+        }
+
+      case 'multiple':
+        switch (ansCode)
+        {
+          case 0: case 1: case 2: case 3:
+            return hashFn(ansHash, _currentQuestion.optionsTrim[ansCode]);
+          default: return hashFn(ansHash);
+        }
+    }
+  }
+
+  function _getAnswerCode(direction)
+  {
+    switch (_currentQuestion.type)
+    {
+      case 'boolean':
+        switch (direction)
+        {
+          case 'top': case 'right': return 1;
+          case 'bottom': case 'left': return 0;
+        }
+
+      case 'multiple':
+        switch (direction)
+        {
+          case 'top': return 0;
+          case 'right': return 1;
+          case 'bottom': return 2;
+          case 'left': return 3;
+        }
+    }
+  }
+
+  function _scoreAnswer(direction, hashFn)
+  {
+    let ansCode = direction ? _getAnswerCode(direction) : '',
+        ansHash = _getAnswerHash(ansCode, hashFn),
+        id = _currentQuestion.id,
+        score = 0;
+
+    $.ajax({
+      url: `${SITE_URL}game/score_user_answer/${id}/${ansCode}`,
+      error: e => console.log(e)
+    });
+
+    let ans = _currentQuestion.type === 'boolean' ? ( ansCode === 1 ? 'True' : ansCode === 0 ?  'False' : undefined ) :
+      _currentQuestion.optionsTrim[ansCode];
+
+    console.log('chose: '+ans);
+    console.log('right: '+_currentQuestion.correct);
+    console.log('nhash: '+ansHash);
+    console.log('ahash: '+_currentQuestion.ah);
+    if (ans === _currentQuestion.correct)
+    {
+      if (ansHash === _currentQuestion.ah)
+        console.log(true);
+      else alert(false);
+    }
+    else
+    {
+      if (ansHash === _currentQuestion.ah)
+        alert(false);
+      else console.log(true);
+    }
+    console.log('-------------');
+
+    if (ansHash === _currentQuestion.ah) score = _currentQuestion.score;
+    _questionAnswered = true;
+
+    return score;
+  }
+
+  function _questionsArray(question)
+  {
+    if (question) _questions.push(question);
+    else if (question === false) _questions = [];
+    else return _questions;
+  }
+
+  let _Questions = {
+    array: _questionsArray,
+    current: _=> _currentQuestion,
+    load: _loadQuestions,
+    get: _getQuestion,
+    scoreAnswer: _scoreAnswer
+  };
+
+  return _Questions;
+})();
+
+var QuestionsDisplay = (_=>
 {
   let _$modalQtns = $('.modal-qtn'),
       _$modalQtnsContent = _$modalQtns.find('.modal-content'),
 
       _modalSwiped = false,
+      _swipeDirection,
       _modalProgressTimerFinished = false,
       _$modalProgress = $('.progress-bar'),
 
@@ -421,10 +993,8 @@ var Modal = (_=>
     _$modalOptionsCarousel.carousel(0);
   }
 
-  function _showQuestion()
+  function _showQuestion(question)
   {
-    let question = Questions.get();
-
     switch (question.type)
     {
       case 'multiple':
@@ -473,7 +1043,6 @@ var Modal = (_=>
       if (timeStamp >= timeEnd)
       {
         _modalProgressTimerFinished = true;
-        Questions.scoreAnswer();
         _$modalQtns.modal('hide');
         _$modalProgress.css('width', 0);
       }
@@ -502,546 +1071,43 @@ var Modal = (_=>
 
     switch (direction)
     {
-      case 0: direction = 'top'; break;
-      case 1: direction = 'right'; break;
-      case 2: direction = 'bottom'; break;
-      case 3: direction = 'left';
+      case 0: _swipeDirection = 'top'; break;
+      case 1: _swipeDirection = 'right'; break;
+      case 2: _swipeDirection = 'bottom'; break;
+      case 3: _swipeDirection = 'left';
     }
 
     let swipeAnimation = {};
-    swipeAnimation[direction] = '-500px';
+    swipeAnimation[_swipeDirection] = '-500px';
     swipeAnimation['opacity'] = '0';
 
     _$modalQtnsContent.animate(swipeAnimation, 'fast').promise().then(_=>
     {
-      Questions.scoreAnswer(direction);
       _$modalQtns.modal('hide');
     });
   }
 
-  let _Modal = {
+  function _onAnswer(callback)
+  {
+    _$modalQtns.on('hide.bs.modal', _=> callback(_swipeDirection));
+    _$modalQtns.on('hidden.bs.modal', _=>
+    {
+      _$modalQtns.off('hide.bs.modal');
+      _$modalQtns.off('hidden.bs.modal');
+      _swipeDirection = null;
+    });
+  }
+
+  let _QuestionsDisplay = {
     nextAnswer: _nextAnswerOption,
     move: _move,
     showQuestion: _showQuestion,
+    onAnswer: _onAnswer,
     gameOver: _gameOver
   };
 
-  return _Modal;
+  return _QuestionsDisplay;
 })();
-
-var Questions = (_=>
-{
-  let _questions,
-      _currentQuestion,
-      _questionAnswered;
-
-  function _loadQuestions()
-  {
-    let level = Game.level(true);
-
-    if (level === 1)
-    {
-      _questions = [];
-      _questionAnswered = true;
-      GridDisplay.message('start-off');
-      GridDisplay.message('load-on');
-    }
-
-    $.ajax({
-      url: `${SITE_URL}game/get_questions/${level}`,
-      dataType: 'JSON',
-      success: data =>
-      {
-        data.forEach(question =>
-        {
-          _questions.push(question);
-        });
-
-        if (level === 1)
-        {
-          GridDisplay.message('load-off');
-          GridDisplay.message('start-on');
-        }
-      },
-      error: e => console.log(e)
-    });
-  }
-
-  function _getQuestion()
-  {
-    if (_questionAnswered)
-    {
-      _questions.length === 2 && _loadQuestions();
-
-      _currentQuestion = _questions.shift();
-
-      if (!_currentQuestion)
-      {
-        GridDisplay.message('load-on');
-
-        let getQuestion = setInterval(_=>
-        {
-          _currentQuestion = _questions.shift();
-          if (_currentQuestion)
-          {
-            clearInterval(getQuestion);
-            GridDisplay.message('load-off');
-          }
-        }, 100);
-      }
-
-      _questionAnswered = false;
-    }
-
-    return _currentQuestion;
-  }
-
-  function _getAnswerHash(ansCode)
-  {
-    let ansHash = _currentQuestion.ah;
-
-    switch (_currentQuestion.type)
-    {
-      case 'boolean':
-        switch (ansCode)
-        {
-          case 1: return Md5(ansHash, 'True');
-          case 0: return Md5(ansHash, 'False');
-          default: return Md5(ansHash);
-        }
-
-      case 'multiple':
-        switch (ansCode)
-        {
-          case 0: case 1: case 2: case 3:
-            return Md5(ansHash, _currentQuestion.optionsTrim[ansCode]);
-          default: return Md5(ansHash);
-        }
-    }
-  }
-
-  function _getAnswerCode(direction)
-  {
-    switch (_currentQuestion.type)
-    {
-      case 'boolean':
-        switch (direction)
-        {
-          case 'top': case 'right': return 1;
-          case 'bottom': case 'left': return 0;
-        }
-
-      case 'multiple':
-        switch (direction)
-        {
-          case 'top': return 0;
-          case 'right': return 1;
-          case 'bottom': return 2;
-          case 'left': return 3;
-        }
-    }
-  }
-
-  function _scoreAnswer(direction)
-  {
-    let ansCode = direction ? _getAnswerCode(direction) : '',
-        ansHash = _getAnswerHash(ansCode),
-        id = _currentQuestion.id,
-        score = 0;
-
-    $.ajax({
-      url: `${SITE_URL}game/score_user_answer/${id}/${ansCode}`,
-      error: e => console.log(e)
-    });
-
-    let ans = _currentQuestion.type === 'boolean' ? ( ansCode === 1 ? 'True' : ansCode === 0 ?  'False' : undefined ) :
-      _currentQuestion.optionsTrim[ansCode];
-
-    console.log('chose: '+ans);
-    console.log('right: '+_currentQuestion.correct);
-    console.log('nhash: '+ansHash);
-    console.log('ahash: '+_currentQuestion.ah);
-    if (ans === _currentQuestion.correct)
-    {
-      if (ansHash === _currentQuestion.ah)
-        console.log(true);
-      else alert(false);
-    }
-    else
-    {
-      if (ansHash === _currentQuestion.ah)
-        alert(false);
-      else console.log(true);
-    }
-    console.log('-------------');
-
-    if (ansHash === _currentQuestion.ah) score = _currentQuestion.score;
-    GridDisplay.setTileValue(parseFloat(score));
-
-    _questionAnswered = true;
-
-    Game.checkStatus();
-  }
-
-  let _Questions = {
-    current: _=> _currentQuestion,
-    load: _loadQuestions,
-    get: _getQuestion,
-    scoreAnswer: _scoreAnswer
-  };
-
-  return _Questions;
-})();
-
-var GridDisplay = (_=>
-{
-  let _score = 0,
-      _level = 1,
-      _loading = true,
-      _newTile = '.tile-new',
-      _$tileContainer = $('#tile-container'),
-      _$gameSection = $('#game-section'),
-      _gameSection = '#game-section',
-
-      _$msgGame = $('#game-message'),
-      _$msgLoading = $('#loading-msg'),
-      _$msgStart = $('.start-msg'),
-      _$msgGameLevel = $('#game-level-msg'),
-
-      _$gameLevel = $('#game-level'),
-      _$gameScore = $('#game-score'),
-      _$newGameBtn = $('.btn-new-game'),
-      _$currentNewTile;
-
-  _$newGameBtn.click(Game.start);
-
-  function _tilesValuesAreSet()
-  {
-    let valuesAreSet = true;
-
-    $(_newTile).each(function()
-    {
-      if (!$(this).data('val-set')) valuesAreSet = false;
-      return false;
-    });
-
-    return valuesAreSet;
-  }
-
-  function _refresh()
-  {
-    window.requestAnimationFrame(_=>
-    {
-      _$tileContainer.empty();
-
-      Grid.eachCell((x, y, tile) =>
-      {
-        tile && _addTile(tile);
-      });
-
-      _updateScore();
-      _updateLevel();
-    });
-  }
-
-  function _message(message)
-  {
-    switch (message)
-    {
-      case 'load-on':
-        _$msgLoading.removeClass('d-none');
-        _$msgGame.removeClass('d-none');
-        _loading = true;
-        break;
-
-      case 'load-off':
-        _$msgGame.addClass('d-none');
-        _$msgLoading.addClass('d-none');
-        _loading = false;
-        break;
-
-      case 'start-on':
-        _$msgGame.removeClass('d-none');
-        _$msgStart.removeClass('d-none');
-        break;
-
-      case 'start-off':
-        _$msgStart.addClass('d-none');
-        _$msgGame.addClass('d-none');
-        break;
-
-      case 'level-up':
-        _$msgGame.removeClass('d-none');
-        _$msgGameLevel.removeClass('d-none');
-        _$levelNumber.html(Game.level());
-        setTimeout(_=>
-        {
-          _$msgGameLevel.addClass('d-none');
-          _$msgGame.addClass('d-none');
-        }, 1500);
-    }
-  }
-
-  function _bounce($element)
-  {
-    let interval = 100, distance = 20, times = 6, damping = 0.8;
-
-    for (let i = 0; i < (times + 1); i++)
-    {
-      let amt = Math.pow(-1, i) * distance / (i * damping);
-      $element.animate({ top: amt }, 100);
-    }
-
-    $element.animate({ top: 0 }, interval);
-  }
-
-  function _updateLevel()
-  {
-    if (Game.level() > _level) _bounce(_$gameLevel);
-    _level = Game.level();
-    _$gameLevel.text(_level);
-  }
-
-  function _updateScore()
-  {
-    if (Game.score() > _score) _bounce(_$gameScore);
-    _score = Game.score();
-    _$gameScore.text(_score.toString().padStart(4, '0'));
-  }
-
-  function _positionClass(position)
-  {
-    let positionX = position.x + 1,
-        positionY = position.y + 1;
-
-    return 'tile-position-' + positionX + '-' + positionY;
-  }
-
-  function _openTile()
-  {
-    if (_loading) return;
-
-    _$currentNewTile = $(_newTile).eq(0);
-		if (!_$currentNewTile.length) return;
-
-    _message('start-off');
-    Modal.showQuestion();
-  }
-
-  function _setTileValue(score)
-  {
-    let intValue = Math.floor(score),
-        tileX = _$currentNewTile.data('x'),
-        tileY = _$currentNewTile.data('y');
-
-    let tile = Grid.cells[tileX][tileY];
-    tile.floatValue = score;
-
-    _$currentNewTile.text(score === 0 ? 'X' : intValue);
-    _$currentNewTile.data('val-set', '1');
-    _$currentNewTile.addClass(
-      score === 0 ? 'tile-zero btn-light focus disabled' :
-        intValue % 2 === 0 ? 'tile-even btn-primary focus disabled' :
-          'tile-odd btn-danger focus disabled'
-    );
-    _$currentNewTile.removeClass('tile-new');
-  }
-
-  function _addTile(tile)
-  {
-    let positionClass = _positionClass(tile.previousPosition || tile);
-
-    let statusClass = tile.floatValue === undefined ? 'tile-new' :
-      tile.floatValue === 0 ? 'tile-zero' :
-      tile.getIntValue() % 2 === 0 ? 'tile-even' : 'tile-odd';
-
-    let classes = ['tile', statusClass, positionClass],
-        textContent = tile.floatValue === undefined ? '?' :
-          tile.floatValue === 0 ? 'X' : tile.getIntValue();
-
-    if (tile.isMaxMerge) classes.push('tile-max');
-
-    let $element = $('#tile-template').clone();
-    $element.attr('class', classes.join(' '));
-    $element.data('x', tile.x);
-    $element.data('y', tile.y);
-    $element.text(textContent);
-
-    if (tile.previousPosition)
-    { // After rendering tile in previous position...
-      window.requestAnimationFrame(_=>
-      {
-        classes[2] = _positionClass(tile);
-        $element.attr('class', classes.join(' '));
-      });
-    }
-    else if (tile.parentTiles)
-    {
-      classes.push('tile-merged');
-      $element.attr('class', classes.join(' '));
-      // Render the tiles that merged
-      tile.parentTiles.forEach(tile =>
-      {
-        _addTile(tile);
-      });
-    }
-
-    _$tileContainer.append($element);
-  }
-
-  let _GridDisplay = {
-    openTile: _openTile,
-    refresh: _refresh,
-    message: _message,
-    tilesValuesAreSet: _tilesValuesAreSet,
-    setTileValue: _setTileValue
-  };
-
-  return _GridDisplay;
-})();
-
-var Input = (_=>
-{
-  let _touchStartX,
-      _touchStartY,
-      _isSwipe = false,
-      _inputDirectionMap = { 38: 0, 39: 1, 40: 2, 37: 3 },
-      _inputVectorMap = {
-        0: { x: 0,  y: -1 },
-        1: { x: 1,  y: 0 },
-        2: { x: 0,  y: 1 },
-        3: { x: -1, y: 0 }
-      };
-
-  $(document).on('keydown touchstart touchmove touchend', _inputHandler);
-
-  function _inputHandler(e)
-  {
-    switch (e.type)
-    {
-      case 'keydown': _keydownInput(e); break;
-
-      case 'touchstart':
-        let touchObj = e.changedTouches[0];
-        _touchStartX = touchObj.pageX;
-        _touchStartY = touchObj.pageY;
-        break;
-
-      case 'touchmove': _isSwipe = true; break;
-
-      case 'touchend':
-        if (_isSwipe)
-        {
-          _swipeInput(e);
-          _isSwipe = false;
-        }
-        else _clickInput(e);
-    }
-  }
-
-  function _clickInput(e)
-  {
-    let $target = $(e.target);
-
-    if ($target.is('.instruction-btn')) return;
-
-    let isGridClick = $target.is('#game-container') ||
-    $target.parents('#game-container').length !== 0;
-
-    let isModalClick = $target.is('.modal') ||
-      $target.parents('.modal').length !== 0;
-
-  	if (isGridClick) GridDisplay.openTile();
-    else if (isModalClick)
-      $(e.target).is('.carousel-indicators li') || Modal.nextAnswer();
-  }
-
-  function _swipeInput(e)
-  {
-    let $target = $(e.target);
-
-    let isGridGesture = $target.is('#game-section') ||
-      $target.parents('#game-section').length !== 0;
-
-    let isModalGesture = $target.is('.modal') ||
-      $target.parents('.modal').length !== 0;
-
-    let threshold = 50, // min distance traveled to be considered swipe
-        restraint = 100, // max distance allowed in perpendicular direction
-        touchObj = e.changedTouches[0],
-        distX = touchObj.pageX - _touchStartX,
-        distY = touchObj.pageY - _touchStartY;
-
-    if (Math.abs(distX) >= threshold && Math.abs(distY) <= restraint)
-      e.direction = (distX < 0) ? 3 : 1; // left : right
-    else if (Math.abs(distY) >= threshold && Math.abs(distX) <= restraint)
-      e.direction = (distY < 0) ? 0 : 2; // up : down
-
-    if (isGridGesture)
-    {
-      let vector = _inputVectorMap[e.direction];
-      vector && Game.move(vector);
-    }
-    else if (isModalGesture)
-      e.direction !== undefined && Modal.move(e.direction);
-  }
-
-  function _keydownInput(e)
-  {
-    if ( $(e.target).is('.modal') )
-    {
-      switch(e.which)
-      {
-        case 32: Modal.nextAnswer(); break;
-
-        case 38: case 37: case 40: case 39:
-          let direction = _inputDirectionMap[e.which];
-          Modal.move(direction);
-      }
-      return;
-    }
-
-    switch(e.which)
-    {
-      case 32: GridDisplay.openTile(); break;
-
-      case 38: case 37: case 40: case 39:
-        let direction = _inputDirectionMap[e.which],
-            vector = _inputVectorMap[direction];
-        vector && Game.move(vector);
-    }
-  }
-
-  let _Input = { vectorMap: _inputVectorMap };
-
-  return _Input;
-})();
-
-function Tile(position, value)
-{
-  this.x = position.x;
-  this.y = position.y;
-  this.floatValue = value;
-  this.isMaxMerge = false;
-  this.previousPosition = null;
-  this.parentTiles = null;
-
-  this.savePosition = function()
-  {
-    this.previousPosition = {x: this.x, y: this.y};
-  };
-
-  this.updatePosition = function(position)
-  {
-    this.x = position.x;
-    this.y = position.y;
-  };
-
-  this.getIntValue = function()
-  {
-    return Math.floor(this.floatValue);
-  };
-}
 
 var Md5 = (_=>
 {

@@ -1,14 +1,14 @@
-<div class="d-flex fixed-top justify-content-center align-items-center" id="game-section">
+<div class="d-flex fixed-top justify-content-center align-items-center" id="game-section" tabindex="-1">
   <div>
 
-    <div class="d-flex justify-content-between text-white right-font" id="game-header">
+    <div class="d-flex justify-content-between text-white right-font position-relative" id="game-header">
       <span class="position-relative" id="game-score" data-toggle="tooltip" title="Score" data-placement="top">0000</span>
-      <span class="position-relative" id="game-level" data-toggle="tooltip" title="Level" data-placement="top">1</span>
+      <span class="position-absolute" id="game-level" data-toggle="tooltip" title="Level" data-placement="top">1</span>
       <span class="position-relative" id="game-timer" data-toggle="tooltip" title="Timer" data-placement="top">00:00</span>
     </div>
 
     <div id="game-container">
-      <div class="hind-700-font d-flex justify-content-center align-items-center" id="game-message">
+      <div class="hind-font-700 d-flex justify-content-center align-items-center" id="game-message">
         <div class="d-flex flex-column align-items-center" id="loading-msg">
           <h1 class="aether-font">9p</h1>
           <div id="game-loader-spinner"></div>
@@ -16,7 +16,7 @@
         <p class="start-msg m-0 d-none">
           Level 1<br>
           Start Game<br><br>
-          <button class="btn btn-dark instruction-btn right-font" data-toggle="modal" data-target="#modal-instructions">Instructions</button>
+          <button class="btn btn-dark instruction-btn right-font" id="btn-instructions" data-toggle="modal" data-target="#modal-instructions">Instructions</button>
         </p>
       </div>
 
@@ -52,8 +52,8 @@
     </div>
 
     <div class="text-white ml-auto mr-auto right-font" id="game-footer">
-      <button class="btn btn-success btn-new-game">New Game</button>
-      <button class="btn btn-danger float-right" data-toggle="modal" data-target="#modal-select-mode">Select Mode</button>
+      <button class="btn btn-danger" data-toggle="modal" data-target="#modal-select-mode">Select Mode</button>
+      <button class="btn btn-success btn-new-game float-right">New Game</button>
     </div>
 
   </div>
@@ -129,9 +129,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="">You Lost...</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+        <button class="btn btn-warning float-right" onclick="location.href='<?= site_url('leaderboard') ?>'">Leaderboard</button>
       </div>
       <div class="modal-body">
         Better luck next time...
@@ -148,7 +146,7 @@
         Last Place -->
       </div>
       <div class="modal-footer justify-content-between">
-        <button class="btn btn-danger" data-toggle="modal" data-target="#modal-select-mode" data-dismiss="modal">Select Mode</button>
+        <button class="btn btn-danger float-right" data-toggle="modal" data-target="#modal-select-mode" data-dismiss="modal" aria-label="Close">Select Mode</button>
         <button type="button" class="btn btn-success btn-new-game ml-1" data-dismiss="modal" aria-label="Close">New Game</button>
       </div>
     </div>

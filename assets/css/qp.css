@@ -10,11 +10,11 @@ src: local('Aetherfox'), url('aetherfox.woff') format('woff');
 .right-font {
   font-family: 'Righteous', cursive;
 }
-.hind-500-font {
+.hind-font-500 {
   font-family: 'Hind', sans-serif;
   font-weight: 500;
 }
-.hind-700-font {
+.hind-font-700 {
   font-family: 'Hind', sans-serif;
   font-weight: 700;
 }
