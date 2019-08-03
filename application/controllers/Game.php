@@ -43,8 +43,6 @@ class Game extends QP_Controller
 		{
 			$qtn->id = "{$game_level}{$index}";
 			$qtn->score = $scores[$index];
-			$qtn->answer_hash =
-				$this->questions->get_next_answer_chain_hash($qtn->correct_answer);
 
 			$usr_qtn = [];
 			$usr_qtn['id'] = $qtn->id;
@@ -53,7 +51,6 @@ class Game extends QP_Controller
 			$usr_qtn['type'] = $qtn->type;
 			$usr_qtn['score'] = $qtn->score;
 			$usr_qtn['correct'] = str_replace(['"', "'", " "], '', $qtn->correct_answer);
-			$usr_qtn['ah'] = $qtn->answer_hash;
 
 			if ($qtn->type === 'multiple')
 			{
@@ -68,6 +65,13 @@ class Game extends QP_Controller
 					$usr_qtn['optionsTrim'][] = str_replace(['"', "'", " "], '', $opt);
 				$qtn->options_trim = $usr_qtn['optionsTrim'];
 			}
+
+			// TODO: Game.php controller: remove $usr_qtn['hashes']
+			$usr_qtn['hashes'] = $this->questions->get_options_test_hashes($usr_qtn);
+
+			$qtn->answer_hash =
+				$this->questions->get_next_answer_chain_hash($qtn->correct_answer);
+			$usr_qtn['ah'] = $qtn->answer_hash;
 
 			$session_questions[] = $qtn;
 			$user_questions[] = $usr_qtn;

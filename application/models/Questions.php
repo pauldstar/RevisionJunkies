@@ -33,6 +33,31 @@ class Questions extends CI_Model
     return self::$next_answer_chain_hash;
   }
 
+  // TODO: Questions.php: remove get_options_test_hashes()
+  public function get_options_test_hashes($qtn)
+  {
+    $result = [];
+
+    $old_hash = self::$next_answer_chain_hash ?? '';
+
+    switch($qtn['type'])
+    {
+      case 'boolean':
+        $result = [
+          md5($old_hash.md5('False')),
+          md5($old_hash.md5('True'))
+        ];
+        break;
+
+      case 'multiple':
+        foreach ($qtn['optionsTrim'] as $opt)
+          $result[] = md5($old_hash.md5($opt));
+        break;
+    }
+
+    return $result;
+  }
+
   public function get_prev_answer_chain_hash($answer_hash)
   {
     $hash = self::$prev_answer_chain_hash ?? '';
@@ -59,10 +84,15 @@ class Questions extends CI_Model
     switch ($level)
     {
       case 1:
-        $this->db->where('difficulty = "easy"');
+        $this->db->where('difficulty', 'easy');
+        $this->db->where('type', 'boolean');
         $limit = 4;
         break;
       case 2:
+        $this->db->where('difficulty', 'easy');
+        $limit = 7;
+        break;
+      case 3:
         $this->db->where('difficulty', 'medium');
         $this->db->or_where('difficulty', 'easy');
         $limit = 7;

@@ -77,19 +77,17 @@ var Game = (_=>
       _loading = GridDisplay.message('load-off');
       GridDisplay.message('start-on');
     });
-
-    _level = 2;
   }
 
   function _loadQuestions()
   {
+    _level++;
+
     let getQuestionsAjax = $.ajax({
       url: `${SITE_URL}game/get_questions`,
       dataType: 'JSON',
       success: data => data.forEach(question => Questions.array(question))
     });
-
-    _level++;
   }
 
   function _startGame()
@@ -909,25 +907,19 @@ var Questions = (_=>
 
     $.ajax({ url: `${SITE_URL}game/score_user_answer/${id}/${ansCode}` });
 
-    let ans = _currentQuestion.type === 'boolean' ? ( ansCode === 1 ? 'True' : ansCode === 0 ?  'False' : undefined ) :
+    // TODO: game.js: remove answer scoring test
+    let ans = _currentQuestion.type === 'boolean' ?
+      ( ansCode === 1 ? 'True' : ansCode === 0 ?  'False' : undefined ) :
       _currentQuestion.optionsTrim[ansCode];
 
     console.log('chose: '+ans);
     console.log('right: '+_currentQuestion.correct);
     console.log('nhash: '+ansHash);
+    console.log('chash: '+_currentQuestion.hashes[ansCode]);
     console.log('ahash: '+_currentQuestion.ah);
-    if (ans === _currentQuestion.correct)
-    {
-      if (ansHash === _currentQuestion.ah)
-        console.log(true);
-      else alert(false);
-    }
-    else
-    {
-      if (ansHash === _currentQuestion.ah)
-        alert(false);
-      else console.log(true);
-    }
+    if (ansHash === _currentQuestion.hashes[ansCode])
+      console.log('correct scoring');
+    else alert('incorrect scoring');
     console.log('-------------');
 
     if (ansHash === _currentQuestion.ah) score = _currentQuestion.score;
