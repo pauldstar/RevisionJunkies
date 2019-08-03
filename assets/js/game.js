@@ -70,8 +70,7 @@ var Game = (_=>
     $.ajax({
       url: `${SITE_URL}game/load_game`,
       dataType: 'JSON',
-      success: data => data.forEach(question => Questions.array(question)),
-      error: e => console.log(e)
+      success: data => data.forEach(question => Questions.array(question))
     })
     .done(data =>
     {
@@ -87,8 +86,7 @@ var Game = (_=>
     let getQuestionsAjax = $.ajax({
       url: `${SITE_URL}game/get_questions`,
       dataType: 'JSON',
-      success: data => data.forEach(question => Questions.array(question)),
-      error: e => console.log(e)
+      success: data => data.forEach(question => Questions.array(question))
     });
 
     _level++;
@@ -98,11 +96,7 @@ var Game = (_=>
   {
     if (_gameStarted) return true;
 
-    $.ajax({
-      url: `${SITE_URL}game/start_game`,
-      dataType: 'JSON',
-      error: e => console.log(e)
-    });
+    $.ajax({ url: `${SITE_URL}game/start_game` });
 
     GridDisplay.message('start-off');
 
@@ -128,11 +122,7 @@ var Game = (_=>
 
     let timeDelta = Math.floor((Date.now() - _startTime) / 1000)
 
-    $.ajax({
-      url: `${SITE_URL}game/end_game/${_score}/${timeDelta}`,
-      dataType: 'JSON',
-      error: e => console.log(e)
-    });
+    $.ajax({ url: `${SITE_URL}game/end_game/${_score}/${timeDelta}` });
   }
 
   function _move(vector)
@@ -917,10 +907,7 @@ var Questions = (_=>
         id = _currentQuestion.id,
         score = 0;
 
-    $.ajax({
-      url: `${SITE_URL}game/score_user_answer/${id}/${ansCode}`,
-      error: e => console.log(e)
-    });
+    $.ajax({ url: `${SITE_URL}game/score_user_answer/${id}/${ansCode}` });
 
     let ans = _currentQuestion.type === 'boolean' ? ( ansCode === 1 ? 'True' : ansCode === 0 ?  'False' : undefined ) :
       _currentQuestion.optionsTrim[ansCode];
