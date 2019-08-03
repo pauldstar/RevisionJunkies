@@ -1,5 +1,3 @@
-'use strict';
-
 /*
  * QuePenny v1.0
  *
@@ -20,16 +18,21 @@
  * - The other modules are helpers; they don't call functions in other
  *   modules. They only have functions that help the masters store, retrieve,
  *   update, and display game data.
+ *
+ * - 'use strict' should be placed at the start of every module
+ *
+ * Obfuscator CLI command:
+ * - to install node.js
+ *   - install javascript-obfucator using: npm install --save-dev javascript-obfuscator
+ *   - then run: npm link javascript-obfuscator
+ * - to obfuscate, navigate to the assets/js folder and run:
+ *   javascript-obfuscator game.js --output game.min.js --config 'obfuscator-config.json'
  */
-
-window.requestAnimationFrame =
-  window.requestAnimationFrame || window.mozRequestAnimationFrame ||
-  window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
 
 $(_=> Game.load());
 
 var Game = (_=>
-{
+{ 'use strict';
   let _score,
       _status,
       _level,
@@ -318,7 +321,7 @@ var Game = (_=>
 })();
 
 var Grid = (_=>
-{
+{ 'use strict';
   let _size, _cells = [];
 
   function Tile(position, value)
@@ -652,7 +655,7 @@ var Grid = (_=>
 })();
 
 var GridDisplay = (_=>
-{
+{ 'use strict';
   let _score = 0,
       _level = 1,
       _newTile = '.tile-new',
@@ -836,7 +839,7 @@ var GridDisplay = (_=>
 })();
 
 var Questions = (_=>
-{
+{ 'use strict';
   let _questions,
       _currentQuestion,
       _questionAnswered;
@@ -950,7 +953,7 @@ var Questions = (_=>
 })();
 
 var Modal = (_=>
-{
+{ 'use strict';
   let _$modalQtns = $('.modal-qtn'),
       _$modalQtnsContent = _$modalQtns.find('.modal-content'),
 
@@ -1109,7 +1112,7 @@ var Modal = (_=>
 })();
 
 var Md5 = (_=>
-{
+{ 'use strict';
   let _oldHash = '';
 
   function _run(answerHash, string)
