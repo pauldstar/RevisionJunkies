@@ -50,14 +50,13 @@ class Questions extends CI_Model
     unset(self::$questions[$question_id]);
   }
 
-  public function load_questions()
+  public function load_questions($level)
   {
     $this->load->database();
-    $this->load->model('state');
 
     $this->db->select('question, type, correct_answer, incorrect_answers');
 
-    switch ($this->state->level())
+    switch ($level)
     {
       case 1:
         $this->db->where('difficulty = "easy"');

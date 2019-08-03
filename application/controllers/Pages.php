@@ -7,9 +7,10 @@ class Pages extends QP_Controller
 	  $data['title'] = 'game';
 
     $data['styles'] = self::load_asset('game', 'css');
+    $data['is_logged_in'] = FALSE;
 
     $data['header'] = $this->load->view('header', $data, TRUE);
-    $data['page_content'] = $this->load->view('game', NULL, TRUE);
+    $data['page_content'] = $this->load->view('game', $data, TRUE);
     $data['footer'] = $this->load->view('footer', NULL, TRUE);
 
     if (ENVIRONMENT === 'development')

@@ -5,15 +5,34 @@ class Game extends QP_Controller
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->model('state');
+		$this->load->model('game_state', 'state');
 		$this->load->model('questions');
 	}
 
-	public function get_questions($game_level)
+	public function load_game()
 	{
-		if ($game_level === '1') self::reset_game();
+		$this->state->reset();
+		$this->questions->reset();
+		self::get_questions();
+	}
 
-		$questions = $this->questions->load_questions();
+	public function start_game()
+	{
+		$this->state->start_time(TRUE);
+	}
+
+	public function end_game($score, $time_delta)
+	{
+		echo 'user<br />';
+		echo $time_delta.'<br />';
+		echo 'session<br />';
+		echo $this->state->time_delta();
+	}
+
+	public function get_questions()
+	{
+		$level = $this->state->level();
+		$questions = $this->questions->load_questions($level);
 		$scores = self::get_calc_scores(count($questions));
 		$session_questions = [];
 		$user_questions = [];
@@ -77,7 +96,7 @@ class Game extends QP_Controller
 				if ($is_correct) $score = $question->score;
 			}
 
-			$this->state->set_session_score($score);
+			$this->state->score($score);
 
 			echo $score;
 		}
@@ -123,11 +142,5 @@ class Game extends QP_Controller
 		}
 
 		return $scores;
-	}
-
-	private function reset_game()
-	{
-		$this->state->reset();
-		$this->questions->reset();
 	}
 }

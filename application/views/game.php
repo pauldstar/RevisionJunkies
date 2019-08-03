@@ -129,7 +129,11 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="">You Lost...</h5>
-        <button class="btn btn-warning float-right" onclick="location.href='<?= site_url('leaderboard') ?>'">Leaderboard</button>
+        <?php if ($is_logged_in): ?>
+          <button class="btn btn-warning float-right" onclick="location.href='<?= site_url('leaderboard') ?>'">Leaderboard</button>
+        <?php else: ?>
+          <button class="btn btn-info float-right" onclick="location.href='<?= site_url('login') ?>'">Save Score</button>
+        <?php endif ?>
       </div>
       <div class="modal-body">
         Better luck next time...

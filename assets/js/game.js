@@ -30,22 +30,16 @@ $(_=> Game.load());
 
 var Game = (_=>
 {
-  let _score, _status, _level, _startTime, _gameStarted, _loading,
-      _timerInterval, _questionInterval;
+  let _score,
+      _status,
+      _level,
+      _startTime,
+      _gameStarted,
+      _loading,
+      _timerInterval,
+      _questionInterval;
 
-  function _gameLevel(increment)
-  {
-    if (increment) _level++;
-    return _level;
-  }
-
-  function _gameScore(value)
-  {
-    if (value) _score = value;
-    else return _score;
-  }
-
-  function _gameOver()
+  function _gameIsOver()
   {
     return _status['lost'] || _status['won'];
   }
@@ -53,14 +47,7 @@ var Game = (_=>
   function _checkGameStatus(moved)
   {
     if (!Grid.movesAvailable(Input.vectorMap)) _status['lost'] = true;
-
-    if (_gameOver())
-    {
-      let status = _status['lost'] ? 'lost' : 'won';
-      setTimeout(_=> QuestionsDisplay.gameOver(status), 1500);
-      clearInterval(_timerInterval);
-      clearInterval(_questionInterval);
-    }
+    if (_gameIsOver()) _endGame();
   }
 
   function _loadGame()
@@ -80,18 +67,42 @@ var Game = (_=>
     _loading = GridDisplay.message('load-on');
     Questions.array(false);
 
-    let getQuestionsAjax = Questions.load(_level++);
-
-    getQuestionsAjax.done(data =>
+    $.ajax({
+      url: `${SITE_URL}game/load_game`,
+      dataType: 'JSON',
+      success: data => data.forEach(question => Questions.array(question)),
+      error: e => console.log(e)
+    })
+    .done(data =>
     {
       _loading = GridDisplay.message('load-off');
       GridDisplay.message('start-on');
     });
+
+    _level = 2;
+  }
+
+  function _loadQuestions()
+  {
+    let getQuestionsAjax = $.ajax({
+      url: `${SITE_URL}game/get_questions`,
+      dataType: 'JSON',
+      success: data => data.forEach(question => Questions.array(question)),
+      error: e => console.log(e)
+    });
+
+    _level++;
   }
 
   function _startGame()
   {
     if (_gameStarted) return true;
+
+    $.ajax({
+      url: `${SITE_URL}game/start_game`,
+      dataType: 'JSON',
+      error: e => console.log(e)
+    });
 
     GridDisplay.message('start-off');
 
@@ -107,9 +118,26 @@ var Game = (_=>
     _gameStarted = true;
   }
 
+  function _endGame()
+  {
+    let status = _status['lost'] ? 'lost' : 'won';
+
+    setTimeout(_=> Modal.gameOver(status), 1500);
+    clearInterval(_timerInterval);
+    clearInterval(_questionInterval);
+
+    let timeDelta = Math.floor((Date.now() - _startTime) / 1000)
+
+    $.ajax({
+      url: `${SITE_URL}game/end_game/${_score}/${timeDelta}`,
+      dataType: 'JSON',
+      error: e => console.log(e)
+    });
+  }
+
   function _move(vector)
   {
-    let preventMove = _gameOver() || !Grid.allTileValuesSet();
+    let preventMove = _gameIsOver() || !Grid.allTileValuesSet();
     if (preventMove) return;
 
     let moved = Grid.move(vector);
@@ -130,21 +158,16 @@ var Game = (_=>
 
   function _showQuestion()
   {
-    if (_loading || _gameOver() || Grid.allTileValuesSet()) return;
+    if (_loading || _gameIsOver() || Grid.allTileValuesSet()) return;
 
-    if (Questions.array().length === 2) Questions.load(_level++);
+    if (Questions.array().length === 2) _loadQuestions();
 
     let question = Questions.get();
 
     let displayQuestionModal = _=>
     {
-      QuestionsDisplay.showQuestion(question);
-      QuestionsDisplay.onAnswer(direction =>
-      {
-        let score = Questions.scoreAnswer(direction, Md5);
-        GridDisplay.setTileValue(parseFloat(score), Grid.cells);
-        _checkGameStatus();
-      });
+      Modal.showQuestion(question);
+      Modal.onAnswer(_answerQuestion);
     };
 
     if (question) displayQuestionModal();
@@ -166,6 +189,13 @@ var Game = (_=>
     }
   }
 
+  function _answerQuestion(direction)
+  {
+    let score = Questions.scoreAnswer(direction, Md5);
+    GridDisplay.setTileValue(parseFloat(score), Grid.cells);
+    _checkGameStatus();
+  }
+
   var Input = (_=>
   {
     let _touchStartX,
@@ -183,7 +213,7 @@ var Game = (_=>
     _$newGameBtn.click(e =>
     {
       $('#game-section').focus();
-      _loadGame()
+      _loadGame();
     });
 
     $('.modal').on('hidden.bs.modal', _=> $('#game-section').focus());
@@ -228,7 +258,7 @@ var Game = (_=>
 
     	if (isGridClick) _startGame() && _showQuestion();
       else if (isModalClick)
-        $(e.target).is('.carousel-indicators li') || QuestionsDisplay.nextAnswer();
+        $(e.target).is('.carousel-indicators li') || Modal.nextAnswer();
     }
 
     function _swipeInput(e)
@@ -258,7 +288,7 @@ var Game = (_=>
         vector && _move(vector);
       }
       else if (isModalGesture)
-        e.direction !== undefined && QuestionsDisplay.move(e.direction);
+        e.direction !== undefined && Modal.move(e.direction);
     }
 
     function _keydownInput(e)
@@ -267,11 +297,11 @@ var Game = (_=>
       {
         switch(e.which)
         {
-          case 32: QuestionsDisplay.nextAnswer(); break;
+          case 32: Modal.nextAnswer(); break;
 
           case 38: case 37: case 40: case 39:
             let direction = _inputDirectionMap[e.which];
-            QuestionsDisplay.move(direction);
+            Modal.move(direction);
         }
         return;
       }
@@ -780,6 +810,7 @@ var GridDisplay = (_=>
 
     let $newTile = _$tileTemplate.clone();
     $newTile.attr('class', classes.join(' '));
+    $newTile.attr('id', '');
     $newTile.data('x', tile.x);
     $newTile.data('y', tile.y);
     $newTile.text(textContent);
@@ -821,20 +852,6 @@ var Questions = (_=>
   let _questions,
       _currentQuestion,
       _questionAnswered;
-
-  function _loadQuestions(level)
-  {
-    if (level === 1) _questionAnswered = true;
-
-    let getQuestionsAjax = $.ajax({
-      url: `${SITE_URL}game/get_questions/${level}`,
-      dataType: 'JSON',
-      success: data => data.forEach(question => _questions.push(question)),
-      error: e => console.log(e)
-    });
-
-    return getQuestionsAjax;
-  }
 
   function _getQuestion()
   {
@@ -935,14 +952,17 @@ var Questions = (_=>
   function _questionsArray(question)
   {
     if (question) _questions.push(question);
-    else if (question === false) _questions = [];
+    else if (question === false)
+    {
+      _questions = [];
+      _questionAnswered = true;
+    }
     else return _questions;
   }
 
   let _Questions = {
     array: _questionsArray,
     current: _=> _currentQuestion,
-    load: _loadQuestions,
     get: _getQuestion,
     scoreAnswer: _scoreAnswer
   };
@@ -950,7 +970,7 @@ var Questions = (_=>
   return _Questions;
 })();
 
-var QuestionsDisplay = (_=>
+var Modal = (_=>
 {
   let _$modalQtns = $('.modal-qtn'),
       _$modalQtnsContent = _$modalQtns.find('.modal-content'),
@@ -1098,7 +1118,7 @@ var QuestionsDisplay = (_=>
     });
   }
 
-  let _QuestionsDisplay = {
+  let _Modal = {
     nextAnswer: _nextAnswerOption,
     move: _move,
     showQuestion: _showQuestion,
@@ -1106,7 +1126,7 @@ var QuestionsDisplay = (_=>
     gameOver: _gameOver
   };
 
-  return _QuestionsDisplay;
+  return _Modal;
 })();
 
 var Md5 = (_=>
