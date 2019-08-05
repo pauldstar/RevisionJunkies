@@ -8,5 +8,8 @@ class Webhooks extends QP_Controller
 		echo '<pre>';
 		var_dump($_POST);
 		echo '</pre>';
+		echo '<pre>';
+		var_dump($_SERVER);
+		echo '</pre>';
 	}
 }
