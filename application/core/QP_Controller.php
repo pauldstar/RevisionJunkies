@@ -22,7 +22,7 @@ class QP_Controller extends Ci_Controller
     }
   }
 
-  function terminal($command)
+  protected function terminal($command)
   {
     if(function_exists('system'))
     {
