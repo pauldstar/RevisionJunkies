@@ -10,7 +10,7 @@ class Pages extends QP_Controller
     $data['is_logged_in'] = FALSE;
 
     $data['header'] = $this->load->view('header', $data, TRUE);
-    $data['page_content'] = $this->load->view('game', $data, TRUE);
+    $data['page_content'] = $this->load->view('content/game', $data, TRUE);
     $data['footer'] = $this->load->view('footer', NULL, TRUE);
 
     if (ENVIRONMENT === 'development')
@@ -74,7 +74,7 @@ class Pages extends QP_Controller
     $data['styles'] = '';
 
     $data['header'] = $this->load->view('header', $data, TRUE);
-    $data['page_content'] = '';
+    $data['page_content'] = $this->load->view('content/login', NULL, TRUE);
     $data['footer'] = $this->load->view('footer', NULL, TRUE);
 
     $data['scripts'] = '';

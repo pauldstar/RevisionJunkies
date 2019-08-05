@@ -19,14 +19,20 @@
  *   modules. They only have functions that help the masters store, retrieve,
  *   update, and display game data.
  *
- * - 'use strict' should be placed at the start of every module
+ * - 'use strict' should be placed at the start of every module instead of the
+ *   start of this file. It messes up obfuscation.
  *
- * Obfuscator CLI command:
- * - to install node.js
- *   - install javascript-obfucator using: npm install --save-dev javascript-obfuscator
- *   - then run: npm link javascript-obfuscator
- * - to obfuscate, navigate to the assets/js folder and run:
- *   javascript-obfuscator game.js --output game.min.js --config 'obfuscator-config.json'
+ * Obfuscator CLI commands
+ *
+ * 1. Install javascript-obfuscator
+ *   - install node.js
+ *   - then run: npm install --save-dev javascript-obfuscator
+ *   - then run: npm link javascript-obfuscator (if the above doesn't work)
+ *
+ * 2. Create/edit the obfuscation config at assets/js/obfuscator-config.json
+ *
+ * 3. Navigate to the assets/js folder and run:
+ *   javascript-obfuscator game.js --output game.min.js --config obfuscator-config.json
  */
 
 $(_=> Game.load());
