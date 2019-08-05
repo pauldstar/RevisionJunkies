@@ -6,7 +6,7 @@ class Webhooks extends QP_Controller
 	{
 		// secret QDjzkg574GjPw29B
 		echo '<pre>';
-		var_dump($_REQUEST);
+		var_dump($_POST);
 		echo '</pre>';
 	}
 }
