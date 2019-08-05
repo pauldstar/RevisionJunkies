@@ -9,7 +9,7 @@ class Webhooks extends QP_Controller
 		$signature = 'sha1='.hash_hmac(
 			'sha1',
 			$_POST['payload'],
-			$_ENV['github_webhook_secret']
+			$_ENV['GITHUB_WEBHOOK_SECRET']
 		);
 
 		$valid_signature = hash_equals($signature, $_SERVER['x-hub-signature']);
@@ -26,8 +26,5 @@ class Webhooks extends QP_Controller
 		echo '<pre>';
 		var_dump($_SERVER);
 		echo '</pre>';
-
-		$signature = 'sha1='.
-			hash_hmac('sha1', Request::getContent(), $_ENV['github_webhook_secret']);
 	}
 }
