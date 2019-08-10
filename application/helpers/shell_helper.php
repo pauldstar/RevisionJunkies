@@ -23,17 +23,17 @@ if ( ! function_exists('terminal'))
 
    function terminal($command)
    {
-     if(function_exists('passthru'))
-     {
-       ob_start();
-       passthru($command, $return_var);
-       $output = ob_get_contents();
-       ob_end_clean();
-     }
      if(function_exists('system'))
      {
        ob_start();
        system($command, $return_var);
+       $output = ob_get_contents();
+       ob_end_clean();
+     }
+     else if(function_exists('passthru'))
+     {
+       ob_start();
+       passthru($command, $return_var);
        $output = ob_get_contents();
        ob_end_clean();
      }
@@ -51,6 +51,7 @@ if ( ! function_exists('terminal'))
        $output = 'Command execution not possible on this system';
        $return_var = 1;
      }
+
      return [
        'output' => $output,
        'status' => $return_var

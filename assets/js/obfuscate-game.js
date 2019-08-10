@@ -1,4 +1,11 @@
-let JavaScriptObfuscator = require('javascript-obfuscator');
+let fileSystem = require('fs');
+
+let gameJsText = fileSystem.readFileSync(
+  '/home/pvhhqumha6t1/public_html/assets/js/game.js',
+  'utf8'
+);
+
+let obfuscator = require('javascript-obfuscator');
 
 let config = {
   "compact": true,
@@ -32,13 +39,16 @@ let config = {
   "unicodeEscapeSequence": false
 };
 
-let fileSystem = require('fs'),
-    gameJs = fileSystem.readFileSync('game.js', "utf8");
+let obfuscationResult = obfuscator.obfuscate(gameJsText, config);
 
-let obfuscationResult = JavaScriptObfuscator.obfuscate(gameJs, config);
-
-fileSystem.writeFile('game2.min.js', obfuscationResult, err => 
+let writeFileCallBack = err =>
 {
   if (err) throw err;
-  console.log('game2.min.js created');
-});
+  console.log('Obfuscation success: game.min.js created');
+}
+
+fileSystem.writeFile(
+  '/home/pvhhqumha6t1/public_html/assets/js/game.min.js',
+  obfuscationResult,
+  writeFileCallBack
+);
