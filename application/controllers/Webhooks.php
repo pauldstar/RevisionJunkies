@@ -15,14 +15,8 @@ class Webhooks extends QP_Controller
 
 		if (!$valid_signature) throw new Exception('Incorrect Signature');
 
-		// TODO: activate git pull on Webhook/deploy
-		// self::git_pull();
+		self::git_pull();
 		self::obfuscate_game_js();
-	}
-
-	private function is_server_repo()
-	{
-
 	}
 
 	private function git_pull()
