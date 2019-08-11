@@ -22,17 +22,19 @@
  * - 'use strict' should be placed at the start of every module instead of the
  *   start of this file. It messes up obfuscation.
  *
- * Obfuscator CLI commands
+ * Manual Obfuscation CLI commands
+ *
+ * Note: obfuscation is triggered automatically in controllers/Webhooks.php
+ * via assets/obfuscate-game.js whenever github tags are pushed. But if you
+ * insist:
  *
  * 1. Install javascript-obfuscator
  *   - install node.js
  *   - then run: npm install --save-dev javascript-obfuscator
- *   - then run: npm link javascript-obfuscator (if the above doesn't work)
+ *   - or run: npm link javascript-obfuscator (if the above doesn't work)
  *
- * 2. Create/edit the obfuscation config at assets/js/obfuscator-config.json
- *
- * 3. Navigate to the assets/js folder and run:
- *   javascript-obfuscator game.js --output game.min.js --config obfuscator-config.json
+ * 2. Navigate to the assets/js folder and run:
+ *   - node obfuscate-game.js (can edit onfuscation config in this file)
  */
 
 $(_=> Game.load());
