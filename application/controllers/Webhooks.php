@@ -1,6 +1,6 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Webhooks extends QP_Controller
+class Webhooks extends CI_Controller
 {
 	public function deploy()
 	{
@@ -15,11 +15,11 @@ class Webhooks extends QP_Controller
 
 		if (!$valid_signature) throw new Exception('Incorrect Signature');
 
-		self::git_pull();
-		self::obfuscate_game_js();
+		self::_git_pull();
+		self::_obfuscate_game_js();
 	}
 
-	private function git_pull()
+	private function _git_pull()
 	{
 		$this->load->helper('shell');
 
@@ -40,7 +40,7 @@ class Webhooks extends QP_Controller
 		echo $git_pull['output'];
 	}
 
-	private function obfuscate_game_js()
+	private function _obfuscate_game_js()
 	{
 		$this->load->helper('shell');
 

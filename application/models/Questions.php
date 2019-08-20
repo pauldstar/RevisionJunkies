@@ -103,7 +103,7 @@ class Questions extends CI_Model
     }
 
     $this->db->order_by(NULL, 'random');
-    $query = $this->db->get('questions', $limit);
+    $query = $this->db->get('question', $limit);
 
     return $query->result();
   }

@@ -1,24 +1,39 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Game extends QP_Controller
+class Game extends CI_Controller
 {
+	private static $start_time;
+	private static $score;
+	private static $level;
+
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->model('game_state', 'state');
+		$this->load->library('session');
+
+		self::$start_time = &$_SESSION['start_time'];
+		self::$level = &$_SESSION['level'];
+		self::$score = &$_SESSION['score'];
+
+		self::$start_time OR self::$start_time = time();
+		self::$level OR self::$level = 1;
+		self::$score OR self::$score = 0;
+
 		$this->load->model('questions');
 	}
 
 	public function load_game()
 	{
-		$this->state->reset();
+		self::$score = 0;
+		self::$level = 1;
+
 		$this->questions->reset();
 		self::get_questions();
 	}
 
 	public function start_game()
 	{
-		$this->state->start_time(TRUE);
+		self::$start_time = time();
 	}
 
 	public function end_game($score, $time_delta)
@@ -26,18 +41,18 @@ class Game extends QP_Controller
 		echo 'user<br />';
 		echo $time_delta.'<br />';
 		echo 'session<br />';
-		echo $this->state->time_delta();
+		echo time() - self::$start_time;
 	}
 
 	public function get_questions()
 	{
-		$level = $this->state->level();
+		$level = self::_level();
 		$questions = $this->questions->load_questions($level);
-		$scores = self::get_calc_scores(count($questions));
+		$scores = self::_get_calc_scores(count($questions));
 		$session_questions = [];
 		$user_questions = [];
 
-		$game_level = $this->state->level();
+		$game_level = self::_level();
 
 		foreach($questions as $index => $qtn)
 		{
@@ -78,7 +93,7 @@ class Game extends QP_Controller
 		}
 
 		$this->questions->set_session_questions($session_questions);
-		$this->state->level(TRUE);
+		self::_level(TRUE);
 
     echo json_encode($user_questions);
 	}
@@ -95,18 +110,30 @@ class Game extends QP_Controller
 
 			if (isset($answer_code))
 			{
-				$answer_hash = self::get_user_answer_hash($question, $answer_code);
+				$answer_hash = self::_get_user_answer_hash($question, $answer_code);
 				$is_correct = $answer_hash === $question->answer_hash;
 				if ($is_correct) $score = $question->score;
 			}
 
-			$this->state->score($score);
+			self::_score($score);
 
 			echo $score;
 		}
 	}
 
-	private function get_user_answer_hash($question, $answer_code)
+	private function _score($score = NULL)
+	{
+		if ($score) self::$score += $score;
+		else return self::$score;
+	}
+
+	private function _level($increment = FALSE)
+	{
+		if ($increment) self::$level++;
+		else return self::$level;
+	}
+
+	private function _get_user_answer_hash($question, $answer_code)
 	{
 		$new_hash = '';
 
@@ -131,9 +158,9 @@ class Game extends QP_Controller
 		return md5($old_hash.$new_hash);
 	}
 
-	private function get_calc_scores($amount)
+	private function _get_calc_scores($amount)
 	{
-		$game_level = $this->state->level();
+		$game_level = self::_level();
 
 		$max = 33 * $game_level;
 		$min = 1;
