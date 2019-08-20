@@ -1,0 +1,19 @@
+.nav-pills .nav-link {
+  font-size: 22px;
+  color: #fff;
+}
+.nav-pills .nav-link.active {
+  background-color: #272727;
+}
+.tab-content {
+  padding: 40px;
+  border-radius: 0.25rem;
+}
+#signup-username:valid~.valid-feedback,
+#signup-email:valid~.valid-feedback {
+  display: none;
+}
+#signup-username.is-valid~.valid-feedback,
+#signup-email.is-valid~.valid-feedback {
+  display: block;
+}

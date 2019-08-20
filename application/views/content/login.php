@@ -1,28 +1,113 @@
-<div class="_94d452dc">
-  <section class="_2b1f4808 bg-white br3">
-    <div>
-      <form id="signup" method="POST" action="/signup" class="ma0">
-        <h2 class="aa630ec5 f3 fw6 pb3 pt0 mt0 mb3 black-70 b--black-10 bb">Sign Up</h2>
-        <div class=" "><label class="_64c2ccaf db mt1 mb2 f5 fw6 black-90 nowrap " for="signup_fullname">Full Name</label><input type="text" id="signup_fullname" class="_425fdea4 relative w-100 ma2 ml0 pv3 pl2 pr2 br2 black-70 ba b--black-10  " name="fullname" placeholder="" element="input"/></div>
-        <div class=" "><label class="_64c2ccaf db mt1 mb2 f5 fw6 black-90 nowrap " for="signup_email">Public Email</label><input type="email" id="signup_email" required="" class="_425fdea4 relative w-100 ma2 ml0 pv3 pl2 pr2 br2 black-70 ba b--black-10  " name="email" placeholder="" element="input"/></div>
-        <div class=" "><label class="_64c2ccaf db mt1 mb2 f5 fw6 black-90 nowrap " for="signup_name">Username</label><input type="text" id="signup_name" required="" class="_425fdea4 relative w-100 ma2 ml0 pv3 pl2 pr2 br2 black-70 ba b--black-10  " name="name" placeholder="" element="input"/></div>
-        <div class=" "><label class="_64c2ccaf db mt1 mb2 f5 fw6 black-90 nowrap " for="signup_password">Password</label><input type="password" id="signup_password" required="" minLength="7" class="_425fdea4 relative w-100 ma2 ml0 pv3 pl2 pr2 br2 black-70 ba b--black-10  " name="password" placeholder="" element="input"/></div>
-        <div>
-          <p class="_77b93cf4 black-80 lh-copy">In order to<span class="_0bb7ba4f fw6 black-70"> protect your account</span>, make sure your password:</p>
-          <ul class="dd5d12f9 mt3 mb4 lh-copy black-60">
-            <li>Is longer than 7 characters</li>
-            <li>Does not match or significantly contain your username, e.g. do not use &#x27;username123&#x27;.</li>
-            <li>Is not a member of this <a class="_0bb7ba4f fw6 black-70" target="_blank" href="/signup/common-passwords">list of common passwords</a></li>
-            <li>Is not a member of the <a class="_0bb7ba4f fw6 black-70" target="_blank" href="https://haveibeenpwned.com/">Have I Been Pwned</a> breach database</li>
-          </ul>
-        </div>
-        <fieldset class="_54445007 mv3 mh0 pv2 ph3 br2 bn black-60">
-          <div class="_62229eaa flex items-center mv1"><input type="checkbox" id="signup_npmweekly" class="_58ef0793 mr2" name="npmweekly"/><label class="b56301db lh-copy" for="signup_npmweekly">Sign up for the npm Weekly</label></div>
-          <div class="_62229eaa flex items-center mv1"><input type="checkbox" id="signup_eula-agreement" class="_58ef0793 mr2" name="eula-agreement" required=""/><label class="b56301db lh-copy" for="signup_eula-agreement"><span>Agree to the <a href="/policies/terms" target="_blank" title="npm, Inc. Terms and Licenses">End User License Agreement</a> and the <a href="/policies/privacy" target="_blank" title="npm, Inc. Privacy Policy">Privacy Policy</a>.</span></label></div>
-        </fieldset>
-        <input type="hidden" name="csrftoken" value="b96XJ5X7_PwIE-gn0hd8pspUJPNRagQutwvgsbTk21l"/><button type="submit" class="_24a1e9c7 dab9924c br2 pv2 ph3 fw5 f5 tc button button-reset pointer ma2 truncate ml0 no-underline e64d5a00 w-100">Create an Account</button>
-      </form>
-      <a href="/login" class="_6126477b db center tc mt3 mb2 f5 fw6 black-50 hover-black-80">or, Login</a>
+<div class="row d-flex justify-content-center page-content-section">
+
+  <div class="col-11 col-sm-9 col-md-6 col-lg-6 col-xl-4 right-font">
+
+    <ul class="nav nav-pills nav-justified mb-3" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link <?= $active_tab === 'login' ? 'active' : '' ?>" id="login-pill" data-toggle="pill" href="#login-tab-pane" role="tab" aria-controls="login" aria-selected="true">Login</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link <?= $active_tab === 'signup' ? 'active' : '' ?>" id="signup-pill" data-toggle="pill" href="#signup-tab-pane" role="tab" aria-controls="signup" aria-selected="false">Sign Up</a>
+      </li>
+    </ul>
+
+    <div class="tab-content bg-darkest text-white">
+      <div id="login-tab-pane" class="tab-pane fade
+        <?= $active_tab === 'login' ? 'active show' : '' ?>
+      " role="tabpanel" aria-labelledby="login-pill">
+
+        <?= form_error('login_form', '<p class="text-danger">', '</p>') ?>
+
+        <?= form_open('user/login', 'id="login-form" novalidate') ?>
+
+          <div class="form-group">
+            <label for="login-name">Username/Email address</label>
+            <input type="text" class="form-control text-dark" id="login-name" value="<?= set_value('login-name') ?>" name="login-name" autocomplete="off" required>
+            <div class="invalid-feedback">
+              Enter valid username/email
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="login-password">Password</label>
+            <input type="password" class="form-control text-dark" id="login-password" value="<?= set_value('login-password') ?>" name="login-password" autocomplete="current-password" required>
+            <div class="invalid-feedback">
+              Enter a correct password
+            </div>
+          </div>
+          <div class="form-group form-check">
+            <input type="checkbox" class="form-check-input" id="login-remember-me" name="login-remember-me" value="<?= set_value('login-remember-me') ?>">
+            <label class="form-check-label" for="remember-me">Remember Me</label>
+          </div>
+          <br>
+          <button type="submit" class="btn btn-info">Login</button>
+
+        <?= form_close() ?>
+
+      </div>
+
+      <div id="signup-tab-pane" class="tab-pane fade
+        <?= $active_tab === 'signup' ? 'active show' : '' ?>
+      " role="tabpanel" aria-labelledby="signup-pill">
+
+        <?= form_error('signup_form', '<p class="text-danger">', '</p>') ?>
+
+        <?= form_open('user/signup', 'id="signup-form" novalidate') ?>
+
+          <div class="form-group">
+            <label>Full Name</label>
+            <div class="row">
+              <div class="col-6">
+                <input type="text" id="signup-firstname" class="form-control text-dark <?= form_error('signup-firstname') ? 'is-invalid' : '' ?>" value="<?= set_value('signup-firstname') ?>" name="signup-firstname" placeholder="First" required/>
+                <div class="invalid-feedback">
+                  Enter a valid first-name.
+                </div>
+              </div>
+              <div class="col-6">
+                <input type="text" id="signup-lastname" class="form-control text-dark <?= form_error('signup-lastname') ? 'is-invalid' : '' ?>" value="<?= set_value('signup-lastname') ?>" name="signup-lastname" placeholder="Last" required />
+                <div class="invalid-feedback">
+                  Enter a valid last-name.
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="signup-username">Username (display name)</label>
+            <input type="text" id="signup-username" class="form-control text-dark <?= form_error('signup-username') ? 'is-invalid' : '' ?>" value="<?= set_value('signup-username') ?>" name="signup-username" placeholder="Max. 20 characters" maxlength="20" required />
+            <div class="valid-feedback">
+              Username available!
+            </div>
+            <div class="invalid-feedback">
+              Enter a username that doesn't already exist. It should be atmost 20 characters; consisting of alphanumeric (letters A-Z, numbers 0-9) or underscores (only between the alphanumeric characters).
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="signup-email">Email</label>
+            <input type="email" id="signup-email" class="form-control text-dark <?= form_error('signup-email') ? 'is-invalid' : '' ?>" value="<?= set_value('signup-email') ?>" autocomplete="email" name="signup-email" placeholder="" required />
+            <div class="valid-feedback">
+              Email is unique!
+            </div>
+            <div class="invalid-feedback">
+              Enter a valid email that doesn't already exist.
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="signup-password">Password</label>
+            <input type="password" id="signup-password" minLength="8" class="form-control text-dark <?= form_error('signup-password') ? 'is-invalid' : '' ?>" value="<?= set_value('signup-password') ?>" autocomplete="new-password" name="signup-password" placeholder="Min. 8 characters" required />
+            <div class="invalid-feedback">
+              Enter a Password with atleast 8 characters.
+            </div>
+          </div>
+          <div>
+            By creating an account you agree to QuePenny's <a href="#">Terms &amp; Conditions</a> and <a href="#">Privacy Policy</a>.
+          </div>
+          <br>
+          <button type="submit" class="btn btn-success">Create Account</button>
+
+        <?= form_close() ?>
+
+      </div>
     </div>
-  </section>
+
+  </div>
+
 </div>
