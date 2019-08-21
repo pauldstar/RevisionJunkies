@@ -2,7 +2,7 @@
   font-family: 'Aetherfox';
   font-style: normal;
   font-weight: normal;
-  src: local('Aetherfox'), url('aetherfox.woff') format('woff');
+  src: local('Aetherfox'), url('../fonts/aetherfox.woff') format('woff');
 }
 .aether-font {
   font-family: 'aetherfox', cursive;

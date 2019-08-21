@@ -72,7 +72,7 @@
           </div>
           <div class="form-group">
             <label for="signup-username">Username (display name)</label>
-            <input type="text" id="signup-username" class="form-control text-dark <?= form_error('signup-username') ? 'is-invalid' : '' ?>" value="<?= set_value('signup-username') ?>" name="signup-username" placeholder="Max. 20 characters" maxlength="20" required />
+            <input type="text" id="signup-username" class="form-control text-dark <?= form_error('signup-username') ? 'is-invalid' : '' ?>" value="<?= set_value('signup-username') ?>" name="signup-username" placeholder="Max. 20 characters" maxlength="20" autocomplete="username" required />
             <div class="valid-feedback">
               Username available!
             </div>
@@ -92,9 +92,16 @@
           </div>
           <div class="form-group">
             <label for="signup-password">Password</label>
-            <input type="password" id="signup-password" minLength="8" class="form-control text-dark <?= form_error('signup-password') ? 'is-invalid' : '' ?>" value="<?= set_value('signup-password') ?>" autocomplete="new-password" name="signup-password" placeholder="Min. 8 characters" required />
-            <div class="invalid-feedback">
-              Enter a Password with atleast 8 characters.
+            <div class="input-group">
+              <input type="password" id="signup-password" minLength="8" class="form-control text-dark <?= form_error('signup-password') ? 'is-invalid' : '' ?>" value="<?= set_value('signup-password') ?>" autocomplete="new-password" name="signup-password" placeholder="Min. 8 characters" required />
+              <div class="input-group-append">
+                <div class="btn btn-secondary password-hidden password-visibility-toggle">
+                  <span class="glyphicon glyphicon-eye-open"></span>
+                </div>
+              </div>
+              <div class="invalid-feedback">
+                Enter a Password with atleast 8 characters.
+              </div>
             </div>
           </div>
           <div>

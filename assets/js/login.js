@@ -3,17 +3,50 @@
 $(_=> init());
 
 let $loginForm = $('#login-form'),
-
     $signupForm = $('#signup-form'),
-    $signupUsername = $('#signup-username'),
-    $signupEmail = $('#signup-email');
+    $passwordVisibilityToggle = $('.password-visibility-toggle');
 
 function init()
 {
   $loginForm.submit(validateForm);
   $signupForm.submit(validateForm);
   $signupForm.find('input').keydown(hideValidation);
-  $signupForm.find('input').focusout(validateInput);
+  $signupForm.find('input').on('focusout change', validateInput);
+
+  $passwordVisibilityToggle.on(
+    'mousedown mouseup touchstart touchend',
+    togglePasswordVisibility
+  );
+}
+
+function togglePasswordVisibility()
+{
+  let $btn = $(this),
+      $glyphicon = $btn.children('span'),
+      $passwordInput = $btn.parents('.input-group').children('input');
+
+  if ($btn.hasClass('password-hidden'))
+  {
+    $btn.removeClass('btn-secondary');
+    $btn.removeClass('password-hidden');
+    $glyphicon.removeClass('glyphicon-eye-open');
+
+    $passwordInput.prop('type', 'text');
+
+    $btn.addClass('btn-danger');
+    $glyphicon.addClass('glyphicon-eye-close');
+  }
+  else
+  {
+    $btn.removeClass('btn-danger');
+    $glyphicon.removeClass('glyphicon-eye-close');
+
+    $passwordInput.prop('type', 'password');
+
+    $btn.addClass('btn-secondary');
+    $btn.addClass('password-hidden');
+    $glyphicon.addClass('glyphicon-eye-open');
+  }
 }
 
 function validateForm(event)
@@ -40,32 +73,40 @@ function validateInput()
 
   if (!inputText) return;
 
+  let regex;
+
   switch ($this.attr('id'))
   {
     case 'signup-username':
+      if (inputText.length > 20)
+        return void(showValidationMessage(false, $this));
+      regex = /^[A-Za-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)*$/;
+      if (!regex.test(inputText))
+        return void(showValidationMessage(false, $this));
       isAvailable('username', inputText, $this);
       break;
+
     case 'signup-email':
+      regex =
+        /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+      if (!regex.test(inputText))
+        return void(showValidationMessage(false, $this));
       isAvailable('email', inputText, $this);
-      if (!isEmail(inputText)) return;
       break;
+
     case 'signup-firstname':
     case 'signup-lastname':
-      isValidName(inputText, $this);
+      regex = /^[A-Za-z][A-Za-z]*(?:-[A-Za-z]+)*(?:'[A-Za-z]+)*$/;
+      if (!regex.test(inputText))
+        showValidationMessage(regex.test(inputText), $this);
       break;
   }
-}
-
-function isValidName(inputText, $input)
-{
-  let regex = /^[A-Za-z][A-Za-z]*(?:-[A-Za-z]+)*(?:'[A-Za-z]+)*$/;
-  showValidationMessage(regex.test(inputText), $input)
 }
 
 function isAvailable(inputType, inputText, $input)
 {
   $.ajax({
-    url: `${SITE_URL}user/is_unique/${inputType}`,
+    url: `${SITE_URL}user/is_valid/${inputType}`,
     data: { inputText: inputText },
     dataType: 'JSON',
     success: data => showValidationMessage(data.response, $input)
@@ -84,12 +125,4 @@ function showValidationMessage(isValid, $input)
     $input.addClass('is-invalid');
     $input.removeClass('is-valid');
   }
-}
-
-function isEmail(email)
-{
-  let regex =
-    /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-
-  return regex.test(email);
 }
