@@ -32,9 +32,8 @@ class User extends CI_Controller
 
     if (!$user_exists)
     {
-      $this->form_validation->set_error('login_form',
-        'Login failed! Please try again...'
-      );
+      $this->form_validation->
+        set_error('login_form', 'Login failed! Please try again...');
       $this->form_validation->save_data();
       redirect('login/100');
     }
@@ -108,12 +107,19 @@ class User extends CI_Controller
 		redirect();
   }
 
-  public function is_unique($input_type)
+  public function is_valid($input_type)
   {
     $input_text = $_GET['inputText'];
 
-    $this->load->database();
     $this->load->library('form_validation');
+
+    if ($input_type === 'email' && !$this->form_validation->valid_email($input_text))
+    {
+      echo json_encode([ 'response' => FALSE ]);
+      die();
+    }
+
+    $this->load->database();
 
     $is_unique = $this->form_validation->is_unique(
       $input_text, "user.{$input_type}"
@@ -125,18 +131,7 @@ class User extends CI_Controller
 	public function logout()
 	{
     $this->load->helper('url');
-
-		$_SESSION = [];
-
-    $session_running = session_id() != "" || isset($_COOKIE[session_name()]);
-
-    if ($session_running)
-    {
-      session_unset();
-      //setcookie(session_name(), '', time() - 2592000, '/');
-      session_destroy();
-    }
-
+    session_destroy();
     redirect('login');
 	}
 }

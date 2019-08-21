@@ -3,19 +3,25 @@
 class QP_Form_validation extends CI_Form_validation
 {
   /**
-   * Save field data in session for reuse in other controllers
+   * Save field data as session flashdata for one time use in other controllers
    *
    * @return	void
    */
   public function save_data()
   {
     $this->CI->load->library('session');
+
     $_SESSION['form_validation_field_data'] = $this->_field_data;
     $_SESSION['form_validation_error_array'] = $this->_error_array;
+
+    $this->CI->session->mark_as_flash([
+      'form_validation_field_data',
+      'form_validation_error_array'
+    ]);
   }
 
   /**
-   * Reload stored field data from sessions for reuse
+   * Reload stored validation session flashdata for reuse
    *
    * Allows use of form_helper functions, such as validation_errors() and
    * form_error(), on previously validated data

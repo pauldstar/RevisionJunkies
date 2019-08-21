@@ -13,7 +13,11 @@
         <ul class="navbar-nav text-center ml-auto">
           <?php
             $nav_items = [
-              'game', 'races', 'leaderboard', 'contact', 'login'
+              'game',
+              'races',
+              'leaderboard',
+              'contact',
+              $logged_in ? 'logout' : 'login'
             ];
 
             foreach ($nav_items as $item):

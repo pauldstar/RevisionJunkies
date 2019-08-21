@@ -2,10 +2,14 @@
 
 class Pages extends CI_Controller
 {
+	private static $user_id;
+
 	public function __construct()
 	{
 		parent::__construct();
 		$this->load->helper('url');
+		$this->load->library('session');
+		self::$user_id = &$_SESSION['user_id'];
 	}
 
 	public function game()
@@ -13,7 +17,7 @@ class Pages extends CI_Controller
 	  $data['title'] = 'game';
 
     $data['styles'] = self::_load_asset('game', 'css');
-    $data['is_logged_in'] = FALSE;
+    $data['logged_in'] = isset(self::$user_id);
 
     $data['header'] = $this->load->view('header', $data, TRUE);
     $data['page_content'] = $this->load->view('content/game', $data, TRUE);
@@ -33,7 +37,7 @@ class Pages extends CI_Controller
 		$data['title'] = 'races';
 
     $data['styles'] = '';
-
+    $data['logged_in'] = isset(self::$user_id);
     $data['header'] = $this->load->view('header', $data, TRUE);
     $data['page_content'] = '';
     $data['footer'] = $this->load->view('footer', '', TRUE);
@@ -48,7 +52,7 @@ class Pages extends CI_Controller
 		$data['title'] = 'leaderboard';
 
     $data['styles'] = '';
-
+    $data['logged_in'] = isset(self::$user_id);
     $data['header'] = $this->load->view('header', $data, TRUE);
     $data['page_content'] = '';
     $data['footer'] = $this->load->view('footer', '', TRUE);
@@ -63,7 +67,7 @@ class Pages extends CI_Controller
 		$data['title'] = 'contact';
 
     $data['styles'] = '';
-
+    $data['logged_in'] = isset(self::$user_id);
     $data['header'] = $this->load->view('header', $data, TRUE);
     $data['page_content'] = '';
     $data['footer'] = $this->load->view('footer', '', TRUE);
@@ -75,9 +79,7 @@ class Pages extends CI_Controller
 
 	public function login($error_code = '')
 	{
-		$data['title'] = 'login';
-
-    $data['styles'] = self::_load_asset('login', 'css');
+		if (self::$user_id) redirect();
 
 		if ($error_code)
 		{
@@ -94,6 +96,14 @@ class Pages extends CI_Controller
 
 		$this->load->helper('form');
 
+		$data['title'] = 'login';
+
+    $login_css = self::_load_asset('login', 'css');
+    $glyphicons = self::_load_asset('glyphicons.min', 'css');
+    $data['styles'] = $login_css.$glyphicons;
+
+		$data['logged_in'] = isset(self::$user_id);
+		
     $data['header'] = $this->load->view('header', $data, TRUE);
     $data['page_content'] = $this->load->view('content/login', $data, TRUE);
     $data['footer'] = $this->load->view('footer', '', TRUE);

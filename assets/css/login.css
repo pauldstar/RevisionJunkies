@@ -17,3 +17,10 @@
 #signup-email.is-valid~.valid-feedback {
   display: block;
 }
+.password-visibility-toggle {
+  cursor: pointer;
+}
+.input-group>.input-group-append:not(:last-child)>.btn {
+  border-top-right-radius: .25rem;
+  border-bottom-right-radius: .25rem;
+}
