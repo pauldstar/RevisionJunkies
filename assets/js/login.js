@@ -13,10 +13,8 @@ function init()
   $signupForm.find('input').keydown(hideValidation);
   $signupForm.find('input').on('focusout change', validateInput);
 
-  $passwordVisibilityToggle.on(
-    'mousedown mouseup touchstart touchend',
-    togglePasswordVisibility
-  );
+  $passwordVisibilityToggle.
+    on('mousedown mouseup touchstart touchend', togglePasswordVisibility);
 }
 
 function togglePasswordVisibility()
@@ -61,44 +59,44 @@ function validateForm(event)
 
 function hideValidation(event)
 {
-  let $this = $(this);
-  $this.removeClass('is-invalid');
-  $this.removeClass('is-valid');
+  let $input = $(this);
+  $input.removeClass('is-invalid');
+  $input.removeClass('is-valid');
 }
 
 function validateInput()
 {
-  let $this = $(this),
-      inputText = $this.val();
+  let $input = $(this),
+      inputText = $input.val();
 
   if (!inputText) return;
 
   let regex;
 
-  switch ($this.attr('id'))
+  switch ($input.attr('id'))
   {
     case 'signup-username':
       if (inputText.length > 20)
-        return void(showValidationMessage(false, $this));
+        return void(showValidationMessage(false, $input));
       regex = /^[A-Za-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)*$/;
       if (!regex.test(inputText))
-        return void(showValidationMessage(false, $this));
-      isAvailable('username', inputText, $this);
+        return void(showValidationMessage(false, $input));
+      isAvailable('username', inputText, $input);
       break;
 
     case 'signup-email':
       regex =
         /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
       if (!regex.test(inputText))
-        return void(showValidationMessage(false, $this));
-      isAvailable('email', inputText, $this);
+        return void(showValidationMessage(false, $input));
+      isAvailable('email', inputText, $input);
       break;
 
     case 'signup-firstname':
     case 'signup-lastname':
       regex = /^[A-Za-z][A-Za-z]*(?:-[A-Za-z]+)*(?:'[A-Za-z]+)*$/;
       if (!regex.test(inputText))
-        showValidationMessage(regex.test(inputText), $this);
+        showValidationMessage(regex.test(inputText), $input);
       break;
   }
 }

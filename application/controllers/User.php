@@ -102,9 +102,33 @@ class User extends CI_Controller
       redirect('login/200');
     }
 
-    self::$user_id = $this->db->insert_id();
-
+    // $this->load->library('email');
+    //
+    // $this->email->initialize([ 'mailtype' => 'html' ]);
+    //
+    // $this->email->from('admin@quepenny.com', 'QuePenny');
+    // $this->email->to($this->input->post('signup-email'));
+    // $this->email->subject('Email Verification');
+    // $this->email->message($this->load->view('verify_email'));
+    //
+    // $this->email->send();
+    //
+		// redirect('pages/verify');
 		redirect();
+  }
+
+  public function test_email()
+  {
+    $this->load->library('email');
+
+    $this->email->initialize([ 'mailtype' => 'html' ]);
+
+    $this->email->from('admin@quepenny.com', 'QuePenny');
+    $this->email->to('paulogbeiwi@gmail.com');
+    $this->email->subject('Email Verification');
+    $this->email->message($this->load->view('verify_email', '', TRUE));
+
+    $this->email->send();
   }
 
   public function is_valid($input_type)
