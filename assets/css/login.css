@@ -24,3 +24,7 @@
   border-top-right-radius: .25rem;
   border-bottom-right-radius: .25rem;
 }
+#email-verified .modal-title,
+#email-unverified .modal-title {
+  text-shadow: 0 0 3px #000;
+}

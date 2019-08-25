@@ -3,12 +3,14 @@
 class User extends CI_Controller
 {
   private static $user_id;
+  private static $unverified_data;
 
   public function __construct()
   {
     parent::__construct();
     $this->load->library('session');
     self::$user_id = &$_SESSION['user_id'];
+    self::$unverified_data = &$_SESSION['unverified_data'];
   }
 
   public function login()
@@ -22,13 +24,14 @@ class User extends CI_Controller
     $this->load->library('form_validation');
     $this->load->database();
 
-    $this->db->select('user_id, password');
+    $this->db->select(
+      'user_id, username, password, email, email_verifier, email_verified'
+    );
     $this->db->where('username', $name);
     $this->db->or_where('email', $name);
-    $query = $this->db->get('user');
-    $row = $query->row_array();
+    $user = $this->db->get('user')->row();
 
-    $user_exists = isset($row) && password_verify($password, $row['password']);
+    $user_exists = isset($user) && password_verify($password, $user->password);
 
     if (!$user_exists)
     {
@@ -38,13 +41,23 @@ class User extends CI_Controller
       redirect('login/100');
     }
 
-    self::$user_id = $row['user_id'];
+    if ($user->email_verified === '0')
+    {
+      self::_save_unverified_data(
+        $user->username,
+        $user->email,
+        $user->email_verifier
+      );
+      redirect('login/400');
+    }
 
-		$this->db->set('logged_in', 1);
-		$this->db->where('user_id', self::$user_id);
-		$this->db->update('user');
+    self::$user_id = $user->user_id;
 
-		redirect();
+    $this->db->set('logged_in', 1);
+    $this->db->where('user_id', self::$user_id);
+    $this->db->update('user');
+
+    redirect();
   }
 
   public function signup()
@@ -79,17 +92,19 @@ class User extends CI_Controller
       redirect('login/200');
     }
 
-    $password_hash = password_hash(
-      $this->input->post('signup-password'), PASSWORD_BCRYPT
-    );
+    $email_verifier = substr(md5($this->input->post('signup-email')), 11, 20);
+
+    $password_hash =
+      password_hash($this->input->post('signup-password'), PASSWORD_BCRYPT);
 
     $params = [
-			'username' => $this->input->post('signup-username', TRUE),
-			'password' => $password_hash,
-			'email' => $this->input->post('signup-email', TRUE),
-			'firstname' => $this->input->post('signup-firstname', TRUE),
-			'lastname' => $this->input->post('signup-lastname', TRUE)
-		];
+      'username' => $this->input->post('signup-username', TRUE),
+      'password' => $password_hash,
+      'email' => $this->input->post('signup-email', TRUE),
+      'firstname' => $this->input->post('signup-firstname', TRUE),
+      'lastname' => $this->input->post('signup-lastname', TRUE),
+      'email_verifier' => $email_verifier
+    ];
 
     $query = $this->db->insert('user', $params);
 
@@ -102,21 +117,66 @@ class User extends CI_Controller
       redirect('login/200');
     }
 
-    // $this->load->library('email');
-    //
-    // $this->email->initialize([ 'mailtype' => 'html' ]);
-    //
-    // $this->email->from('admin@quepenny.com', 'QuePenny');
-    // $this->email->to($this->input->post('signup-email'));
-    // $this->email->subject('Email Verification');
-    // $this->email->message($this->load->view('verify_email'));
-    //
-    // $this->email->send();
-    //
-		// redirect('pages/verify');
-		redirect();
+    self::_save_unverified_data(
+      $this->input->post('signup-username'),
+      $this->input->post('signup-email'),
+      $email_verifier
+    );
+
+    self::send_email_verifier();
   }
 
+  public function verify_email($username, $email_verifier)
+  {
+    $this->db->select('email, email_verifier');
+    $this->db->where('username', $username);
+    $user = $this->db->get('user')->row();
+
+    isset($user) OR redirect('login');
+
+    if ($email_verifier !== $user->email_verifier)
+    {
+      self::_save_unverified_data(
+        $username,
+        $user->email,
+        $user->email_verifier
+      );
+      redirect('login/400');
+    }
+
+    $this->db->set('email_verified', 1);
+    $this->db->where('username', self::$username);
+    $this->db->update('user');
+
+    redirect('login/300');
+  }
+
+  public function send_email_verifier()
+  {
+    isset($email) OR redirect('login/400');
+
+    $this->load->library('email');
+
+    $this->email->initialize([ 'mailtype' => 'html' ]);
+
+    $this->email->from('admin@quepenny.com', 'QuePenny');
+    $this->email->to($email);
+    $this->email->subject('Email Verification');
+
+    $unverified_data = $_SESSION['unverified_data'];
+    $data['username'] = $unverified_data['username'];
+    $data['email_verifier'] = $unverified_data['email_verifier'];
+
+    $this->email->message(
+      $this->load->view('template/verify_email', $data, TRUE)
+    );
+
+    $this->email->send();
+
+    redirect('login/400');
+  }
+
+  // TODO: remove test_email() and show_email()
   public function test_email()
   {
     $this->load->library('email');
@@ -126,18 +186,37 @@ class User extends CI_Controller
     $this->email->from('admin@quepenny.com', 'QuePenny');
     $this->email->to('paulogbeiwi@gmail.com');
     $this->email->subject('Email Verification');
-    $this->email->message($this->load->view('verify_email', '', TRUE));
+
+    $unverified_data = $_SESSION['unverified_data'];
+    $data['username'] = $unverified_data['username'];
+    $data['email_verifier'] = $unverified_data['email_verifier'];
+
+    $this->email->message(
+      $this->load->view('template/verify_email', $data, TRUE)
+    );
 
     $this->email->send();
   }
 
+  public function show_email()
+  {
+    $unverified_data = $_SESSION['unverified_data'];
+    $data['username'] = $unverified_data['username'];
+    $data['email_verifier'] = $unverified_data['email_verifier'];
+
+    $this->load->view('template/verify_email', $data);
+  }
+
   public function is_valid($input_type)
   {
-    $input_text = $_GET['inputText'];
+    $input_text = $_POST['inputText'];
 
     $this->load->library('form_validation');
 
-    if ($input_type === 'email' && !$this->form_validation->valid_email($input_text))
+    $invalid_email = $input_type === 'email' &&
+      !$this->form_validation->valid_email($input_text);
+
+    if ($invalid_email)
     {
       echo json_encode([ 'response' => FALSE ]);
       die();
@@ -145,17 +224,25 @@ class User extends CI_Controller
 
     $this->load->database();
 
-    $is_unique = $this->form_validation->is_unique(
-      $input_text, "user.{$input_type}"
-    );
+    $is_unique = $this->form_validation->
+      is_unique($input_text, "user.{$input_type}");
 
     echo json_encode([ 'response' => $is_unique ]);
   }
 
-	public function logout()
-	{
+  public function logout()
+  {
     $this->load->helper('url');
     session_destroy();
     redirect('login');
-	}
+  }
+
+  private function _save_unverified_data($username, $email, $email_verifier)
+  {
+    $_SESSION['unverified_data'] = [
+      'username' => $username,
+      'email' => $email,
+      'email_verifier' => $email_verifier
+    ];
+  }
 }

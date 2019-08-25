@@ -118,3 +118,47 @@
   </div>
 
 </div>
+
+<div class="modal fade <?= isset($email_verified) ? 'active' : '' ?>" id="email-verified" tabindex="-1" aria-labelledby="email-verified" role="dialog">
+  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white progress-bar-striped right-font">
+        <h4 class="modal-title">Email verified!</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body hind-font-700">
+        <p class="mt-3">Login to begin enjoying all QuePenny benefits.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success float-left" data-dismiss="modal">Login</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade <?= isset($email_unverified) ? 'active' : '' ?>" id="email-unverified" tabindex="-1" aria-labelledby="email-unverified" role="dialog">
+  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white progress-bar-striped right-font">
+        <h4 class="modal-title">Verify your email</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body hind-font-700">
+        <p class="mt-3">
+          An email has been sent to you for confirmation.
+          <br><br>
+          Can't find it? Check your spam folder.
+          <br><br>
+          If not...resend?
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger float-left" data-dismiss="modal" onclick="location.href='<?= site_url("user/send_email_verification") ?>'">Resend</button>
+      </div>
+    </div>
+  </div>
+</div>

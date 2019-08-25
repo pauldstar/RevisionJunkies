@@ -4,17 +4,21 @@ $(_=> init());
 
 let $loginForm = $('#login-form'),
     $signupForm = $('#signup-form'),
+    $emailVerified = $('#email-verified'),
+    $emailUnverified = $('#email-unverified'),
     $passwordVisibilityToggle = $('.password-visibility-toggle');
 
 function init()
 {
   $loginForm.submit(validateForm);
   $signupForm.submit(validateForm);
-  $signupForm.find('input').keydown(hideValidation);
-  $signupForm.find('input').on('focusout change', validateInput);
+  $signupForm.find('input').on('change', validateInput);
 
   $passwordVisibilityToggle.
     on('mousedown mouseup touchstart touchend', togglePasswordVisibility);
+
+  $emailVerified.hasClass('active') && $emailVerified.modal('show');
+  $emailUnverified.hasClass('active') && $emailUnverified.modal('show');
 }
 
 function togglePasswordVisibility()
@@ -55,13 +59,6 @@ function validateForm(event)
     event.stopPropagation();
     this.classList.add('was-validated');
   }
-}
-
-function hideValidation(event)
-{
-  let $input = $(this);
-  $input.removeClass('is-invalid');
-  $input.removeClass('is-valid');
 }
 
 function validateInput()
@@ -105,6 +102,7 @@ function isAvailable(inputType, inputText, $input)
 {
   $.ajax({
     url: `${SITE_URL}user/is_valid/${inputType}`,
+    type: 'POST',
     data: { inputText: inputText },
     dataType: 'JSON',
     success: data => showValidationMessage(data.response, $input)
