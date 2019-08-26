@@ -2,10 +2,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<meta name="format-detection" content="telephone=no">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-	<meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7; IE=EDGE" />
+	<meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7; IE=EDGE">
 	<link href="https://fonts.googleapis.com/css?family=Hind:500,700|Righteous&display=swap" rel="stylesheet">
 </head>
 
@@ -60,7 +60,7 @@
 														<td>Or click/paste this link into your browser:</td>
 													</tr>
 													<tr>
-														<td><a href="http://quepenny.com/user/verify_email/<?= $username ?>/<?= $email_verifier ?>" style="font-family: 'Righteous', cursive;color:#17a2b8;text-decoration:none" target="_blank">http://quepenny.com/user/verify_email/<?= $username ?>/<?= $email_verifier ?></a></td>
+														<td><a href="http://quepenny.com/user/verify_email/&lt;?= $username ?&gt;/&lt;?= $email_verifier ?&gt;" style="font-family: 'Righteous', cursive;color:#17a2b8;text-decoration:none" target="_blank">http://quepenny.com/user/verify_email/<?= $username ?>/<?= $email_verifier ?></a></td>
 													</tr>
 													<tr>
 														<td>

@@ -132,7 +132,7 @@
         <p class="mt-3">Login to begin enjoying all QuePenny benefits.</p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-success float-left" data-dismiss="modal">Login</button>
+        <button type="button" class="btn btn-success" data-dismiss="modal">Login</button>
       </div>
     </div>
   </div>
@@ -157,7 +157,7 @@
         </p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-danger float-left" data-dismiss="modal" onclick="location.href='<?= site_url("user/send_email_verification") ?>'">Resend</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="location.href='<?= site_url("user/send_email_verifier") ?>'">Resend</button>
       </div>
     </div>
   </div>
