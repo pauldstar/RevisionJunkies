@@ -137,7 +137,7 @@ class User extends CI_Controller
     $data['username'] = $unverified_user_data['username'];
     $data['email_verifier'] = $unverified_user_data['email_verifier'];
 
-    $this->email->to($unverified_user_data['email']);
+    $this->email->to($unverified_data['email']);
     $this->email->message(
       $this->load->view('template/verify_email', $data, TRUE)
     );
