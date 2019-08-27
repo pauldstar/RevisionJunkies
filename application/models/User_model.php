@@ -13,19 +13,24 @@ class User_model extends CI_Model
     self::$email_verification_data = &$_SESSION['email_verification_data'];
   }
 
-  public function id($id = NULL)
+  public function user_id($id = NULL)
   {
     if ($id) self::$user_id = $id;
     return self::$user_id;
   }
 
-  public function get_user($id, $id_type)
+  public function get_user($id, $id_type, $for_login = FALSE)
   {
     $this->load->database();
 
-    $this->db->select(
-      'user_id, username, password, email, email_verifier, email_verified'
-    );
+    $selections = 'user.user_id, username, password, email, email_verified';
+    $for_login AND $selections .= ', verifier';
+
+    $this->db->select($selections);
+    $this->db->from('user');
+
+    $for_login AND $this->db->
+      join('email_verifier', 'email_verifier.user_id = user.user_id', 'left');
 
     if (is_array($id_type))
     {
@@ -37,9 +42,9 @@ class User_model extends CI_Model
       $clause = implode(' OR ', $id_type);
       $this->db->where($clause);
     }
-    else $this->db->where($id_type, $id);
+    else $this->db->where("user.{$id_type}", $id);
 
-    return $this->db->get('user')->row();
+    return $this->db->get()->row();
   }
 
   public function create_user()
@@ -56,12 +61,23 @@ class User_model extends CI_Model
       'password' => $password_hash,
       'email' => $post['signup-email'],
       'firstname' => $post['signup-firstname'],
-      'lastname' => $post['signup-lastname'],
-      'email_verifier' => $email_verifier
+      'lastname' => $post['signup-lastname']
     ];
 
-    $query = $this->db->insert('user', $params);
-    if (!$query) return NULL;
+    $this->db->trans_start();
+
+    $this->db->insert('user', $params);
+
+    $params = [
+      'user_id' => $this->db->insert_id(),
+      'verifier' => $email_verifier
+    ];
+
+    $this->db->insert('email_verifier', $params);
+
+    $this->db->trans_complete();
+
+    if (!$this->db->trans_status()) return FALSE;
 
     self::set_email_verification_data(
       $post['signup-username'],
@@ -69,7 +85,25 @@ class User_model extends CI_Model
       $email_verifier
     );
 
-    return $email_verifier;
+    return TRUE;
+  }
+
+  public function confirm_email_verification($user_id)
+  {
+    $this->load->database();
+
+    $this->db->trans_start();
+
+    $this->db->set('email_verified', 1);
+    $this->db->where('user_id', $user_id);
+    $this->db->update('user');
+
+    $this->db->where('user_id', $user_id);
+    $this->db->delete('email_verifier');
+
+    $this->db->trans_complete();
+
+    return $this->db->trans_status();
   }
 
   public function login($user_id)
@@ -77,33 +111,23 @@ class User_model extends CI_Model
     self::$user_id = $user_id;
 
     $this->load->database();
-    $this->db->set('logged_in', 1);
+    $this->db->set('last_login_time', 'CURRENT_TIMESTAMP');
     $this->db->where('user_id', $user_id);
     $this->db->update('user');
   }
 
-  public function logout()
-  {
-    $this->load->database();
-    $this->db->set('logged_in', 0);
-    $this->db->where('user_id', self::$user_id);
-    $this->db->update('user');
-
-    session_destroy();
-  }
-
-  public function get_email_verification_data($key)
+  public function get_email_verification_data($key = NULL)
   {
     if ($key) return self::$email_verification_data[$key];
     return self::$email_verification_data;
   }
 
-  public function set_email_verification_data($username, $email, $verifier)
+  public function set_email_verification_data($user_id, $email, $verifier)
   {
     self::$email_verification_data = [
-      'username' => $username,
+      'user_id' => $user_id,
       'email' => $email,
-      'email_verifier' => $email_verifier
+      'email_verifier' => $verifier
     ];
   }
 }

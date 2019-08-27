@@ -48,7 +48,7 @@
 																<tbody>
 																	<tr>
 																		<td align="center" valign="middle" style="font-family:Helvetica,Arial,sans-serif;color:rgb(255,255,255);font-size:14px;line-height:21px">
-                                      <a href="http://quepenny.com/user/verify_email/<?= $username ?>/<?= $email_verifier ?>" style="font-family: 'Hind', sans-serif;font-size: 19px;color:rgb(255,255,255);text-decoration:none;padding:15px 30px;display:block;font-weight:bold;" target="_blank">Verify my email
+                                      <a href="http://quepenny.com/user/verify_email/<?= $user_id ?>/<?= $email_verifier ?>" style="font-family: 'Hind', sans-serif;font-size: 19px;color:rgb(255,255,255);text-decoration:none;padding:15px 30px;display:block;font-weight:bold;" target="_blank">Verify my email
                                       </a>
                                     </td>
 																	</tr>
@@ -60,7 +60,7 @@
 														<td>Or click/paste this link into your browser:</td>
 													</tr>
 													<tr>
-														<td><a href="http://quepenny.com/user/verify_email/&lt;?= $username ?&gt;/&lt;?= $email_verifier ?&gt;" style="font-family: 'Righteous', cursive;color:#17a2b8;text-decoration:none" target="_blank">http://quepenny.com/user/verify_email/<?= $username ?>/<?= $email_verifier ?></a></td>
+														<td><a href="http://quepenny.com/user/verify_email/<?= $username ?>/<?= $email_verifier ?>" style="font-family: 'Righteous', cursive;color:#17a2b8;text-decoration:none" target="_blank">http://quepenny.com/user/verify_email/<?= $user_id ?>/<?= $email_verifier ?></a></td>
 													</tr>
 													<tr>
 														<td>

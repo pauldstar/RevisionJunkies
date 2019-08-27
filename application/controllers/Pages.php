@@ -6,7 +6,6 @@ class Pages extends CI_Controller
 	{
 		parent::__construct();
 		$this->load->helper('url');
-		$this->load->library('session');
 		$this->load->model('user_model');
 	}
 
@@ -15,7 +14,7 @@ class Pages extends CI_Controller
 	  $data['title'] = 'game';
 
     $data['styles'] = self::_load_asset('game', 'css');
-    $data['logged_in'] = $this->user_model->id();
+    $data['logged_in'] = $this->user_model->user_id();
 
     $data['header'] = $this->load->view('template/header', $data, TRUE);
     $data['page_content'] = $this->load->view('content/game', $data, TRUE);
@@ -35,7 +34,7 @@ class Pages extends CI_Controller
 		$data['title'] = 'races';
 
     $data['styles'] = '';
-    $data['logged_in'] = $this->user_model->id();
+    $data['logged_in'] = $this->user_model->user_id();
 
     $data['header'] = $this->load->view('template/header', $data, TRUE);
     $data['page_content'] = '';
@@ -51,7 +50,7 @@ class Pages extends CI_Controller
 		$data['title'] = 'leaderboard';
 
     $data['styles'] = '';
-    $data['logged_in'] = $this->user_model->id();
+    $data['logged_in'] = $this->user_model->user_id();
 
     $data['header'] = $this->load->view('template/header', $data, TRUE);
     $data['page_content'] = '';
@@ -67,7 +66,7 @@ class Pages extends CI_Controller
 		$data['title'] = 'contact';
 
     $data['styles'] = '';
-    $data['logged_in'] = $this->user_model->id();
+    $data['logged_in'] = $this->user_model->user_id();
 
     $data['header'] = $this->load->view('template/header', $data, TRUE);
     $data['page_content'] = '';
@@ -80,7 +79,7 @@ class Pages extends CI_Controller
 
 	public function login($response_code = '')
 	{
-		if ($this->user_model->id()) redirect();
+		if ($this->user_model->user_id()) redirect();
 
 		$data['active_tab'] = 'login';
 
@@ -109,7 +108,7 @@ class Pages extends CI_Controller
     $glyphicons = self::_load_asset('glyphicons.min', 'css');
 
     $data['styles'] = $login_css.$glyphicons;
-		$data['logged_in'] = $this->user_model->id();
+		$data['logged_in'] = $this->user_model->user_id();
 
     $data['header'] = $this->load->view('template/header', $data, TRUE);
     $data['page_content'] = $this->load->view('content/login', $data, TRUE);
