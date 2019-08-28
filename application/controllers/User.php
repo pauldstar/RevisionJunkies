@@ -85,7 +85,7 @@ class User extends CI_Controller
       redirect('login/200');
     }
 
-    self::_send_email_verifier();
+    self::send_email_verifier();
   }
 
   public function verify_email($user_id, $email_verifier)
@@ -182,26 +182,5 @@ class User extends CI_Controller
     session_destroy();
     $this->load->helper('url');
     redirect('login');
-  }
-
-  private function _send_email_verifier()
-  {
-    $this->load->helper('url');
-    $this->load->library('email');
-
-    $this->email->initialize([ 'mailtype' => 'html' ]);
-
-    $this->email->subject('Email Verification');
-    $this->email->from('admin@quepenny.com', 'QuePenny');
-
-    $data = $this->user_model->get_email_verification_data();
-
-    $this->email->to($data['email']);
-    $email_view = $this->load->view('template/verify_email', $data, TRUE);
-    $this->email->message($email_view);
-
-    $this->email->send();
-
-    redirect('login/400');
   }
 }
