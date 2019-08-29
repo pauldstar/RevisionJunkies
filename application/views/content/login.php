@@ -119,7 +119,7 @@
 
 </div>
 
-<div class="modal fade <?= isset($email_verified) ? 'active' : '' ?>" id="email-verified" tabindex="-1" aria-labelledby="email-verified" role="dialog">
+<div class="modal fade <?= $email_verified ?>" id="email-verified" tabindex="-1" aria-labelledby="email-verified" role="dialog">
   <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header bg-success text-white progress-bar-striped right-font">
@@ -138,7 +138,7 @@
   </div>
 </div>
 
-<div class="modal fade <?= isset($email_unverified) ? 'active' : '' ?>" id="email-unverified" tabindex="-1" aria-labelledby="email-unverified" role="dialog">
+<div class="modal fade <?= $email_unverified ?>" id="email-unverified" tabindex="-1" aria-labelledby="email-unverified" role="dialog">
   <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header bg-danger text-white progress-bar-striped right-font">
@@ -157,7 +157,7 @@
         </p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="location.href='<?= site_url("user/send_email_verifier") ?>'">Resend</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="location.href='<?= site_url("user/send_email_verifier/{$user_id}") ?>'">Resend</button>
       </div>
     </div>
   </div>

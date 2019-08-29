@@ -82,15 +82,16 @@ class Pages extends CI_Controller
 		if ($this->user_model->user_id()) redirect();
 
 		$data['active_tab'] = 'login';
+		$data['user_id'] = $data['email_verified'] = $data['email_unverified'] = '';
 
 		switch ($response_code)
 		{
 			case '400':
-				$data['email_unverified'] = TRUE;
-				$data['email'] = $this->user_model->get_email_verification_data('email');
+				$data['email_unverified'] = 'active';
+				$data['user_id'] = $this->user_model->unverified_id();
 				break;
 			case '300':
-				$data['email_verified'] = TRUE;
+				$data['email_verified'] = 'active';
 				break;
 			case '200':
 				$data['active_tab'] = 'signup'; // no break
@@ -105,9 +106,9 @@ class Pages extends CI_Controller
 		$data['title'] = 'login';
 
     $login_css = self::_load_asset('login', 'css');
-    $glyphicons = self::_load_asset('glyphicons.min', 'css');
+    $glyphicons_css = self::_load_asset('glyphicons.min', 'css');
 
-    $data['styles'] = $login_css.$glyphicons;
+    $data['styles'] = $login_css.$glyphicons_css;
 		$data['logged_in'] = $this->user_model->user_id();
 
     $data['header'] = $this->load->view('template/header', $data, TRUE);

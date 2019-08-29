@@ -3,28 +3,36 @@
 class User_model extends CI_Model
 {
   private static $user_id;
-  private static $email_verification_data;
+  private static $unverified_id;
 
   public function __construct()
   {
     parent::__construct();
     $this->load->library('session');
     self::$user_id = &$_SESSION['user_id'];
-    self::$email_verification_data = &$_SESSION['email_verification_data'];
+    self::$unverified_id = &$_SESSION['unverified_id'];
   }
 
   public function user_id($id = NULL)
   {
     if ($id) self::$user_id = $id;
-    return self::$user_id;
+    else return self::$user_id;
   }
 
-  public function get_user($id, $id_type, $for_login = FALSE)
+  public function unverified_id($id = NULL)
   {
+    if ($id) self::$unverified_id = $id;
+    else return self::$unverified_id;
+  }
+
+  public function get_user($id = NULL, $for_login = FALSE, $id_type = 'user_id')
+  {
+    $id = $id ?? self::$user_id;
+
     $this->load->database();
 
     $selections = 'user.user_id, username, password, email, email_verified';
-    $for_login AND $selections .= ', verifier';
+    $for_login AND $selections .= ', verifier AS email_verifier';
 
     $this->db->select($selections);
     $this->db->from('user');
@@ -49,43 +57,43 @@ class User_model extends CI_Model
 
   public function create_user()
   {
+    $this->load->helper('string');
     $this->load->database();
 
     $post = $this->input->post(NULL, TRUE);
 
-    $email_verifier = substr(md5($post['signup-email']), 11, 20);
+    $email_verifier = random_string('alnum', 10);
     $password_hash = password_hash($post['signup-password'], PASSWORD_BCRYPT);
 
-    $params = [
+    $user_params = [
       'username' => $post['signup-username'],
       'password' => $password_hash,
       'email' => $post['signup-email'],
       'firstname' => $post['signup-firstname'],
-      'lastname' => $post['signup-lastname']
+      'lastname' => $post['signup-lastname'],
     ];
 
     $this->db->trans_start();
 
-    $this->db->insert('user', $params);
+    $this->db->insert('user', $user_params);
 
-    $params = [
-      'user_id' => $this->db->insert_id(),
+    $user_id = $this->db->insert_id();
+
+    $email_verifier_params = [
+      'user_id' => $user_id,
       'verifier' => $email_verifier
     ];
 
-    $this->db->insert('email_verifier', $params);
+    $this->db->insert('email_verifier', $email_verifier_params);
 
     $this->db->trans_complete();
 
     if (!$this->db->trans_status()) return FALSE;
 
-    self::set_email_verification_data(
-      $post['signup-username'],
-      $post['signup-email'],
-      $email_verifier
-    );
+    self::$unverified_id = $user_id;
+    $user_params['email_verifier'] = $email_verifier;
 
-    return TRUE;
+    return $user_params;
   }
 
   public function confirm_email_verification($user_id)
@@ -114,20 +122,5 @@ class User_model extends CI_Model
     $this->db->set('last_login_time', 'CURRENT_TIMESTAMP');
     $this->db->where('user_id', $user_id);
     $this->db->update('user');
-  }
-
-  public function get_email_verification_data($key = NULL)
-  {
-    if ($key) return self::$email_verification_data[$key];
-    return self::$email_verification_data;
-  }
-
-  public function set_email_verification_data($user_id, $email, $verifier)
-  {
-    self::$email_verification_data = [
-      'user_id' => $user_id,
-      'email' => $email,
-      'email_verifier' => $verifier
-    ];
   }
 }

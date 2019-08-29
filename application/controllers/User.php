@@ -18,7 +18,7 @@ class User extends CI_Controller
 
     $this->load->library('form_validation');
 
-    $row = $this->user_model->get_user($name, ['username', 'email'], TRUE);
+    $row = $this->user_model->get_user($name, TRUE, ['username', 'email']);
 
     $user_exists = isset($row) && password_verify($password, $row->password);
 
@@ -32,8 +32,7 @@ class User extends CI_Controller
 
     if ($row->email_verified === '0')
     {
-      $this->user_model->
-        set_email_verification_data($row->user_id, $row->email, $row->verifier);
+      $this->user_model->unverified_id($row->user_id);
       redirect('login/400');
     }
 
@@ -74,9 +73,9 @@ class User extends CI_Controller
       redirect('login/200');
     }
 
-    $user_created = $this->user_model->create_user();
+    $user = $this->user_model->create_user();
 
-    if (!$user_created)
+    if (!$user)
     {
       $this->form_validation->set_error('signup_form',
         'Server error. Sign Up failed! Please try again later.'
@@ -85,47 +84,51 @@ class User extends CI_Controller
       redirect('login/200');
     }
 
-    self::send_email_verifier();
+    self::send_email_verifier($user);
   }
 
-  public function verify_email($user_id, $email_verifier)
+  public function verify_email($username, $email_verifier)
   {
     $this->load->helper('url');
     $this->load->database();
 
-    $row = $this->user_model->get_user($user_id, 'user_id', TRUE);
+    $row = $this->user_model->get_user($username, TRUE, 'username');
 
     isset($row) AND $row->email_verified === '0' OR redirect('login');
 
-    if ($email_verifier !== $row->verifier)
+    if ($email_verifier !== $row->email_verifier)
     {
-      $this->user_model->
-        set_email_verification_data($user_id, $row->email, $row->verifier);
+      $this->user_model->unverified_id($row->user_id);
       redirect('login/400');
     }
 
-    $this->user_model->confirm_email_verification($user_id);
+    $this->user_model->confirm_email_verification($row->user_id);
 
     redirect('login/300');
   }
 
-  public function send_email_verifier()
+  public function send_email_verifier($user)
   {
     $this->load->helper('url');
     $this->load->library('email');
 
-    $this->email->initialize([ 'mailtype' => 'html' ]);
+    $this->email->initialize(['mailtype' => 'html']);
 
     $this->email->subject('Email Verification');
     $this->email->from('admin@quepenny.com', 'QuePenny');
 
-    $data = $this->user_model->get_email_verification_data();
+    $data = is_array($user) ? $user :
+      (array) $this->user_model->get_user($user, TRUE);
 
     $this->email->to($data['email']);
     $email_view = $this->load->view('template/verify_email', $data, TRUE);
     $this->email->message($email_view);
 
     $this->email->send();
+
+    $this->user_model->unverified_id(
+      is_array($user) ? $user['user_id'] : $user
+    );
 
     redirect('login/400');
   }
@@ -135,13 +138,13 @@ class User extends CI_Controller
   {
     $this->load->library('email');
 
-    $this->email->initialize([ 'mailtype' => 'html' ]);
+    $this->email->initialize(['mailtype' => 'html']);
 
     $this->email->from('admin@quepenny.com', 'QuePenny');
     $this->email->to('paulogbeiwi@gmail.com');
     $this->email->subject('Email Verification');
 
-    $data = $this->user_model->get_email_verification_data();
+    $data = (array) $this->user_model->get_user(2, TRUE);
     $email_view = $this->load->view('template/verify_email', $data, TRUE);
     $this->email->message($email_view);
 
@@ -150,7 +153,8 @@ class User extends CI_Controller
 
   public function show_email()
   {
-    $data = $this->user_model->get_email_verification_data();
+    $user_id = $this->user_model->unverified_id();
+    $data = (array) $this->user_model->get_user($user_id, TRUE);
     $this->load->view('template/verify_email', $data);
   }
 
