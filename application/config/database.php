@@ -73,13 +73,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $active_group = 'default';
 $query_builder = TRUE;
 
-$hostname = ENVIRONMENT === 'production' ? 'localhost' : 'quepenny.com';
+$host_name = ENVIRONMENT === 'production' ?
+	'/cloudsql/quepenny:europe-west2:qp-app' : '35.189.68.120';
 
 $db['default'] = array(
-	'dsn'	=> "mysql:host={$hostname};dbname=quepenny",
+	'hostname' => '35.189.68.120',
 	'username' => 'qp-prod',
 	'password' => 'wSPr@bktNDl#',
-	'dbdriver' => 'pdo',
+	'database' => 'quepenny',
+	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => FALSE,
 	'db_debug' => (ENVIRONMENT !== 'production'),

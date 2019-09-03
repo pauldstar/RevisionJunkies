@@ -1,9 +1,6 @@
 let fileSystem = require('fs');
 
-let gameJsText = fileSystem.readFileSync(
-  '/home/pvhhqumha6t1/public_html/assets/js/game.js',
-  'utf8'
-);
+let gameJsText = fileSystem.readFileSync('assets/js/game.js', 'utf8');
 
 let obfuscator = require('javascript-obfuscator');
 
@@ -47,8 +44,5 @@ let writeFileCallBack = err =>
   console.log('Obfuscation success: game.min.js created');
 }
 
-fileSystem.writeFile(
-  '/home/pvhhqumha6t1/public_html/assets/js/game.min.js',
-  obfuscationResult,
-  writeFileCallBack
-);
+fileSystem.
+  writeFile('assets/js/game.min.js', obfuscationResult, writeFileCallBack);
