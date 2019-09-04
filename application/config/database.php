@@ -77,7 +77,7 @@ $host_name = ENVIRONMENT === 'production' ?
 	'/cloudsql/quepenny:europe-west2:qp-app' : '35.189.68.120';
 
 $db['default'] = array(
-	'hostname' => '35.189.68.120',
+	'hostname' => $host_name,
 	'username' => 'qp-prod',
 	'password' => 'wSPr@bktNDl#',
 	'database' => 'quepenny',
