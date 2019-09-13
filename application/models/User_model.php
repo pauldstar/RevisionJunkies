@@ -3,14 +3,14 @@
 class User_model extends CI_Model
 {
   private static $user_id;
-  private static $unverified_id;
+  private static $unverified_username;
 
   public function __construct()
   {
     parent::__construct();
     $this->load->library('session');
     self::$user_id = &$_SESSION['user_id'];
-    self::$unverified_id = &$_SESSION['unverified_id'];
+    self::$unverified_username = &$_SESSION['unverified_username'];
   }
 
   public function user_id($id = NULL)
@@ -19,10 +19,10 @@ class User_model extends CI_Model
     else return self::$user_id;
   }
 
-  public function unverified_id($id = NULL)
+  public function unverified_username($username = NULL)
   {
-    if ($id) self::$unverified_id = $id;
-    else return self::$unverified_id;
+    if ($username) self::$unverified_username = $username;
+    else return self::$unverified_username;
   }
 
   public function get_user($id = NULL, $for_login = FALSE, $id_type = 'user_id')
@@ -77,10 +77,8 @@ class User_model extends CI_Model
 
     $this->db->insert('user', $user_params);
 
-    $user_id = $this->db->insert_id();
-
     $email_verifier_params = [
-      'user_id' => $user_id,
+      'user_id' => $this->db->insert_id(),
       'verifier' => $email_verifier
     ];
 
@@ -90,7 +88,8 @@ class User_model extends CI_Model
 
     if (!$this->db->trans_status()) return FALSE;
 
-    self::$unverified_id = $user_id;
+    self::$unverified_username = $post['signup-username'];
+    $user_params['email_verified'] = '0';
     $user_params['email_verifier'] = $email_verifier;
 
     return $user_params;

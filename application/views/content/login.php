@@ -157,7 +157,7 @@
         </p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="location.href='<?= site_url("user/send_email_verifier/{$user_id}") ?>'">Resend</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="location.href='<?= site_url("user/send_email_verifier/{$username}") ?>'">Resend</button>
       </div>
     </div>
   </div>

@@ -32,7 +32,7 @@ class User extends CI_Controller
 
     if ($row->email_verified === '0')
     {
-      $this->user_model->unverified_id($row->user_id);
+      $this->user_model->unverified_username($row->username);
       redirect('login/400');
     }
 
@@ -98,7 +98,7 @@ class User extends CI_Controller
 
     if ($email_verifier !== $row->email_verifier)
     {
-      $this->user_model->unverified_id($row->user_id);
+      $this->user_model->unverified_username($row->username);
       redirect('login/400');
     }
 
@@ -110,15 +110,16 @@ class User extends CI_Controller
   public function send_email_verifier($user)
   {
     $this->load->helper('url');
-    $this->load->library('email');
-
-    $this->email->initialize(['mailtype' => 'html']);
-
-    $this->email->subject('Email Verification');
-    $this->email->from('admin@quepenny.com', 'QuePenny');
 
     $data = is_array($user) ? $user :
-      (array) $this->user_model->get_user($user, TRUE);
+      (array) $this->user_model->get_user($user, TRUE, 'username');
+
+    if ($data['email_verified'] === '1') redirect('login/300');
+
+    $this->load->library('email');
+
+    $this->email->subject('Email Verification');
+    $this->email->from('info@quepenny.com', 'QuePenny');
 
     $this->email->to($data['email']);
     $email_view = $this->load->view('template/verify_email', $data, TRUE);
@@ -126,9 +127,7 @@ class User extends CI_Controller
 
     $this->email->send();
 
-    $this->user_model->unverified_id(
-      is_array($user) ? $user['user_id'] : $user
-    );
+    $this->user_model->unverified_username($data['username']);
 
     redirect('login/400');
   }
@@ -138,23 +137,22 @@ class User extends CI_Controller
   {
     $this->load->library('email');
 
-    $this->email->initialize(['mailtype' => 'html']);
-
-    $this->email->from('admin@quepenny.com', 'QuePenny');
-    $this->email->to('paulogbeiwi@gmail.com');
     $this->email->subject('Email Verification');
+    $this->email->from('info@quepenny.com', 'QuePenny');
+    $this->email->to('paulogbeiwi@gmail.com');
 
-    $data = (array) $this->user_model->get_user(2, TRUE);
+    $data = (array) $this->user_model->get_user(5, TRUE);
     $email_view = $this->load->view('template/verify_email', $data, TRUE);
     $this->email->message($email_view);
 
-    $this->email->send();
+    $this->email->send(FALSE);
+    echo $this->email->print_debugger(['headers']);
   }
 
   public function show_email()
   {
-    $user_id = $this->user_model->unverified_id();
-    $data = (array) $this->user_model->get_user($user_id, TRUE);
+    // $user_id = $this->user_model->unverified_username();
+    $data = (array) $this->user_model->get_user(5, TRUE);
     $this->load->view('template/verify_email', $data);
   }
 

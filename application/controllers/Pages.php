@@ -88,7 +88,7 @@ class Pages extends CI_Controller
 		{
 			case '400':
 				$data['email_unverified'] = 'active';
-				$data['user_id'] = $this->user_model->unverified_id();
+				$data['username'] = $this->user_model->unverified_username();
 				break;
 			case '300':
 				$data['email_verified'] = 'active';
