@@ -2,43 +2,68 @@
 
 class User_model extends CI_Model
 {
-  private static $user_id;
+  private static $user;
   private static $unverified_username;
 
   public function __construct()
   {
     parent::__construct();
     $this->load->library('session');
-    self::$user_id = &$_SESSION['user_id'];
+    self::$user = &$_SESSION['user'];
     self::$unverified_username = &$_SESSION['unverified_username'];
   }
 
-  public function user_id($id = NULL)
-  {
-    if ($id) self::$user_id = $id;
-    else return self::$user_id;
-  }
-
+  /**
+   * Set & get the username for an unverified email
+   *
+   * @param  string $username
+   * @return  string
+   */
   public function unverified_username($username = NULL)
   {
     if ($username) self::$unverified_username = $username;
     else return self::$unverified_username;
   }
 
-  public function get_user($id = NULL, $for_login = FALSE, $id_type = 'user_id')
+  /**
+   * Retrieve user details from the database or session
+   *
+   * @param  mixed  $id - text/number
+   * @param  mixed  $id_type - user_id/username/email or an array
+   * @param  bool  $login - set TRUE to save user session
+   * @return  object
+   */
+  public function get_user($id = '', $id_type = 'user_id', $login = FALSE)
   {
-    $id = $id ?? self::$user_id;
+    if (empty($id)) return self::$user;
 
     $this->load->database();
 
-    $selections = 'user.user_id, username, password, email, email_verified';
-    $for_login AND $selections .= ', verifier AS email_verifier';
+    $selections = '
+      user.user_id,
+      user.username,
+      user.password,
+      user.email,
+      user.email_verified,
+      user.total_qp,
+      user_photo.filename AS photo,
+      user_email_verifier.verifier AS email_verifier
+    ';
 
     $this->db->select($selections);
     $this->db->from('user');
 
-    $for_login AND $this->db->
-      join('email_verifier', 'email_verifier.user_id = user.user_id', 'left');
+    $this->db->join(
+      'user_email_verifier',
+      'user_email_verifier.user_id = user.user_id',
+      'left'
+    );
+
+    $this->db->join(
+      'user_photo',
+      'user_photo.user_id = user.user_id',
+      'left'
+    );
 
     if (is_array($id_type))
     {
@@ -52,7 +77,11 @@ class User_model extends CI_Model
     }
     else $this->db->where("user.{$id_type}", $id);
 
-    return $this->db->get()->row();
+    $user = $this->db->get()->row();
+
+    if ($login && !self::$user) self::$user = $user;
+
+    return $user;
   }
 
   public function create_user()
@@ -113,13 +142,13 @@ class User_model extends CI_Model
     return $this->db->trans_status();
   }
 
-  public function login($user_id)
+  public function login($user)
   {
-    self::$user_id = $user_id;
+    self::$user = $user;
 
     $this->load->database();
-    $this->db->set('last_login_time', 'CURRENT_TIMESTAMP');
-    $this->db->where('user_id', $user_id);
+    $this->db->set('last_login_time', 'NOW()', FALSE);
+    $this->db->where('user_id', $user->user_id);
     $this->db->update('user');
   }
 }

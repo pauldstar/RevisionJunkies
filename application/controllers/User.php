@@ -18,9 +18,9 @@ class User extends CI_Controller
 
     $this->load->library('form_validation');
 
-    $row = $this->user_model->get_user($name, TRUE, ['username', 'email']);
+    $user = $this->user_model->get_user($name, ['username', 'email'], TRUE);
 
-    $user_exists = isset($row) && password_verify($password, $row->password);
+    $user_exists = isset($user) && password_verify($password, $user->password);
 
     if (!$user_exists)
     {
@@ -30,13 +30,13 @@ class User extends CI_Controller
       redirect('login/100');
     }
 
-    if ($row->email_verified === '0')
+    if ($user->email_verified === '0')
     {
-      $this->user_model->unverified_username($row->username);
+      $this->user_model->unverified_username($user->username);
       redirect('login/400');
     }
 
-    $this->user_model->login($row->user_id);
+    $this->user_model->login($user);
 
     redirect();
   }
@@ -92,7 +92,7 @@ class User extends CI_Controller
     $this->load->helper('url');
     $this->load->database();
 
-    $row = $this->user_model->get_user($username, TRUE, 'username');
+    $row = $this->user_model->get_user($username, 'username');
 
     isset($row) AND $row->email_verified === '0' OR redirect('login');
 
@@ -112,7 +112,7 @@ class User extends CI_Controller
     $this->load->helper('url');
 
     $data = is_array($user) ? $user :
-      (array) $this->user_model->get_user($user, TRUE, 'username');
+      (array) $this->user_model->get_user($user, 'username');
 
     if ($data['email_verified'] === '1') redirect('login/300');
 
@@ -141,7 +141,7 @@ class User extends CI_Controller
     $this->email->from('info@quepenny.com', 'QuePenny');
     $this->email->to('paulogbeiwi@gmail.com');
 
-    $data = (array) $this->user_model->get_user(5, TRUE);
+    $data = (array) $this->user_model->get_user(5);
     $email_view = $this->load->view('template/verify_email', $data, TRUE);
     $this->email->message($email_view);
 
@@ -151,8 +151,7 @@ class User extends CI_Controller
 
   public function show_email()
   {
-    // $user_id = $this->user_model->unverified_username();
-    $data = (array) $this->user_model->get_user(5, TRUE);
+    $data = (array) $this->user_model->get_user(5);
     $this->load->view('template/verify_email', $data);
   }
 

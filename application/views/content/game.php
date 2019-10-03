@@ -1,4 +1,4 @@
-<div class="d-flex fixed-top justify-content-center align-items-center" id="game-section" tabindex="-1">
+<div class="d-flex justify-content-center align-items-center" id="game-section" tabindex="-1">
   <div>
 
     <div class="d-flex justify-content-between text-white right-font position-relative" id="game-header">

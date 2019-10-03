@@ -66,9 +66,10 @@
   padding-top: 7px;
 }
 #game-section {
+  min-height: calc(100vh - 63px);
+}
+#game-container {
   touch-action: none;
-  height: calc(100% - 63px);
-  top: 63px;
 }
 #game-container #game-message {
   position: absolute;
