@@ -1,22 +1,11 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Pages extends CI_Controller
+class Pages_public extends QP_Controller
 {
-	public function __construct()
-	{
-		parent::__construct();
-		$this->load->helper('url');
-		$this->load->model('user_model');
-	}
-
 	public function game()
 	{
 	  $data['title'] = 'game';
-
     $data['styles'] = self::_load_asset('game', 'css');
-    $data['logged_in'] = $this->user_model->user_id();
-
-    $data['header'] = $this->load->view('template/header', $data, TRUE);
     $data['page_content'] = $this->load->view('content/game', $data, TRUE);
     $data['footer'] = $this->load->view('template/footer', '', TRUE);
 
@@ -26,63 +15,53 @@ class Pages extends CI_Controller
 
     $data['scripts'] = $game_js;
 
-    $this->load->view('template/html', $data);
+		self::_output_page($data);
 	}
 
 	public function races()
 	{
 		$data['title'] = 'races';
-
-    $data['styles'] = '';
-    $data['logged_in'] = $this->user_model->user_id();
-
-    $data['header'] = $this->load->view('template/header', $data, TRUE);
+		$data['styles'] = '';
     $data['page_content'] = '';
-    $data['footer'] = $this->load->view('template/footer', '', TRUE);
-
     $data['scripts'] = '';
+		self::_output_page($data);
+	}
 
-		$this->load->view('template/html', $data);
+	public function leagues()
+	{
+		$data['title'] = 'leagues';
+    $data['styles'] = '';
+		$data['page_content'] = '';
+		$data['scripts'] = '';
+		self::_output_page($data);
 	}
 
 	public function leaderboard()
 	{
 		$data['title'] = 'leaderboard';
-
     $data['styles'] = '';
-    $data['logged_in'] = $this->user_model->user_id();
-
-    $data['header'] = $this->load->view('template/header', $data, TRUE);
-    $data['page_content'] = '';
-    $data['footer'] = $this->load->view('template/footer', '', TRUE);
-
-    $data['scripts'] = '';
-
-		$this->load->view('template/html', $data);
+		$data['page_content'] = '';
+		$data['scripts'] = '';
+		self::_output_page($data);
 	}
 
 	public function contact()
 	{
 		$data['title'] = 'contact';
-
     $data['styles'] = '';
-    $data['logged_in'] = $this->user_model->user_id();
-
-    $data['header'] = $this->load->view('template/header', $data, TRUE);
     $data['page_content'] = '';
-    $data['footer'] = $this->load->view('template/footer', '', TRUE);
-
     $data['scripts'] = '';
-
-		$this->load->view('template/html', $data);
+		self::_output_page($data);
 	}
 
 	public function login($response_code = '')
 	{
-		if ($this->user_model->user_id()) redirect();
+		if (self::$logged_in) redirect();
 
 		$data['active_tab'] = 'login';
-		$data['user_id'] = $data['email_verified'] = $data['email_unverified'] = '';
+		$data['user_id'] = '';
+		$data['email_verified'] = '';
+		$data['email_unverified'] = '';
 
 		switch ($response_code)
 		{
@@ -107,17 +86,11 @@ class Pages extends CI_Controller
 
     $login_css = self::_load_asset('login', 'css');
     $glyphicons_css = self::_load_asset('glyphicons.min', 'css');
-
     $data['styles'] = $login_css.$glyphicons_css;
-		$data['logged_in'] = $this->user_model->user_id();
 
-    $data['header'] = $this->load->view('template/header', $data, TRUE);
     $data['page_content'] = $this->load->view('content/login', $data, TRUE);
-    $data['footer'] = $this->load->view('template/footer', '', TRUE);
-
     $data['scripts'] = self::_load_asset('login', 'js');
-
-		$this->load->view('template/html', $data);
+		self::_output_page($data);
 	}
 
 	public function server_info()
@@ -125,19 +98,5 @@ class Pages extends CI_Controller
 		echo '<pre>';
 		var_dump($_SERVER);
 		echo '</pre>';
-	}
-
-	private function _load_asset($name, $ext)
-	{
-		$path = base_url("assets/{$ext}/{$name}.{$ext}");
-
-		switch ($ext)
-		{
-			case 'css':
-				return "<link href='{$path}' rel='stylesheet' type='text/css'>";
-
-			case 'js':
-				return "<script src='{$path}'></script>";
-		}
 	}
 }

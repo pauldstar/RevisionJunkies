@@ -49,14 +49,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | Examples:	my-controller/index	-> my_controller/index
 |		my-controller/my-method	-> my_controller/my_method
 */
-$route['login/(:num)'] = 'pages/login/$1';
+$route['statistics'] = 'pages_member/statistics';
+$route['picture'] = 'pages_member/picture';
+$route['password'] = 'pages_member/password';
+$route['login/(:num)'] = 'pages_public/login/$1';
 $route['logout'] = 'user/logout';
-$route['verify_email'] = 'pages/verify_email';
-$route['login'] = 'pages/login';
-$route['contact'] = 'pages/contact';
-$route['leaderboard'] = 'pages/leaderboard';
-$route['races'] = 'pages/races';
-$route['game'] = 'pages/game';
-$route['default_controller'] = 'pages/game';
+$route['verify_email'] = 'pages_public/verify_email';
+$route['login'] = 'pages_public/login';
+$route['contact'] = 'pages_public/contact';
+$route['leaderboard'] = 'pages_public/leaderboard';
+$route['leagues'] = 'pages_public/leagues';
+$route['races'] = 'pages_public/races';
+$route['game'] = 'pages_public/game';
+$route['default_controller'] = 'pages_public/game';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
