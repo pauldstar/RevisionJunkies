@@ -16,8 +16,9 @@ class User_model extends CI_Model
   /**
    * Set & get the username for an unverified email
    *
-   * @param  string $username
-   * @return  string
+   * @param string $username
+   * @return void set
+   * @return string get
    */
   public function unverified_username($username = NULL)
   {
@@ -28,12 +29,12 @@ class User_model extends CI_Model
   /**
    * Retrieve user details from the database or session
    *
-   * @param  mixed  $id - text/number
-   * @param  mixed  $id_type - user_id/username/email or an array
-   * @param  bool  $login - set TRUE to save user session
-   * @return  object
+   * @param mixed $id - text/number
+   * @param mixed $id_type - user_id/username/email or an array
+   * @param bool $save_session - set TRUE and save user data in session
+   * @return object
    */
-  public function get_user($id = '', $id_type = 'user_id', $login = FALSE)
+  public function get_user($id = '', $id_type = 'user_id', $save_session = FALSE)
   {
     if (empty($id)) return self::$user;
 
@@ -47,7 +48,9 @@ class User_model extends CI_Model
       user.email_verified,
       user.total_qp,
       user_photo.filename AS photo,
-      user_email_verifier.verifier AS email_verifier
+      user_email_verifier.verifier AS email_verifier,
+      user_league.name AS league_name,
+      user_league.color AS league_color
     ';
 
     $this->db->select($selections);
@@ -65,6 +68,11 @@ class User_model extends CI_Model
       'left'
     );
 
+    $this->db->join(
+      'user_league',
+      'user_league.league_id = user.league'
+    );
+
     if (is_array($id_type))
     {
       $id_type = array_map(function($type) use($id)
@@ -78,8 +86,7 @@ class User_model extends CI_Model
     else $this->db->where("user.{$id_type}", $id);
 
     $user = $this->db->get()->row();
-
-    if ($login && !self::$user) self::$user = $user;
+    $save_session AND self::$user = $user;
 
     return $user;
   }

@@ -4,6 +4,8 @@ class Pages_public extends QP_Controller
 {
 	public function game()
 	{
+		$data = self::_init_page_data();
+
 	  $data['title'] = 'game';
     $data['styles'] = self::_load_asset('game', 'css');
     $data['page_content'] = $this->load->view('content/game', $data, TRUE);
@@ -20,42 +22,56 @@ class Pages_public extends QP_Controller
 
 	public function races()
 	{
+		$data = self::_init_page_data();
+
 		$data['title'] = 'races';
 		$data['styles'] = '';
     $data['page_content'] = '';
     $data['scripts'] = '';
+
 		self::_output_page($data);
 	}
 
 	public function leagues()
 	{
+		$data = self::_init_page_data();
+
 		$data['title'] = 'leagues';
     $data['styles'] = '';
 		$data['page_content'] = '';
 		$data['scripts'] = '';
+
 		self::_output_page($data);
 	}
 
 	public function leaderboard()
 	{
+		$data = self::_init_page_data();
+
 		$data['title'] = 'leaderboard';
     $data['styles'] = '';
 		$data['page_content'] = '';
 		$data['scripts'] = '';
+
 		self::_output_page($data);
 	}
 
 	public function contact()
 	{
+		$data = self::_init_page_data();
+
 		$data['title'] = 'contact';
     $data['styles'] = '';
     $data['page_content'] = '';
     $data['scripts'] = '';
+
 		self::_output_page($data);
 	}
 
 	public function login($response_code = '')
 	{
+		$data = self::_init_page_data();
+
 		if (self::$logged_in) redirect();
 
 		$data['active_tab'] = 'login';
@@ -90,6 +106,7 @@ class Pages_public extends QP_Controller
 
     $data['page_content'] = $this->load->view('content/login', $data, TRUE);
     $data['scripts'] = self::_load_asset('login', 'js');
+
 		self::_output_page($data);
 	}
 

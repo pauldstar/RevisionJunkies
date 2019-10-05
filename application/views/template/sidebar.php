@@ -14,7 +14,9 @@
       </div>
       <div class="float-left text-white">
         <span class="d-block"><?= $logged_in ? $user->username : '&nbsp;' ?></span>
-        <span class="d-block" id="user-role"><?= $logged_in ? $user->username : 'Guest' ?></span>
+        <span class="d-block" id="user-role" style="<?= $logged_in ? "color:{$user->league_color};" : '' ?>">
+          <?= $logged_in ? $user->league_name : 'Guest' ?>
+        </span>
         <span class="d-block" id="qp-status">
           <?php if ($logged_in): ?>
             <span class="aether-font">9p&nbsp;</span><?= $user->total_qp ?>

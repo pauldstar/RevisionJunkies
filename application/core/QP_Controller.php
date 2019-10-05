@@ -12,7 +12,6 @@ class QP_Controller extends CI_Controller
 		$this->load->model('user_model');
 
 		self::$logged_in = $this->user_model->get_user() ? TRUE : FALSE;
-		if ($members_only && !self::$logged_in) redirect();
   }
 
 	protected function _load_asset($name, $ext)
@@ -29,7 +28,12 @@ class QP_Controller extends CI_Controller
 		}
 	}
 
-	protected function _output_page($data)
+	/**
+   * Initialise and retrieve mandatory page $data
+   *
+   * @return array
+   */
+	protected function _init_page_data()
 	{
 		$data['logged_in'] = self::$logged_in;
 
@@ -84,6 +88,16 @@ class QP_Controller extends CI_Controller
 			'color' => 'success'
 		];
 
+		return $data;
+	}
+
+	/**
+   * Create and output a view using it's data
+   *
+   * @return void
+   */
+	protected function _output_page($data)
+	{
 		$data['header'] = $this->load->view('template/header', $data, TRUE);
 		$data['footer'] = $this->load->view('template/footer', '', TRUE);
 
