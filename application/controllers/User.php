@@ -41,6 +41,11 @@ class User extends CI_Controller
     redirect();
   }
 
+  /**
+   * Sign-up and send email verification to user
+   *
+   * @return void
+   */
   public function signup()
   {
     $this->load->helper('url');
@@ -87,6 +92,13 @@ class User extends CI_Controller
     self::send_email_verifier($user);
   }
 
+  /**
+   * Verify Email when user follows verification email link
+   *
+	 * @param string $username
+	 * @param string $email_verifier
+   * @return void
+   */
   public function verify_email($username, $email_verifier)
   {
     $this->load->helper('url');
@@ -107,6 +119,12 @@ class User extends CI_Controller
     redirect('login/300');
   }
 
+  /**
+   * Send email verification to user
+   *
+	 * @param array $user
+   * @return void
+   */
   public function send_email_verifier($user)
   {
     $this->load->helper('url');
@@ -155,6 +173,13 @@ class User extends CI_Controller
     $this->load->view('template/verify_email', $data);
   }
 
+  /**
+   * Check if login/signup form input is valid
+   * Called mostly by ajax calls
+   *
+	 * @param string $input_type
+   * @return void
+   */
   public function is_valid($input_type)
   {
     $input_text = $this->input->post('inputText', TRUE);
@@ -178,6 +203,11 @@ class User extends CI_Controller
     echo json_encode(['response' => $is_unique]);
   }
 
+  /**
+   * Log user out
+   *
+   * @return void
+   */
   public function logout()
   {
     session_destroy();

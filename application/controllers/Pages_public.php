@@ -2,77 +2,44 @@
 
 class Pages_public extends QP_Controller
 {
-	public function game()
+	/**
+	 * Class constructor
+	 *
+	 * Create list of public pages
+	 * Each with view file matching its name
+	 *
+	 * @return void
+	 */
+	public function __construct()
 	{
-		$data = self::_init_page_data();
+		parent::__construct();
 
-	  $data['title'] = 'game';
-    $data['styles'] = self::_load_asset('game', 'css');
-    $data['page_content'] = $this->load->view('content/game', $data, TRUE);
-    $data['footer'] = $this->load->view('template/footer', '', TRUE);
-
-    if (ENVIRONMENT === 'development')
-			$game_js = self::_load_asset('game', 'js');
-		else $game_js = self::_load_asset('game.min', 'js');
-
-    $data['scripts'] = $game_js;
-
-		self::_output_page($data);
+		self::$pages = [
+			'game',
+			'leagues',
+			'races',
+			'leaderboard',
+			'contact',
+			'login',
+			'server_info'
+		];
 	}
 
-	public function races()
-	{
-		$data = self::_init_page_data();
-
-		$data['title'] = 'races';
-		$data['styles'] = '';
-    $data['page_content'] = '';
-    $data['scripts'] = '';
-
-		self::_output_page($data);
-	}
-
-	public function leagues()
-	{
-		$data = self::_init_page_data();
-
-		$data['title'] = 'leagues';
-    $data['styles'] = '';
-		$data['page_content'] = '';
-		$data['scripts'] = '';
-
-		self::_output_page($data);
-	}
-
-	public function leaderboard()
-	{
-		$data = self::_init_page_data();
-
-		$data['title'] = 'leaderboard';
-    $data['styles'] = '';
-		$data['page_content'] = '';
-		$data['scripts'] = '';
-
-		self::_output_page($data);
-	}
-
-	public function contact()
-	{
-		$data = self::_init_page_data();
-
-		$data['title'] = 'contact';
-    $data['styles'] = '';
-    $data['page_content'] = '';
-    $data['scripts'] = '';
-
-		self::_output_page($data);
-	}
-
+	/**
+   * Login
+   *
+   * Response codes:
+	 * 100 - login failed
+	 * 200 - sign-up failed
+   * 300 - email verified
+	 * 400 - verify email
+	 *
+	 * @param int $response_code
+   * @return void
+   */
 	public function login($response_code = '')
 	{
-		$data = self::_init_page_data();
-
-		if (self::$logged_in) redirect();
+		self::$logged_in AND redirect();
 
 		$data['active_tab'] = 'login';
 		$data['user_id'] = '';
@@ -89,7 +56,7 @@ class Pages_public extends QP_Controller
 				$data['email_verified'] = 'active';
 				break;
 			case '200':
-				$data['active_tab'] = 'signup'; // no break
+				$data['active_tab'] = 'signup';
 			case '100':
 				$this->load->library('form_validation');
 				$this->form_validation->reload_data();
@@ -98,18 +65,10 @@ class Pages_public extends QP_Controller
 
 		$this->load->helper('form');
 
-		$data['title'] = 'login';
-
-    $login_css = self::_load_asset('login', 'css');
-    $glyphicons_css = self::_load_asset('glyphicons.min', 'css');
-    $data['styles'] = $login_css.$glyphicons_css;
-
-    $data['page_content'] = $this->load->view('content/login', $data, TRUE);
-    $data['scripts'] = self::_load_asset('login', 'js');
-
-		self::_output_page($data);
+		self::_output_page('login', $data);
 	}
 
+// TODO: remove server_info
 	public function server_info()
 	{
 		echo '<pre>';

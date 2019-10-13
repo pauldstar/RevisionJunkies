@@ -52,9 +52,10 @@
     $('[data-toggle="tooltip"]').tooltip();
 
     $('#menu-toggle').click(e => $('#wrapper').toggleClass('toggled'));
-  </script>
 
-  <script> const SITE_URL = '<?= site_url() ?>' </script>
+    const SITE_URL = '<?= site_url() ?>',
+          HI_SCORE = '<?= $logged_in ? $hi_score : 0 ?>';
+  </script>
 
   <?= $scripts ?>
 

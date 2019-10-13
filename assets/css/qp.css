@@ -273,7 +273,7 @@ a.nav-link.bg-darkest:hover {
   color: #5cb85c;
 }
 #sidebar-menu {
-  border-top: 2px solid #3a3f48;
+  border-top: 2px solid #212121;
 }
 #sidebar-menu ul li a {
   display: inline-block;

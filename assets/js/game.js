@@ -41,7 +41,8 @@ $(_=> Game.load());
 
 var Game = (_=>
 { 'use strict';
-  let _score,
+  let _hiScore = HI_SCORE,
+      _score,
       _status,
       _level,
       _startTime,
@@ -73,7 +74,7 @@ var Game = (_=>
     GridDisplay.updateTimer();
     Grid.build();
     Grid.addStartTiles();
-    GridDisplay.refresh(Grid.eachCell, _level, _score);
+    GridDisplay.refresh(Grid.eachCell, _level, _score, _hiScore);
     GridDisplay.message('start-off');
     _loading = GridDisplay.message('load-on');
     Questions.array(false);
@@ -149,8 +150,9 @@ var Game = (_=>
 
       if (maxMergeValue >= 9999) _status['won'] = true;
       _score = _status['won'] ? 9999 : maxMergeValue;
+      if (_score > _hiScore) _hiScore = _score;
 
-      GridDisplay.refresh(Grid.eachCell, _level, _score);
+      GridDisplay.refresh(Grid.eachCell, _level, _score, _hiScore);
       _checkGameStatus(moved);
     }
   }
@@ -666,6 +668,7 @@ var GridDisplay = (_=>
 { 'use strict';
   let _score = 0,
       _level = 1,
+      _hiScore = 0,
       _newTile = '.tile-new',
       _$tileTemplate = $('#tile-template'),
       _$tileContainer = $('#tile-container'),
@@ -679,10 +682,11 @@ var GridDisplay = (_=>
 
       _$gameLevel = $('#game-level'),
       _$gameScore = $('#game-score'),
+      _$siteHiScore = $('#site-hiscore'),
       _$gameTimer = $('#game-timer'),
       _$currentNewTile;
 
-  function _refresh(gridIterator, gameLevel, gameScore)
+  function _refresh(gridIterator, gameLevel, gameScore, siteHiScore)
   {
     window.requestAnimationFrame(_=>
     {
@@ -695,6 +699,7 @@ var GridDisplay = (_=>
 
       _updateLevel(gameLevel);
       _updateScore(gameScore);
+      _updateHiScore(siteHiScore);
     });
   }
 
@@ -749,6 +754,13 @@ var GridDisplay = (_=>
     if (gameScore > _score) _bounce(_$gameScore);
     _score = gameScore;
     _$gameScore.text(_score.toString().padStart(4, '0'));
+  }
+
+  function _updateHiScore(siteHiScore)
+  {
+    if (siteHiScore > _hiScore) _bounce(_$siteHiScore);
+    _hiScore = siteHiScore;
+    _$siteHiScore.text(_hiScore.toString().padStart(4, '0'));
   }
 
   function _updateTimer(timeDelta)

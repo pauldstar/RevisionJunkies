@@ -2,9 +2,27 @@
 
 class User_model extends CI_Model
 {
+  /**
+   * User data object
+   *
+   * @var	object
+   */
   private static $user;
+
+  /**
+   * Username of currently unverified user
+   *
+   * @var	string
+   */
   private static $unverified_username;
 
+  /**
+	 * Class constructor
+	 *
+	 * Initialise class variables with session variables
+	 *
+	 * @return void
+	 */
   public function __construct()
   {
     parent::__construct();
@@ -91,6 +109,11 @@ class User_model extends CI_Model
     return $user;
   }
 
+  /**
+   * For signing up users
+   *
+   * @return array
+   */
   public function create_user()
   {
     $this->load->helper('string');
@@ -131,6 +154,12 @@ class User_model extends CI_Model
     return $user_params;
   }
 
+  /**
+   * Set user email as verified
+   *
+	 * @param int $user_id
+   * @return bool
+   */
   public function confirm_email_verification($user_id)
   {
     $this->load->database();
@@ -149,6 +178,12 @@ class User_model extends CI_Model
     return $this->db->trans_status();
   }
 
+  /**
+   * Save user in session and update last login time in db
+   *
+	 * @param object $user
+   * @return void
+   */
   public function login($user)
   {
     self::$user = $user;
