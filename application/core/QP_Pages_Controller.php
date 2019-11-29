@@ -1,6 +1,6 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 
-class QP_Controller extends CI_Controller
+class QP_Pages_Controller extends CI_Controller
 {
 	/**
 	 * Is user logged in or not?
@@ -11,36 +11,32 @@ class QP_Controller extends CI_Controller
 
 	/**
 	 * List of pages to load views for
-	 * Initialised by child classes
+	 * Initialised/defined by child classes in application/controllers
 	 *
 	 * @var	array
 	 */
 	protected static $pages;
 
-	/**
-	 * Class constructor
-	 *
-	 * Save if user is logged in
-	 *
-	 * @return void
-	 */
   public function __construct()
   {
     parent::__construct();
 
 		$this->load->helper('url');
 		$this->load->helper('html');
-		$this->load->model('user_model');
+		$this->load->helper('number');
+		$this->load->model('user_model', '_user');
 
-		self::$logged_in = $this->user_model->get_user() ? TRUE : FALSE;
+		self::$logged_in = $this->_user->get_user()->logged_in;
   }
 
 	/**
    * Remap
-	 * All controller calls go through this function first
+	 * This function overrides the normal controller behavior in which the URI
+	 * determines which controller method is called; allowing us to define our
+	 * own method routing rules.
    *
 	 * @param string $page - name of requested page
-	 * @param array $params - to pass in page method call e.g. $page()
+	 * @param array $params - for controller method call e.g. $page()
    * @return callback|void
    */
 	public function _remap($page, $params = [])
@@ -58,7 +54,7 @@ class QP_Controller extends CI_Controller
    * Create and output a view using provided data
    * At method CLOSE, most (or all) view-producing methods SHOULD call this
 	 *
-	 * @param array $page - for the page
+	 * @param string $page
 	 * @param array $data - for the page
    * @return void
    */
@@ -67,6 +63,9 @@ class QP_Controller extends CI_Controller
 		$data['logged_in'] = self::$logged_in;
 		$data['title'] = $page;
 		$data['styles'] = css_tag($page);
+		$data['user'] = $this->_user->get_user();
+		$data['hi_score'] = $data['user'] ? $data['user']->hi_score : 0;
+		$data['total_qp'] = $data['user'] ? $data['user']->total_qp : 0;
 
 		$data['nav_items']['main'] = [
 			'game' => ['glyphicon' => 'equalizer', 'color' => 'danger'],
@@ -84,28 +83,21 @@ class QP_Controller extends CI_Controller
 				'password' => ['glyphicon' => 'eye-close', 'color' => 'warning'],
 				'logout' => ['glyphicon' => 'log-out', 'color' => 'danger']
 			];
-
-			$data['user'] = $this->user_model->get_user();
-			$data['hi_score'] = 100;
 		}
 		else $data['nav_items']['main']['login'] = [
 			'glyphicon' => 'log-in',
 			'color' => 'success'
 		];
 
-		$data['page_content'] = $this->load->view(
-			"content/{$page}", $data, TRUE
-		);
+		$data['header'] = $this->load->view('template/header', $data, TRUE);
+		$data['footer'] = $this->load->view('template/footer', '', TRUE);
+		$data['page_content'] = $this->load->view("content/{$page}", $data, TRUE);
+		$data['mainbar'] = $this->load->view('template/mainbar', $data, TRUE);
+		$data['sidebar'] = $this->load->view('template/sidebar', $data, TRUE);
 
 		if ($page === 'game' && ENVIRONMENT === 'production')
 			$data['scripts'] = script_tag('game.min');
 		else $data['scripts'] = script_tag($page);
-
-		$data['header'] = $this->load->view('template/header', $data, TRUE);
-		$data['footer'] = $this->load->view('template/footer', '', TRUE);
-
-		$data['mainbar'] = $this->load->view('template/mainbar', $data, TRUE);
-		$data['sidebar'] = $this->load->view('template/sidebar', $data, TRUE);
 
 		$this->load->view('template/html', $data);
 	}
