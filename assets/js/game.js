@@ -56,7 +56,7 @@ var Game = (_=>
     return _status['lost'] || _status['won'];
   }
 
-  function _checkGameStatus(moved)
+  function _checkGameStatus()
   {
     if (!Grid.movesAvailable(Input.vectorMap)) _status['lost'] = true;
     if (_gameIsOver()) _endGame();
@@ -71,12 +71,12 @@ var Game = (_=>
     Md5();
     clearInterval(_timerInterval);
     clearInterval(_questionInterval);
-    GridDisplay.updateTimer();
+    GameDisplay.updateTimer();
     Grid.build();
     Grid.addStartTiles();
-    GridDisplay.refresh(Grid.eachCell, _level, _score, _hiScore);
-    GridDisplay.message('start-off');
-    _loading = GridDisplay.message('load-on');
+    GameDisplay.refresh(Grid.eachCell, _level, _score);
+    GameDisplay.message('start-off');
+    _loading = GameDisplay.message('load-on');
     Questions.array(false);
 
     $.ajax({
@@ -84,10 +84,10 @@ var Game = (_=>
       dataType: 'JSON',
       success: data => data.forEach(question => Questions.array(question))
     })
-    .done(data =>
+    .done(_=>
     {
-      _loading = GridDisplay.message('load-off');
-      GridDisplay.message('start-on');
+      _loading = GameDisplay.message('load-off');
+      GameDisplay.message('start-on');
     });
   }
 
@@ -95,7 +95,7 @@ var Game = (_=>
   {
     _level++;
 
-    let getQuestionsAjax = $.ajax({
+    $.ajax({
       url: `${SITE_URL}game/get_questions`,
       dataType: 'JSON',
       success: data => data.forEach(question => Questions.array(question))
@@ -108,7 +108,7 @@ var Game = (_=>
 
     $.ajax({ url: `${SITE_URL}game/start_game` });
 
-    GridDisplay.message('start-off');
+    GameDisplay.message('start-off');
 
     _startTime = Date.now();
     let timeDelta;
@@ -116,7 +116,7 @@ var Game = (_=>
     _timerInterval = setInterval(_=>
     {
       timeDelta = Date.now() - _startTime;
-      GridDisplay.updateTimer(timeDelta);
+      GameDisplay.updateTimer(timeDelta);
     }, 1000);
 
     _gameStarted = true;
@@ -130,7 +130,7 @@ var Game = (_=>
     clearInterval(_timerInterval);
     clearInterval(_questionInterval);
 
-    let timeDelta = Math.floor((Date.now() - _startTime) / 1000)
+    let timeDelta = Math.floor((Date.now() - _startTime) / 1000);
 
     $.ajax({ url: `${SITE_URL}game/end_game/${_score}/${timeDelta}` });
   }
@@ -152,7 +152,7 @@ var Game = (_=>
       _score = _status['won'] ? 9999 : maxMergeValue;
       if (_score > _hiScore) _hiScore = _score;
 
-      GridDisplay.refresh(Grid.eachCell, _level, _score, _hiScore);
+      GameDisplay.refresh(Grid.eachCell, _level, _score, _hiScore);
       _checkGameStatus(moved);
     }
   }
@@ -174,7 +174,7 @@ var Game = (_=>
     if (question) displayQuestionModal();
     else
     {
-      _loading = GridDisplay.message('load-on');
+      _loading = GameDisplay.message('load-on');
 
       _questionInterval = setInterval(_=>
       {
@@ -183,7 +183,7 @@ var Game = (_=>
         if (question)
         {
           clearInterval(_questionInterval);
-          _loading = GridDisplay.message('load-off');
+          _loading = GameDisplay.message('load-off');
           displayQuestionModal();
         }
       }, 500);
@@ -193,7 +193,7 @@ var Game = (_=>
   function _answerQuestion(direction)
   {
     let score = Questions.scoreAnswer(direction, Md5);
-    GridDisplay.setTileValue(parseFloat(score), Grid.cells);
+    GameDisplay.setTileValue(parseFloat(score), Grid.cells);
     _checkGameStatus();
   }
 
@@ -211,7 +211,7 @@ var Game = (_=>
           3: { x: -1, y: 0 }
         };
 
-    _$newGameBtn.click(e =>
+    _$newGameBtn.click(_=>
     {
       $('#game-section').focus();
       _loadGame();
@@ -401,11 +401,11 @@ var Grid = (_=>
 
     for (let x = 0; x < _size; x++)
     {
-      let row = _cells[x] = [];
+      _cells[x] = [];
 
       for (let y = 0; y < _size; y++)
       {
-        row.push(null);
+				_cells[x].push(null);
       }
     }
   }
@@ -430,7 +430,7 @@ var Grid = (_=>
   {
   	if (_availableCells(true)) return true;
 
-    let cell, tile, otherTile, tileIntValue,
+    let cell, otherTile, tileIntValue,
         vector, isMergeable, matchesAvailable = false;
 
     _eachCell((x, y, tile) =>
@@ -587,20 +587,12 @@ var Grid = (_=>
   {
     let maxMerge = _getMaxMerge();
 
-    if (maxMerge)
+    if (maxMerge && merged.floatValue > maxMerge.floatValue)
     {
-      if (merged.floatValue > maxMerge.floatValue)
-      {
-        maxMerge.isMaxMerge = false;
-        merged.isMaxMerge = true;
-        maxMerge = merged;
-      }
+			maxMerge.isMaxMerge = false;
+			merged.isMaxMerge = true;
     }
-    else
-    {
-      merged.isMaxMerge = true;
-      maxMerge = merged;
-    }
+    else merged.isMaxMerge = true;
   }
 
   function _move(vector)
@@ -664,7 +656,7 @@ var Grid = (_=>
   return _Grid;
 })();
 
-var GridDisplay = (_=>
+var GameDisplay = (_=>
 { 'use strict';
   let _score = 0,
       _level = 1,
@@ -756,9 +748,18 @@ var GridDisplay = (_=>
     _$gameScore.text(_score.toString().padStart(4, '0'));
   }
 
+  /**
+   * Update the displayed hi-score if new score is higher.
+   * Animate with pulsation.
+   *
+	 * @param int siteHiScore - leave undefined to disable pulsation animation
+   * @return void
+   */
   function _updateHiScore(siteHiScore)
   {
-    if (siteHiScore > _hiScore) _bounce(_$siteHiScore);
+    if (!siteHiScore) return void(_$siteHiScore.removeClass('pulsate'));
+
+    if (siteHiScore > _hiScore) _$siteHiScore.addClass('pulsate');
     _hiScore = siteHiScore;
     _$siteHiScore.text(_hiScore.toString().padStart(4, '0'));
   }
@@ -848,14 +849,14 @@ var GridDisplay = (_=>
     _$tileContainer.append($newTile);
   }
 
-  let _GridDisplay = {
+  let _GameDisplay = {
     refresh: _refresh,
     message: _message,
     updateTimer: _updateTimer,
     setTileValue: _setTileValue
   };
 
-  return _GridDisplay;
+  return _GameDisplay;
 })();
 
 var Questions = (_=>
@@ -928,7 +929,7 @@ var Questions = (_=>
         id = _currentQuestion.id,
         score = 0;
 
-    $.ajax({ url: `${SITE_URL}game/score_user_answer/${id}/${ansCode}` });
+    $.ajax({ url: `${SITE_URL}game/answer_score/${id}/${ansCode}` });
 
     // TODO: game.js: remove answer scoring test
     let ans = _currentQuestion.type === 'boolean' ?
