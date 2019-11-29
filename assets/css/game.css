@@ -66,7 +66,7 @@
   padding-top: 7px;
 }
 #game-section {
-  min-height: calc(100vh - 63px);
+  min-height: calc(100vh - 68.39px);
 }
 #game-container {
   touch-action: none;

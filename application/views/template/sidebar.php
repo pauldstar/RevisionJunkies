@@ -18,11 +18,7 @@
           <?= $logged_in ? $user->league_name : 'Guest' ?>
         </span>
         <span class="d-block" id="qp-status">
-          <?php if ($logged_in): ?>
-            <span class="aether-font">9p&nbsp;</span><?= $user->total_qp ?>
-          <?php else: ?>
-            &nbsp;
-          <?php endif ?>
+          <span class="aether-font">9p&nbsp;</span><?= metric_format($user->total_qp, 2) ?>
         </span>
       </div>
     </div>
