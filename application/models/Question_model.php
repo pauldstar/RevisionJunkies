@@ -1,6 +1,6 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Question extends CI_Model
+class Question_model extends CI_Model
 {
 	private static $questions;
 	private static $answer_hash_chain;
@@ -21,7 +21,8 @@ class Question extends CI_Model
 		if (isset(self::$questions[$question_id]))
 		{
 			$question = self::$questions[$question_id];
-			$unset AND unset(self::$questions[$question_id]);
+			// dont refactor to short-hand conditional statement
+			if ($unset) unset(self::$questions[$question_id]);
       return $question;
     }
 
