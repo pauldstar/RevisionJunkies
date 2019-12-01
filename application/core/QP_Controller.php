@@ -1,6 +1,14 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 
-class QP_Pages_Controller extends CI_Controller
+/*
+ * Defines 3 'base' controller classes
+ *
+ * - Main QP controller
+ * - Test controller
+ * - Page controller
+ */
+
+class QP_Controller extends CI_Controller
 {
 	/**
 	 * Is user logged in or not?
@@ -9,6 +17,26 @@ class QP_Pages_Controller extends CI_Controller
 	 */
 	protected static $logged_in;
 
+	public function __construct()
+	{
+		parent::__construct();
+		$this->load->model('user_model', '_user');
+		self::$logged_in = !!$this->_user->get_user();
+	}
+}
+
+class QP_Test_Controller extends QP_Controller
+{
+	public function __construct()
+	{
+		parent::__construct();
+		$this->load->helper('url');
+		ENVIRONMENT === 'production' AND redirect();
+	}
+}
+
+class QP_Page_Controller extends QP_Controller
+{
 	/**
 	 * List of pages to load views for
 	 * Initialised/defined by child classes in application/controllers
@@ -20,13 +48,9 @@ class QP_Pages_Controller extends CI_Controller
   public function __construct()
   {
     parent::__construct();
-
 		$this->load->helper('url');
 		$this->load->helper('html');
 		$this->load->helper('number');
-		$this->load->model('user_model', '_user');
-
-		self::$logged_in = $this->_user->get_user()->logged_in;
   }
 
 	/**
