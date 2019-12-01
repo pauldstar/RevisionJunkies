@@ -1,6 +1,6 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Member extends QP_Pages_Controller
+class Member extends QP_Page_Controller
 {
 	/**
 	 * Class constructor

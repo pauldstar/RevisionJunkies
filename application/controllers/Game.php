@@ -5,7 +5,7 @@ class Game extends CI_Controller
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->model('question', '_question');
+		$this->load->model('question_model', '_question');
 		$this->load->model('game_model', '_game');
 	}
 
@@ -13,7 +13,7 @@ class Game extends CI_Controller
    * Load/prepare/reload/reset game
 	 * Called before start_game()
 	 *
-   * @return void
+   * @echo array
    */
 	public function load_game()
 	{
@@ -25,8 +25,6 @@ class Game extends CI_Controller
 
 	/**
    * Start game & timer
-	 *
-   * @return void
    */
 	public function start_game()
 	{
@@ -38,7 +36,7 @@ class Game extends CI_Controller
 	 *
 	 * @param string|int $score
 	 * @param string|int $time_delta - game time length
-   * @return void
+   * @echo string
    */
 	public function end_game($score, $time_delta)
 	{
@@ -51,12 +49,12 @@ class Game extends CI_Controller
 	/**
    * Get game questions (displayed to user) and increment game level
 	 *
-   * @return void
+   * @echo json - questions for user to answer
    */
 	public function get_questions()
 	{
 		$level = $this->_game->level();
-		$user_questions = $this->_game->get_user_questions($level);
+		$user_questions = $this->_question->get_user_questions($level);
     $this->_game->level(TRUE);
 		echo json_encode($user_questions);
 	}
@@ -66,7 +64,7 @@ class Game extends CI_Controller
 	 *
 	 * @param string|int $question_id
 	 * @param string|int $answer_code - null value suggests question timed out
-   * @return void
+   * @echo int
    */
 	public function answer_score($question_id, $answer_code = NULL)
 	{

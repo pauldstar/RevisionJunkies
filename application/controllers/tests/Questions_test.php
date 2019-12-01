@@ -5,6 +5,6 @@ class Questions_test extends QP_Test_Controller
    public function __construct()
    {
      parent::__construct();
-     $this->load->model('questions');
+     $this->load->model('question_model', '_question');
    }
  }
