@@ -20,22 +20,23 @@ class Game_model extends CI_Model
 		self::$score OR self::$score = 0;
   }
 
-  public function start_time($time = NULL)
+  public function start_time($time = 0)
   {
     if ($time) self::$start_time = $time;
     else return self::$start_time;
   }
 
-  public function score($score = NULL)
+  public function score($score = 0, $increment = TRUE)
   {
-    if ($score) self::$score += $score;
+    if ($score && $increment) self::$score += $score;
+    else if (!$increment) self::$score = $score;
     else return self::$score;
   }
 
-  public function level($increment = FALSE)
+  public function level($increment = FALSE, $reset = FALSE)
   {
     if ($increment) self::$level++;
+    else if ($reset) self::$level = 1;
     else return self::$level;
   }
-
 }

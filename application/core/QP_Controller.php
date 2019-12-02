@@ -32,6 +32,8 @@ class QP_Test_Controller extends QP_Controller
 		parent::__construct();
 		$this->load->helper('url');
 		ENVIRONMENT === 'production' AND redirect();
+		$this->load->library('unit_test');
+		$this->unit->use_strict(TRUE);
 	}
 }
 

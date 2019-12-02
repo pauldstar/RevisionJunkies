@@ -50,9 +50,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |		my-controller/my-method	-> my_controller/my_method
 */
 $route['logout'] = 'user/logout';
+
 $route['statistics'] = 'pages/member/statistics';
 $route['picture'] = 'pages/member/picture';
 $route['password'] = 'pages/member/password';
+
 $route['login/(:num)'] = 'pages/common/login/$1';
 $route['verify_email'] = 'pages/common/verify_email';
 $route['login'] = 'pages/common/login';
@@ -61,6 +63,7 @@ $route['leaderboard'] = 'pages/common/leaderboard';
 $route['leagues'] = 'pages/common/leagues';
 $route['races'] = 'pages/common/races';
 $route['game'] = 'pages/common/game';
+
 $route['default_controller'] = 'pages/common/game';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
