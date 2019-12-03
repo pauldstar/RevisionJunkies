@@ -8,6 +8,13 @@ class Game_test extends QP_Test_Controller
     $this->load->model('game_model', '_game');
   }
 
+  public function run()
+  {
+    self::start_time();
+    self::score();
+    self::level();
+  }
+
   public function start_time()
   {
     $test = $this->_game->start_time();
@@ -60,14 +67,7 @@ class Game_test extends QP_Test_Controller
     $this->_game->level(FALSE, TRUE);
     $test = $this->_game->level();
     $this->unit->run($test, 1, 'Reset level to 1');
-    
-    echo $this->unit->report();
-  }
 
-  public function all()
-  {
-    self::start_time();
-    self::score();
-    self::level();
+    echo $this->unit->report();
   }
  }
