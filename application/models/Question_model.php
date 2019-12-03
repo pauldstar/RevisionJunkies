@@ -16,6 +16,44 @@ class Question_model extends CI_Model
 		self::$answer_hash_chain OR self::$answer_hash_chain = [''];
 	}
 
+	public function load_questions($level)
+	{
+		$this->load->database();
+
+		$this->db->select('question, type, correct_answer, incorrect_answers');
+
+		switch ($level)
+		{
+			case 1:
+				$this->db->where('difficulty', 'easy');
+				$this->db->where('type', 'boolean');
+				$limit = 4;
+				break;
+			case 2:
+				$this->db->where('difficulty', 'easy');
+				$limit = 7;
+				break;
+			case 3:
+				$this->db->where('difficulty', 'medium');
+				$this->db->or_where('difficulty', 'easy');
+				$limit = 7;
+				break;
+			default:
+				$limit = 10;
+				break;
+		}
+
+		$this->db->order_by(NULL, 'random');
+		$query = $this->db->get('question', $limit);
+
+		return $query->result();
+	}
+
+	public function set_session_questions($questions)
+	{
+		foreach ($questions as $qtn) self::$questions[$qtn->id] = $qtn;
+	}
+
 	public function get_session_question($question_id, $unset = TRUE)
 	{
 		if (isset(self::$questions[$question_id]))
@@ -54,43 +92,6 @@ class Question_model extends CI_Model
 		return $result;
 	}
 
-	public function set_session_questions($questions)
-	{
-		foreach ($questions as $qtn) self::$questions[$qtn->id] = $qtn;
-	}
-
-	public function load_questions($level)
-	{
-		$this->load->database();
-
-		$this->db->select('question, type, correct_answer, incorrect_answers');
-
-		switch ($level)
-		{
-			case 1:
-				$this->db->where('difficulty', 'easy');
-				$this->db->where('type', 'boolean');
-				$limit = 4;
-				break;
-			case 2:
-				$this->db->where('difficulty', 'easy');
-				$limit = 7;
-				break;
-			case 3:
-				$this->db->where('difficulty', 'medium');
-				$this->db->or_where('difficulty', 'easy');
-				$limit = 7;
-				break;
-			default:
-				$limit = 10;
-				break;
-		}
-
-		$this->db->order_by(NULL, 'random');
-		$query = $this->db->get('question', $limit);
-
-		return $query->result();
-	}
 
 	public function reset()
 	{
