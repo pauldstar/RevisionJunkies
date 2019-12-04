@@ -20,7 +20,8 @@ class Question_model extends CI_Model
 	{
 		$this->load->database();
 
-		$this->db->select('question, type, correct_answer, incorrect_answers');
+		$this->db->
+			select('question, type, correct_answer, difficulty, incorrect_answers');
 
 		switch ($level)
 		{
