@@ -1,14 +1,12 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
- * Unit Testing Class
- *
- * Simple testing class
+ * Extending Unit Testing Class
  *
  * @package		CodeIgniter
  * @subpackage	Libraries
  * @category	UnitTesting
- * @author		EllisLab Dev Team
+ * @author		Quepenny
  * @link		https://codeigniter.com/user_guide/libraries/unit_testing.html
  */
 class QP_Unit_test extends CI_Unit_test

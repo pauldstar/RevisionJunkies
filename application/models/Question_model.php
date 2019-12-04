@@ -16,40 +16,69 @@ class Question_model extends CI_Model
 		self::$answer_hash_chain OR self::$answer_hash_chain = [''];
 	}
 
-	public function load_questions($level)
+	/**
+   * Format database questions for user
+   *
+   * @param	int $level current game level
+   * @return object
+   */
+	public function format_user_questions($level)
 	{
-		$this->load->database();
+		$questions = self::_load_questions_db($level);
+		$scores = self::get_calc_scores($level, count($questions));
+		$session_questions = [];
+		$user_questions = [];
 
-		$this->db->
-			select('question, type, correct_answer, difficulty, incorrect_answers');
-
-		switch ($level)
+		foreach ($questions as $index => $qtn)
 		{
-			case 1:
-				$this->db->where('difficulty', 'easy');
-				$this->db->where('type', 'boolean');
-				$limit = 4;
-				break;
-			case 2:
-				$this->db->where('difficulty', 'easy');
-				$limit = 7;
-				break;
-			case 3:
-				$this->db->where('difficulty', 'medium');
-				$this->db->or_where('difficulty', 'easy');
-				$limit = 7;
-				break;
-			default:
-				$limit = 10;
-				break;
+			$qtn->id = "{$level}{$index}";
+			$qtn->score = $scores[$index];
+
+			$usr_qtn = [];
+			$usr_qtn['id'] = $qtn->id;
+			$usr_qtn['level'] = $level;
+			$usr_qtn['question'] = $qtn->question;
+			$usr_qtn['type'] = $qtn->type;
+			$usr_qtn['score'] = $qtn->score;
+
+			// TODO: Game.php controller: remove $usr_qtn['correct']
+			$usr_qtn['correct'] = str_replace(['"', "'", " "], '', $qtn->correct_answer);
+
+			if ($qtn->type === 'multiple')
+			{
+				$usr_qtn['options'][] = $qtn->correct_answer;
+
+				$incorrect_answers = explode(',', $qtn->incorrect_answers);
+				foreach ($incorrect_answers as $ans) $usr_qtn['options'][] = $ans;
+
+				shuffle($usr_qtn['options']);
+
+				foreach ($usr_qtn['options'] as $opt)
+					$usr_qtn['optionsTrim'][] = str_replace(['"', "'", " "], '', $opt);
+				$qtn->options_trim = $usr_qtn['optionsTrim'];
+			}
+
+			// TODO: Questions.php model: remove $usr_qtn['hashes']
+			$usr_qtn['hashes'] = self::get_options_test_hashes($usr_qtn);
+
+			$qtn->answer_hash = self::_get_next_answer_chain_hash($qtn->correct_answer);
+			$usr_qtn['ah'] = $qtn->answer_hash;
+
+			$session_questions[] = $qtn;
+			$user_questions[] = $usr_qtn;
 		}
 
-		$this->db->order_by(NULL, 'random');
-		$query = $this->db->get('question', $limit);
-
-		return $query->result();
+		self::set_session_questions($session_questions);
 	}
-
+	/**
+   * Check that test value IS the expected value(s)
+   *
+   * @param	mixed	$test
+   * @param	mixed|array	$expected
+   * @param	string $test_name
+   * @param	string $notes
+   * @return	string
+   */
 	public function set_session_questions($questions)
 	{
 		foreach ($questions as $qtn) self::$questions[$qtn->id] = $qtn;
@@ -135,55 +164,6 @@ class Question_model extends CI_Model
 		return 0;
 	}
 
-	public function get_user_questions($level)
-	{
-		$questions = self::load_questions($level);
-		$scores = self::get_calc_scores($level, count($questions));
-		$session_questions = [];
-		$user_questions = [];
-
-		foreach ($questions as $index => $qtn)
-		{
-			$qtn->id = "{$level}{$index}";
-			$qtn->score = $scores[$index];
-
-			$usr_qtn = [];
-			$usr_qtn['id'] = $qtn->id;
-			$usr_qtn['level'] = $level;
-			$usr_qtn['question'] = $qtn->question;
-			$usr_qtn['type'] = $qtn->type;
-			$usr_qtn['score'] = $qtn->score;
-
-			// TODO: Game.php controller: remove $usr_qtn['correct']
-			$usr_qtn['correct'] = str_replace(['"', "'", " "], '', $qtn->correct_answer);
-
-			if ($qtn->type === 'multiple')
-			{
-				$usr_qtn['options'][] = $qtn->correct_answer;
-
-				$incorrect_answers = explode(',', $qtn->incorrect_answers);
-				foreach ($incorrect_answers as $ans) $usr_qtn['options'][] = $ans;
-
-				shuffle($usr_qtn['options']);
-
-				foreach ($usr_qtn['options'] as $opt)
-					$usr_qtn['optionsTrim'][] = str_replace(['"', "'", " "], '', $opt);
-				$qtn->options_trim = $usr_qtn['optionsTrim'];
-			}
-
-			// TODO: Questions.php model: remove $usr_qtn['hashes']
-			$usr_qtn['hashes'] = self::get_options_test_hashes($usr_qtn);
-
-			$qtn->answer_hash = self::_get_next_answer_chain_hash($qtn->correct_answer);
-			$usr_qtn['ah'] = $qtn->answer_hash;
-
-			$session_questions[] = $qtn;
-			$user_questions[] = $usr_qtn;
-		}
-
-		self::set_session_questions($session_questions);
-	}
-
 	/**
 	 * get hash for user's answer
 	 *
@@ -230,5 +210,45 @@ class Question_model extends CI_Model
 		$next_hash = md5($last_hash . md5($answer));
 		self::$answer_hash_chain[] = $next_hash;
 		return $next_hash;
+	}
+
+	/**
+	 * Load random questions from database for game level
+	 *
+	 * @param	int $level current game level
+	 * @return object
+	 */
+	private function _load_questions_db($level)
+	{
+		$this->load->database();
+
+		$this->db->
+			select('question, type, correct_answer, difficulty, incorrect_answers');
+
+		switch ($level)
+		{
+			case 1:
+				$this->db->where('difficulty', 'easy');
+				$this->db->where('type', 'boolean');
+				$limit = 4;
+				break;
+			case 2:
+				$this->db->where('difficulty', 'easy');
+				$limit = 7;
+				break;
+			case 3:
+				$this->db->where('difficulty', 'medium');
+				$this->db->or_where('difficulty', 'easy');
+				$limit = 7;
+				break;
+			default:
+				$limit = 10;
+				break;
+		}
+
+		$this->db->order_by(NULL, 'random');
+		$query = $this->db->get('question', $limit);
+
+		return $query->result();
 	}
 }
