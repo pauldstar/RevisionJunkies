@@ -458,6 +458,12 @@ if ( ! function_exists('log_message'))
 	 */
 	function log_message($level, $message)
 	{
+		if (ENVIRONMENT === 'production' && $level === 'error')
+		{
+			error_log($message);
+			return;
+		}
+
 		static $_log;
 
 		if ($_log === NULL)
