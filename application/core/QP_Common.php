@@ -45,3 +45,24 @@ if ( ! function_exists('log_message'))
 		$_log[0]->write_log($level, $message);
 	}
 }
+
+// ------------------------------------------------------------------------
+
+if ( ! function_exists('dd'))
+{
+	/**
+	 * Output a parameter and die
+	 *
+	 * Used for debugging
+	 *
+	 * @param	mixed $output
+	 * @return	void
+	 */
+	function dd($val)
+	{
+		echo '<pre>';
+    print_r($val);
+    echo  '</pre>';
+		die();
+	}
+}
