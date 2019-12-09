@@ -894,7 +894,7 @@ var Questions = (_=>
         switch (ansCode)
         {
           case 0: case 1: case 2: case 3:
-            return hashFn(ansHash, _currentQuestion.optionsTrim[ansCode]);
+            return hashFn(ansHash, _currentQuestion.options[ansCode]);
           default: return hashFn(ansHash);
         }
     }
@@ -929,12 +929,12 @@ var Questions = (_=>
         id = _currentQuestion.id,
         score = 0;
 
-    $.ajax({ url: `${SITE_URL}game/answer_score/${id}/${ansCode}` });
+    $.ajax({ url: `${SITE_URL}game/answer_score/${ansCode}` });
 
     // TODO: game.js: remove answer scoring test
     let ans = _currentQuestion.type === 'boolean' ?
       ( ansCode === 1 ? 'True' : ansCode === 0 ?  'False' : undefined ) :
-      _currentQuestion.optionsTrim[ansCode];
+      _currentQuestion.options[ansCode];
 
     console.log('chose: '+ans);
     console.log('right: '+_currentQuestion.correct);

@@ -54,9 +54,10 @@ class Game extends CI_Controller
 	public function get_questions()
 	{
 		$level = $this->_game->level();
-		$user_questions = $this->_question->format_user_questions($level);
+		$db_questions = $this->_question->load_questions($level);
+		$game_questions = $this->_question->format_questions($level, $db_questions);
     $this->_game->level(TRUE);
-		echo json_encode($user_questions);
+		echo json_encode($game_questions);
 	}
 
 	/**

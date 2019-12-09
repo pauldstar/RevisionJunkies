@@ -27,6 +27,7 @@ class Questions_test extends QP_Test_Controller
         is($qtn->difficulty, 'easy', 'Level 1 has only easy difficulty');
       $this->unit->
         is($qtn->type, 'boolean', 'Level 1 has only boolean questions');
+      $this->unit->is($qtn->level, '1', 'Question is Level 1');
     }
 
     $questions = $this->_question->load_questions(2);
@@ -34,31 +35,32 @@ class Questions_test extends QP_Test_Controller
     $this->unit->is(count($questions), 7, 'Level 2 has 7 questions');
 
     foreach ($questions as $qtn)
+    {
       $this->unit->
         is($qtn->difficulty, 'easy', 'Level 2 has only easy difficulty');
+      $this->unit->is($qtn->level, '2', 'Question is Level 2');
+    }
 
     $questions = $this->_question->load_questions(3);
 
     $this->unit->is(count($questions), 7, 'Level 3 has 7 questions');
 
     foreach ($questions as $qtn)
+    {
       $this->unit->
         isnt($qtn->difficulty, 'hard', 'Level 3 has no hard difficulty');
+      $this->unit->is($qtn->level, '3', 'Question is Level 3');
+    }
 
     $questions = $this->_question->load_questions(4);
     $this->unit->is(count($questions), 10, 'Level 4 has 10 questions');
 
-    echo $this->unit->report();
-  }
-
-  public function session_questions()
-  {
-    $test = $this->_question->set_session_questions();
-    $this->unit->is($test, 'is_int', 'start_time() returns int');
-
-    $this->_question->start_time(1234567890);
-    $test = $this->_question->start_time();
-    $this->unit->is($test, 1234567890, 'Set start time as 1234567890');
+    foreach ($questions as $qtn)
+    {
+      $this->unit->
+        isnt($qtn->difficulty, 'hard', 'Level 3 has no hard difficulty');
+      $this->unit->is($qtn->level, '4', 'Question is Level 4');
+    }
 
     echo $this->unit->report();
   }

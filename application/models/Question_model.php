@@ -2,78 +2,104 @@
 
 class Question_model extends CI_Model
 {
-	private static $questions;
+	private static $session_questions;
 	private static $answer_hash_chain;
 
 	public function __construct()
 	{
 		parent::__construct();
 		$this->load->library('session');
-		self::$questions = &$_SESSION['questions'];
+		self::$session_questions = &$_SESSION['questions'];
 		self::$answer_hash_chain = &$_SESSION['answer_hash_chain'];
 
-		self::$questions OR self::$questions = [];
+		self::$session_questions OR self::$session_questions = [];
 		self::$answer_hash_chain OR self::$answer_hash_chain = [''];
 	}
 
 	/**
-   * Format database questions for user
-   *
-   * @param	int $level current game level
+   * Get and save formatted questions to display in-game
+	 *
+   * @param	array $db_questions current game level
    * @return object
    */
-	public function format_user_questions($level)
+	public function format_questions($level, $db_questions)
 	{
-		$questions = self::_load_questions_db($level);
-		$scores = self::get_calc_scores($level, count($questions));
-		$session_questions = [];
-		$user_questions = [];
+		$game_questions = [];
 
-		foreach ($questions as $index => $qtn)
+		foreach ($db_questions as $index => $qtn)
 		{
-			$qtn->id = "{$level}{$index}";
-			$qtn->score = $scores[$index];
+			$game_qtn['level'] = $qtn->level;
+			$game_qtn['question'] = $qtn->question;
+			$game_qtn['type'] = $qtn->type;
 
-			$usr_qtn = [];
-			$usr_qtn['id'] = $qtn->id;
-			$usr_qtn['level'] = $level;
-			$usr_qtn['question'] = $qtn->question;
-			$usr_qtn['type'] = $qtn->type;
-			$usr_qtn['score'] = $qtn->score;
+			$qtn->score = self::_get_random_score($level);
+			$game_qtn['score'] = $qtn->score;
 
-			// TODO: Game.php controller: remove $usr_qtn['correct']
-			$usr_qtn['correct'] = str_replace(['"', "'", " "], '', $qtn->correct_answer);
+			$qtn->answer_hash = self::_get_next_answer_hash($qtn->correct_answer);
+			$game_qtn['ah'] = $qtn->answer_hash;
 
 			if ($qtn->type === 'multiple')
 			{
-				$usr_qtn['options'][] = $qtn->correct_answer;
+				$game_qtn['options'] = array_merge(
+					[$qtn->correct_answer], explode(',', $qtn->incorrect_answers)
+				);
 
-				$incorrect_answers = explode(',', $qtn->incorrect_answers);
-				foreach ($incorrect_answers as $ans) $usr_qtn['options'][] = $ans;
-
-				shuffle($usr_qtn['options']);
-
-				foreach ($usr_qtn['options'] as $opt)
-					$usr_qtn['optionsTrim'][] = str_replace(['"', "'", " "], '', $opt);
-				$qtn->options_trim = $usr_qtn['optionsTrim'];
+				shuffle($game_qtn['options']);
 			}
 
-			// TODO: Questions.php model: remove $usr_qtn['hashes']
-			$usr_qtn['hashes'] = self::get_options_test_hashes($usr_qtn);
-
-			$qtn->answer_hash = self::_get_next_answer_chain_hash($qtn->correct_answer);
-			$usr_qtn['ah'] = $qtn->answer_hash;
-
-			$session_questions[] = $qtn;
-			$user_questions[] = $usr_qtn;
+			self::$session_questions[] = $qtn;
+			$game_questions[] = $game_qtn;
 		}
 
-		self::set_session_questions($session_questions);
+		return $game_questions;
 	}
+
 	/**
-   * Check that test value IS the expected value(s)
+	 * Load random questions from database for game level
+	 *
+	 * @param	int $level current game level
+	 * @return object
+	 */
+	public function load_questions($level)
+	{
+		$this->load->database();
+
+		$this->db->select(
+			"question, type, correct_answer, difficulty,".
+			"incorrect_answers, {$level} as level"
+		);
+
+		switch ($level)
+		{
+			case 1:
+				$this->db->where('difficulty', 'easy');
+				$this->db->where('type', 'boolean');
+				$limit = 4;
+				break;
+			case 2:
+				$this->db->where('difficulty', 'easy');
+				$limit = 7;
+				break;
+			case 3:
+				$this->db->where('difficulty', 'medium');
+				$this->db->or_where('difficulty', 'easy');
+				$limit = 7;
+				break;
+			default:
+				$limit = 10;
+				break;
+		}
+
+		$this->db->order_by(NULL, 'random');
+		$query = $this->db->get('question', $limit);
+
+		return $query->result();
+	}
+
+	/**
+   * Save game questions in session
    *
-   * @param	mixed	$test
+   * @param	array $questions
    * @param	mixed|array	$expected
    * @param	string $test_name
    * @param	string $notes
@@ -81,16 +107,16 @@ class Question_model extends CI_Model
    */
 	public function set_session_questions($questions)
 	{
-		foreach ($questions as $qtn) self::$questions[$qtn->id] = $qtn;
+		foreach ($questions as $qtn) self::$session_questions[$qtn->id] = $qtn;
 	}
 
 	public function get_session_question($question_id, $unset = TRUE)
 	{
-		if (isset(self::$questions[$question_id]))
+		if (isset(self::$session_questions[$question_id]))
 		{
-			$question = self::$questions[$question_id];
+			$question = self::$session_questions[$question_id];
 			// dont refactor to short-hand conditional statement
-			if ($unset) unset(self::$questions[$question_id]);
+			if ($unset) unset(self::$session_questions[$question_id]);
       return $question;
     }
 
@@ -122,30 +148,14 @@ class Question_model extends CI_Model
 		return $result;
 	}
 
-
 	public function reset()
 	{
-		self::$questions = [];
+		self::$session_questions = [];
 		self::$answer_hash_chain = [''];
 	}
 
-	public function get_calc_scores($level, $amount)
-	{
-		$max = 33 * $level;
-		$min = 1;
-		$scores = [];
-
-		while ($amount-- > 0)
-		{
-			$rand_float = mt_rand() / mt_getrandmax();
-			$scores[] = $rand_float * ($max - $min) + $min;
-		}
-
-		return $scores;
-	}
-
 	/**
-	 * Get score for user answer
+	 * Get score for user answer on current question
 	 *
 	 * @param string|int $question_id
 	 * @param string|int $answer_code - null value suggests question timed out
@@ -153,7 +163,7 @@ class Question_model extends CI_Model
 	 */
 	public function get_answer_score($question_id, $answer_code = NULL)
 	{
-		$answer_code AND $question = self::get_session_question($question_id);
+		$answer_code AND $question = array_first(self::$session_questions);
 
 		if (isset($question))
 		{
@@ -178,7 +188,7 @@ class Question_model extends CI_Model
 		switch ($question->type)
 		{
 			case 'multiple':
-				$test_hash = md5($question->options_trim[$answer_code]);
+				$test_hash = md5($question->options[$answer_code]);
 				break;
 
 			case 'boolean':
@@ -194,61 +204,49 @@ class Question_model extends CI_Model
 				break;
 		}
 
-		$first_hash = array_shift(self::$answer_hash_chain);
+		$first_hash = self::_get_first_answer_hash();
 
 		return md5($first_hash . $test_hash);
 	}
 
 	/**
+	* Get a random score to assign to a question if correct
+	*
+	* @param int $level - the current game level
+	* @return int
+	*/
+	private function _get_random_score($level)
+	{
+		$max = 33 * $level;
+		$min = 1;
+		$rand_float = mt_rand() / mt_getrandmax();
+
+		return $rand_float * ($max - $min) + $min;
+	}
+
+
+	/**
+	* Get and remove the first hash on the answer hash chain
+	*
+	* @return string
+	*/
+	private function _get_first_answer_hash()
+	{
+		return array_shift(self::$answer_hash_chain);
+	}
+
+	/**
+	 * Use last hash on asnwer hash chain to create new hash
+	 * then add hash to chain
+	 *
 	 * @param $answer
 	 * @return string new_hash
 	 */
-	private function _get_next_answer_chain_hash($answer)
+	private function _get_next_answer_hash($answer)
 	{
-		$answer = str_replace(['"', "'", " "], '', $answer);
 		$last_hash = end(self::$answer_hash_chain);
 		$next_hash = md5($last_hash . md5($answer));
 		self::$answer_hash_chain[] = $next_hash;
 		return $next_hash;
-	}
-
-	/**
-	 * Load random questions from database for game level
-	 *
-	 * @param	int $level current game level
-	 * @return object
-	 */
-	private function _load_questions_db($level)
-	{
-		$this->load->database();
-
-		$this->db->
-			select('question, type, correct_answer, difficulty, incorrect_answers');
-
-		switch ($level)
-		{
-			case 1:
-				$this->db->where('difficulty', 'easy');
-				$this->db->where('type', 'boolean');
-				$limit = 4;
-				break;
-			case 2:
-				$this->db->where('difficulty', 'easy');
-				$limit = 7;
-				break;
-			case 3:
-				$this->db->where('difficulty', 'medium');
-				$this->db->or_where('difficulty', 'easy');
-				$limit = 7;
-				break;
-			default:
-				$limit = 10;
-				break;
-		}
-
-		$this->db->order_by(NULL, 'random');
-		$query = $this->db->get('question', $limit);
-
-		return $query->result();
 	}
 }
