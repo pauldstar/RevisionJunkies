@@ -77,7 +77,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  *  Load the global functions
  * ------------------------------------------------------
  */
- 	require_once(APPPATH.'core/QP_Common.php');
 	require_once(BASEPATH.'core/Common.php');
 
 /*

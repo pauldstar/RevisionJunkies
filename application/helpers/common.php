@@ -43,14 +43,14 @@ function log_message($level, $message)
 
 if ( ! function_exists('dd'))
 {
-	/**
-	 * Output a parameter and die
-	 *
-	 * Used for debugging
-	 *
-	 * @param	mixed $output
-	 * @return	void
-	 */
+		/**
+		 * Dump and Die
+		 *
+		 * Output a parameter and die. Useful for debugging
+		 *
+		 * @param $val
+		 * @return  void
+		 */
 	function dd($val)
 	{
 		echo '<pre>';
