@@ -9,19 +9,21 @@
 
 // ------------------------------------------------------------------------
 
-/**
- * Error Logging Interface
- * Overrides log_message() in system/core/Commons.php
- *
- * We use this as a simple mechanism to access the logging
- * class and send messages to be logged.
- *
- * @param	string	the error level: 'error', 'debug' or 'info'
- * @param	string	the error message
- * @return	void
- */
-function log_message($level, $message)
+if ( ! function_exists('log_message'))
 {
+	/**
+	 * Error Logging Interface
+	 * Overrides log_message() in system/core/Commons.php
+	 *
+	 * We use this as a simple mechanism to access the logging
+	 * class and send messages to be logged.
+	 *
+	 * @param	string	the error level: 'error', 'debug' or 'info'
+	 * @param	string	the error message
+	 * @return	void
+	 */
+	function log_message($level, $message)
+	{
 		if (ENVIRONMENT === 'production' && $level === 'error')
 		{
 				error_log($message);
@@ -37,6 +39,7 @@ function log_message($level, $message)
 		}
 
 		$_log[0]->write_log($level, $message);
+	}
 }
 
 // ------------------------------------------------------------------------
