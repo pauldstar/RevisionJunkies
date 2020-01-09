@@ -54,7 +54,7 @@
     $('#menu-toggle').click(e => $('#wrapper').toggleClass('toggled'));
 
     const SITE_URL = '<?= site_url() ?>',
-          hiScore = '<?= $loggedIn ? $hiScore : 0 ?>';
+          HI_SCORE = '<?= $loggedIn ? $hiScore : 0 ?>';
   </script>
 
   <?= $scripts ?>

@@ -82,11 +82,11 @@ class PageController extends BaseController
 			'color' => 'success'
 		];
 
-		$data['header'] = view('template/header');
+		$data['header'] = view('template/header', $data);
 		$data['footer'] = view('template/footer');
-		$data['pageContent'] = view("content/{$page}");
-		$data['mainbar'] = view('template/mainbar');
-		$data['sidebar'] = view('template/sidebar');
+		$data['pageContent'] = view("content/{$page}", $data);
+		$data['mainbar'] = view('template/mainbar', $data);
+		$data['sidebar'] = view('template/sidebar', $data);
 
 		if ($page === 'game' && ENVIRONMENT === 'production')
 			$data['scripts'] = script_tag('game.min');

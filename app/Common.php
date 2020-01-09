@@ -15,9 +15,9 @@
  */
 
 use App\Libraries\Optional;
-use CodeIgniter\Database\BaseConnection;
-use CodeIgniter\Database\ConnectionInterface;
-use Config\Database;
+use Config\Logger;
+use Config\Services;
+use Tests\Support\Log\TestLogger;
 
 if (!function_exists('optional'))
 {
