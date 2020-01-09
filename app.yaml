@@ -8,11 +8,11 @@ env_variables:
 # serve a custom PHP front controller (e.g. "serve backend/index.php") or to
 # run a long-running PHP script as a worker process (e.g. "php worker.php").
 #
-# entrypoint: serve index.php
+entrypoint: serve public/index.php
 
 handlers:
 # Serve a directory as a static resource.
-- url: /assets
+- url: /public/assets
   static_dir: assets
 
 - url: /favicon\.ico
