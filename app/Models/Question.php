@@ -88,7 +88,9 @@ class Question extends BaseModel
 	 */
 	public function loadDbQuestions($level)
 	{
-		$this->builder->select(
+		$builder = $this->builder();
+
+	  $builder->select(
 			"question, type, correct_answer, difficulty,".
 			"incorrect_answers, {$level} as level"
 		);
@@ -96,17 +98,17 @@ class Question extends BaseModel
 		switch ($level)
 		{
 			case 1:
-				$this->builder->where('difficulty', 'easy');
-				$this->builder->where('type', 'boolean');
+				$builder->where('difficulty', 'easy');
+				$builder->where('type', 'boolean');
 				$limit = 4;
 				break;
 			case 2:
-				$this->builder->where('difficulty', 'easy');
+				$builder->where('difficulty', 'easy');
 				$limit = 7;
 				break;
 			case 3:
-				$this->builder->where('difficulty', 'medium');
-				$this->builder->orWhere('difficulty', 'easy');
+				$builder->where('difficulty', 'medium');
+				$builder->orWhere('difficulty', 'easy');
 				$limit = 7;
 				break;
 			default:
@@ -114,8 +116,8 @@ class Question extends BaseModel
 				break;
 		}
 
-		$this->builder->orderBy(null, 'random');
-		$query = $this->builder->get($limit);
+		$builder->orderBy('', 'random');
+		$query = $builder->get($limit);
 
 		return $query->getResult();
 	}
