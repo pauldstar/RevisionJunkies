@@ -22,3 +22,5 @@ application/logs/*.php
 
 # PHP Composer dependencies:
 /vendor/
+
+tests/
