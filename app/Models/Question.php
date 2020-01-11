@@ -65,7 +65,7 @@ class Question extends BaseModel
 			if ($qtn->type === 'multiple')
 			{
 				$gameQtn['options'] = array_merge(
-					[$qtn->correct_answer], explode(',', $qtn->incorrect_answers)
+					[$qtn->correct_answer], json_decode($qtn->incorrect_answers)
 				);
 
 				shuffle($gameQtn['options']);
