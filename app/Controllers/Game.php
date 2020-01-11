@@ -3,6 +3,7 @@
 use App\Models\Question as QuestionModel;
 use App\Models\Game as GameModel;
 use CodeIgniter\API\ResponseTrait;
+use CodeIgniter\HTTP\Response;
 
 class Game extends BaseController
 {
@@ -30,7 +31,8 @@ class Game extends BaseController
 		$this->gameModel->score(0);
 		$this->gameModel->level(1);
 		$this->questionModel->reset();
-		$this->get_questions();
+
+		return $this->get_questions();
 	}
 
 	//--------------------------------------------------------------------
@@ -45,19 +47,19 @@ class Game extends BaseController
 
 	//--------------------------------------------------------------------
 
-	/**
+  /**
    * End game and update user details
-	 *
-	 * @param string|int $score
-	 * @param string|int $timeDelta - game time length
-   * @echo string
+   *
+   * @param string|int $score
+   * @param string|int $timeDelta - game time length
+   * @return ResponseTrait
    */
 	public function end_game($score, $timeDelta)
 	{
-		echo 'user<br />';
-		echo $timeDelta.'<br />';
-		echo 'session<br />';
-		echo time() - $this->gameModel->startTime();
+		$elapsed = time() - $this->gameModel->startTime();
+		$output = "user<br />{$timeDelta}<br />session<br />$elapsed";
+
+		return $this->respond($output);
 	}
 
 	//--------------------------------------------------------------------
@@ -65,7 +67,7 @@ class Game extends BaseController
 	/**
    * Get game questions (displayed to user) and increment game level
 	 *
-   * @return ResponseTrait - questions for user to answer
+   * @return Response
    */
 	public function get_questions()
 	{
@@ -74,7 +76,7 @@ class Game extends BaseController
 		$gameQuestions = $this->questionModel->formatQuestions($level, $dbQuestions);
     $this->gameModel->level(TRUE);
 
-    return $this->respond($gameQuestions);
+    return $this->response->setJSON($gameQuestions);
 	}
 
 	//--------------------------------------------------------------------
