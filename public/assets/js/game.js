@@ -931,21 +931,6 @@ var Questions = (_=>
 
     $.ajax({ url: `${SITE_URL}game/answer_score/${ansCode}` });
 
-    // TODO: game.js: remove answer scoring test
-    let ans = _currentQuestion.type === 'boolean' ?
-      ( ansCode === 1 ? 'True' : ansCode === 0 ?  'False' : undefined ) :
-      _currentQuestion.options[ansCode];
-
-    console.log('chose: '+ans);
-    console.log('right: '+_currentQuestion.correct);
-    console.log('nhash: '+ansHash);
-    console.log('chash: '+_currentQuestion.hashes[ansCode]);
-    console.log('ahash: '+_currentQuestion.ah);
-    if (ansHash === _currentQuestion.hashes[ansCode])
-      console.log('correct scoring');
-    else alert('incorrect scoring');
-    console.log('-------------');
-
     if (ansHash === _currentQuestion.ah) score = _currentQuestion.score;
     _questionAnswered = true;
 
