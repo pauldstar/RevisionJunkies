@@ -2,111 +2,100 @@
 
 class QuestionTest extends \CIUnitTestCase
 {
-  public function __construct()
+  public function testFormatQuestionsEmpty()
   {
-    parent::__construct();
-    $this->load->model('question_model', '_question');
+    $question = new Question();
+    $test = $question->formatQuestions([]);
+    $this->assertIsArray($test);
+    $this->assertEmpty($test);
   }
 
-  public function run()
+  /**
+   * @depends testLoadDbQuestionsLvl1
+   * @param array $dbQuestions
+   */
+  public function testFormatQuestionsLvl1(array $dbQuestions)
   {
-    self::load_questions();
-    self::format_questions();
-    // self::score();
-    // self::level();
-  }
+    $question = new Question();
+    $questions = $question->formatQuestions($dbQuestions);
 
-  public function load_questions()
-  {
-    self::_load_questions_lvl_1();
-    self::_load_questions_lvl_2();
-    self::_load_questions_lvl_3();
-    self::_load_questions_lvl_4();
-    echo $this->unit->report();
-  }
-
-  public function format_questions()
-  {
-    self::_format_questions_empty();
-    self::_format_questions_lvl_1();
-    // self::_format_questions_lvl_2();
-    // self::_format_questions_lvl_3();
-    // self::_format_questions_lvl_4();
-    echo $this->unit->report();
-  }
-
-  private function _format_questions_empty()
-  {
-    $test = $this->_question->format_questions(1, []);
-    $this->unit->is($test, 'is_array', 'format_questions() returns array');
-
-    $test = empty($test);
-    $this->unit->is($test, true, 'format_questions() with empty $db_questions returns empty array');
-  }
-
-  private function _format_questions_lvl_1()
-  {
-    $db_questions = $this->_question->load_questions(1);
-    $questions = $this->_question->format_questions(1, $db_questions);
-
-    foreach($questions as $qtn)
+    foreach($questions as $index => $qtn)
     {
-      $qtn['type'] === 'multiple' AND
-        $this->unit->is(count($qtn['options']), 4, 'Multiple choice questions has 4 options if multiple choice');
+      $this->assertEquals('1', $qtn['level']);
+
+      if ($qtn['type'] === 'multiple')
+      {
+        $this->assertCount(4, $qtn['options']);
+
+        $testOptions = array_merge(
+          [ $dbQuestions[$index]->correct_answer ],
+          json_decode($dbQuestions[$index]->incorrect_answers)
+        );
+        $this->assertNotSame($qtn['options'], $testOptions);
+
+        $sessionQuestion = session('questions')[$index];
+        $this->assertEquals($qtn['level'], $sessionQuestion->level);
+        $this->assertEquals($qtn['score'], $sessionQuestion->score);
+      }
     }
+
+    $question->reset();
   }
 
-  private function _load_questions_lvl_1()
+  public function testLoadDbQuestionsLvl1()
   {
-    $questions = $this->_question->load_questions(1);
-
-    $this->unit->is(count($questions), 4, 'Level 1 has 4 questions');
+    $question = new Question();
+    $questions = $question->loadDbQuestions(1);
+    $this->assertCount(4, $questions);
 
     foreach ($questions as $qtn)
     {
-      $this->unit->
-        is($qtn->difficulty, 'easy', 'Level 1 has only easy difficulty');
-      $this->unit->
-        is($qtn->type, 'boolean', 'Level 1 has only boolean questions');
-      $this->unit->is($qtn->level, '1', 'Question is Level 1');
+      $this->assertEquals('easy', $qtn->difficulty);
+      $this->assertEquals('boolean', $qtn->type);
+      $this->assertEquals('1', $qtn->level);
     }
+
+    return $questions;
   }
 
-
-  private function _load_questions_lvl_2()
+  public function testLoadDbQuestionsLvl2()
   {
-    $questions = $this->_question->load_questions(2);
-
-    $this->unit->is(count($questions), 7, 'Level 2 has 7 questions');
+    $question = new Question();
+    $questions = $question->loadDbQuestions(2);
+    $this->assertCount(7, $questions);
 
     foreach ($questions as $qtn)
     {
-      $this->unit->
-        is($qtn->difficulty, 'easy', 'Level 2 has only easy difficulty');
-      $this->unit->is($qtn->level, '2', 'Question is Level 2');
+      $this->assertEquals('easy', $qtn->difficulty);
+      $this->assertEquals('2', $qtn->level);
     }
+
+    return $questions;
   }
 
-  private function _load_questions_lvl_3()
+  public function testLoadDbQuestionsLvl3()
   {
-    $questions = $this->_question->load_questions(3);
-
-    $this->unit->is(count($questions), 7, 'Level 3 has 7 questions');
+    $question = new Question();
+    $questions = $question->loadDbQuestions(3);
+    $this->assertCount(7, $questions);
 
     foreach ($questions as $qtn)
     {
-      $this->unit->
-        isnt($qtn->difficulty, 'hard', 'Level 3 has no hard difficulty');
-      $this->unit->is($qtn->level, '3', 'Question is Level 3');
+      $this->assertNotEquals('hard', $qtn->difficulty);
+      $this->assertEquals('3', $qtn->level);
     }
+
+    return $questions;
   }
 
-  private function _load_questions_lvl_4()
+  public function testLoadDbQuestionsLvl4()
   {
-    $questions = $this->_question->load_questions(4);
-    $this->unit->is(count($questions), 10, 'Level 4 has 10 questions');
+    $question = new Question();
+    $questions = $question->loadDbQuestions(4);
+    $this->assertCount(10, $questions);
 
-    foreach ($questions as $qtn)
-      $this->unit->is($qtn->level, '4', 'Question is Level 4');
+    foreach ($questions as $qtn) $this->assertEquals('4', $qtn->level);
+
+    return $questions;
   }
 }
