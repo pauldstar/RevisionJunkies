@@ -4,8 +4,8 @@ class QuestionTest extends \CIUnitTestCase
 {
   public function testFormatQuestionsEmpty()
   {
-    $question = new Question();
-    $test = $question->formatQuestions([]);
+    $questionModel = new Question();
+    $test = $questionModel->formatQuestions([]);
     $this->assertIsArray($test);
     $this->assertEmpty($test);
   }
@@ -16,36 +16,75 @@ class QuestionTest extends \CIUnitTestCase
    */
   public function testFormatQuestionsLvl1(array $dbQuestions)
   {
-    $question = new Question();
-    $questions = $question->formatQuestions($dbQuestions);
+    $this->formatQuestions($dbQuestions);
+  }
 
-    foreach($questions as $index => $qtn)
+  /**
+   * @depends testLoadDbQuestionsLvl2
+   * @param array $dbQuestions
+   */
+  public function testFormatQuestionsLvl2(array $dbQuestions)
+  {
+    $this->formatQuestions($dbQuestions);
+  }
+
+  /**
+   * @depends testLoadDbQuestionsLvl3
+   * @param array $dbQuestions
+   */
+  public function testFormatQuestionsLvl3(array $dbQuestions)
+  {
+    $this->formatQuestions($dbQuestions);
+  }
+
+  /**
+   * @depends testLoadDbQuestionsLvl4
+   * @param array $dbQuestions
+   */
+  public function testFormatQuestionsLvl4(array $dbQuestions)
+  {
+    $this->formatQuestions($dbQuestions);
+  }
+
+  /**
+   * @depends testLoadDbQuestionsLvl4
+   * @param array $dbQuestions
+   */
+  public function testFormatQuestionsLvl134(array $dbQuestions)
+  {
+    $questionModel = new Question();
+    $dbQuestions = $questionModel->loadDbQuestions(134);
+    $this->formatQuestions($dbQuestions);
+  }
+
+  private function formatQuestions($dbQuestions)
+  {
+    $questionModel = new Question();
+    $questions = $questionModel->formatQuestions($dbQuestions);
+
+    foreach ($questions as $index => $qtn)
     {
-      $this->assertEquals('1', $qtn['level']);
+      $this->assertGreaterThanOrEqual('1', $qtn['score']);
+      $this->assertLessThanOrEqual(33 * $qtn['level'], $qtn['score']);
 
       if ($qtn['type'] === 'multiple')
       {
         $this->assertCount(4, $qtn['options']);
-
-        $testOptions = array_merge(
-          [ $dbQuestions[$index]->correct_answer ],
-          json_decode($dbQuestions[$index]->incorrect_answers)
-        );
-        $this->assertNotSame($qtn['options'], $testOptions);
-
-        $sessionQuestion = session('questions')[$index];
-        $this->assertEquals($qtn['level'], $sessionQuestion->level);
-        $this->assertEquals($qtn['score'], $sessionQuestion->score);
       }
+
+      $sessionQuestion = $_SESSION['questions'][$index];
+      $this->assertEquals($qtn['level'], $sessionQuestion->level);
+      $this->assertEquals($qtn['score'], $sessionQuestion->score);
+      $this->assertEquals($qtn['ah'], $sessionQuestion->answer_hash);
     }
 
-    $question->reset();
+    $questionModel->reset();
   }
 
   public function testLoadDbQuestionsLvl1()
   {
-    $question = new Question();
-    $questions = $question->loadDbQuestions(1);
+    $questionModel = new Question();
+    $questions = $questionModel->loadDbQuestions(1);
     $this->assertCount(4, $questions);
 
     foreach ($questions as $qtn)
@@ -60,8 +99,8 @@ class QuestionTest extends \CIUnitTestCase
 
   public function testLoadDbQuestionsLvl2()
   {
-    $question = new Question();
-    $questions = $question->loadDbQuestions(2);
+    $questionModel = new Question();
+    $questions = $questionModel->loadDbQuestions(2);
     $this->assertCount(7, $questions);
 
     foreach ($questions as $qtn)
@@ -75,8 +114,8 @@ class QuestionTest extends \CIUnitTestCase
 
   public function testLoadDbQuestionsLvl3()
   {
-    $question = new Question();
-    $questions = $question->loadDbQuestions(3);
+    $questionModel = new Question();
+    $questions = $questionModel->loadDbQuestions(3);
     $this->assertCount(7, $questions);
 
     foreach ($questions as $qtn)
@@ -90,8 +129,8 @@ class QuestionTest extends \CIUnitTestCase
 
   public function testLoadDbQuestionsLvl4()
   {
-    $question = new Question();
-    $questions = $question->loadDbQuestions(4);
+    $questionModel = new Question();
+    $questions = $questionModel->loadDbQuestions(4);
     $this->assertCount(10, $questions);
 
     foreach ($questions as $qtn) $this->assertEquals('4', $qtn->level);
