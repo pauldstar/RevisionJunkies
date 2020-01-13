@@ -32,7 +32,7 @@ class User extends BaseModel
 		'lastname',
 		'hi_score',
 		'total_qp',
-		'league',
+		'league_id'
 	];
 
 	public function __construct()

@@ -63,7 +63,7 @@ class GuestPages extends PageController
 				$data['activeTab'] = 'signup';
 				// don't break
 			case '100':
-				$validation = Services::validation();
+				$data['validation'] = Services::validation();
 		}
 
 		helper('form');

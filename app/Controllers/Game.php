@@ -73,7 +73,7 @@ class Game extends BaseController
 	{
 		$level = $this->gameModel->level();
 		$dbQuestions = $this->questionModel->loadDbQuestions($level);
-		$gameQuestions = $this->questionModel->formatQuestions($level, $dbQuestions);
+		$gameQuestions = $this->questionModel->formatQuestions($dbQuestions);
     $this->gameModel->level(TRUE);
 
     return $this->response->setJSON($gameQuestions);

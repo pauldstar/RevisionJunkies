@@ -40,39 +40,39 @@ class Question extends BaseModel
 	//--------------------------------------------------------------------
 
 	/**
-	 * Get and save formatted questions to display in-game
+	 * Prepare questions for user game session
 	 *
-	 * @param int $level current game level
 	 * @param array $dbQuestions
 	 * @return array
 	 */
-	public function formatQuestions($level, $dbQuestions)
+	public function formatQuestions($dbQuestions)
 	{
 		$gameQuestions = [];
 
-		foreach ($dbQuestions as $index => $qtn)
+		foreach ($dbQuestions as $sessionQuestion)
 		{
-			$gameQtn['level'] = $qtn->level;
-			$gameQtn['question'] = $qtn->question;
-			$gameQtn['type'] = $qtn->type;
+			$gameQuestion['level'] = $sessionQuestion->level;
+			$gameQuestion['question'] = $sessionQuestion->question;
+			$gameQuestion['type'] = $sessionQuestion->type;
+      $gameQuestion['score'] = $this->getRandomScore($sessionQuestion->level);
+      $gameQuestion['ah'] = $this->
+        getNextAnswerHash($sessionQuestion->correct_answer);
 
-			$qtn->score = $this->getRandomScore($level);
-			$gameQtn['score'] = $qtn->score;
-
-			$qtn->answer_hash = $this->getNextAnswerHash($qtn->correct_answer);
-			$gameQtn['ah'] = $qtn->answer_hash;
-
-			if ($qtn->type === 'multiple')
+			if ($sessionQuestion->type === 'multiple')
 			{
-				$gameQtn['options'] = array_merge(
-					[$qtn->correct_answer], json_decode($qtn->incorrect_answers)
+				$gameQuestion['options'] = array_merge(
+					[$sessionQuestion->correct_answer],
+          json_decode($sessionQuestion->incorrect_answers)
 				);
 
-				shuffle($gameQtn['options']);
+				shuffle($gameQuestion['options']);
 			}
 
-			$this->questions[] = $qtn;
-			$gameQuestions[] = $gameQtn;
+			$gameQuestions[] = $gameQuestion;
+
+			$sessionQuestion->score = $gameQuestion['score'];
+		  $sessionQuestion->answer_hash = $gameQuestion['ah'];
+			$this->questions[] = $sessionQuestion;
 		}
 
 		return $gameQuestions;
@@ -88,9 +88,7 @@ class Question extends BaseModel
 	 */
 	public function loadDbQuestions($level)
 	{
-		$builder = $this->builder();
-
-	  $builder->select(
+	  $this->builder->select(
 			"question, type, correct_answer, difficulty,".
 			"incorrect_answers, {$level} as level"
 		);
@@ -98,17 +96,17 @@ class Question extends BaseModel
 		switch ($level)
 		{
 			case 1:
-				$builder->where('difficulty', 'easy');
-				$builder->where('type', 'boolean');
+				$this->builder->where('difficulty', 'easy');
+				$this->builder->where('type', 'boolean');
 				$limit = 4;
 				break;
 			case 2:
-				$builder->where('difficulty', 'easy');
+				$this->builder->where('difficulty', 'easy');
 				$limit = 7;
 				break;
 			case 3:
-				$builder->where('difficulty', 'medium');
-				$builder->orWhere('difficulty', 'easy');
+				$this->builder->where('difficulty', 'medium');
+				$this->builder->orWhere('difficulty', 'easy');
 				$limit = 7;
 				break;
 			default:
@@ -116,8 +114,8 @@ class Question extends BaseModel
 				break;
 		}
 
-		$builder->orderBy('', 'random');
-		$query = $builder->get($limit);
+		$this->builder->orderBy('', 'random');
+		$query = $this->builder->get($limit);
 
 		return $query->getResult();
 	}
