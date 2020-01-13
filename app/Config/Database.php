@@ -84,25 +84,25 @@ class Database extends \CodeIgniter\Database\Config
 	 * @var array
 	 */
 	public $tests = [
-		'DSN' => '',
-		'hostname' => 'localhost',
-		'username' => 'root',
-		'password' => '',
-		'database' => 'quepenny',
-		'DBDriver' => 'MySQLi',
-		'DBPrefix' => 'db_',  // Needed to ensure we're working correctly with prefixes live. DO NOT REMOVE.
-		'pConnect' => false,
-		'DBDebug' => (ENVIRONMENT !== 'production'),
-		'cacheOn' => false,
-		'cacheDir' => '',
-		'charset' => 'utf8',
-		'DBCollat' => 'utf8_general_ci',
-		'swapPre' => '',
-		'encrypt' => false,
-		'compress' => false,
-		'strictOn' => false,
-		'port' => 3306,
-		'failover' => []
+    'DSN' => '',
+    'hostname' => 'localhost',
+    'username' => 'root',
+    'password' => '',
+    'database' => 'quepenny',
+    'DBDriver' => 'MySQLi',
+//		'DBPrefix' => 'db_',  // Needed to ensure we're working correctly with prefixes live. DO NOT REMOVE.
+    'DBPrefix' => '',
+    'pConnect' => false,
+    'DBDebug' => (ENVIRONMENT !== 'production'),
+    'cacheOn' => false,
+    'cacheDir' => '',
+    'charset' => 'utf8',
+    'DBCollat' => 'utf8_general_ci',
+    'swapPre' => '',
+    'encrypt' => false,
+    'compress' => false,
+    'strictOn' => false,
+    'port' => 3306
 	];
 
 	//--------------------------------------------------------------------
