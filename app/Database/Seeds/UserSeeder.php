@@ -1,5 +1,6 @@
 <?php namespace App\Database\Seeds;
 
+use App\Models\League;
 use App\Models\User;
 use CodeIgniter\Database\Seeder;
 use Faker\Factory;
@@ -27,6 +28,7 @@ class UserSeeder extends Seeder
 		if (ENVIRONMENT !== 'production')
 		{
 			$faker = Factory::create();
+			$leagues = (new League)->findColumn('id');
 
 			for ($c = 1; $c <= 9; $c++)
 			{
@@ -38,7 +40,7 @@ class UserSeeder extends Seeder
 					'lastname' => $faker->lastName,
 					'hi_score' => $faker->numberBetween(0, 9999),
 					'total_qp' => $faker->numberBetween(0, 2000000),
-					'league_id' => $faker->numberBetween(1, 11),
+					'league_id' => $faker->randomElement($leagues)
 				];
 
 				$user->save($data);
