@@ -10,8 +10,9 @@ class BaseModel extends Model
 	{
 		parent::__construct();
 		helper('text');
-		session();
+    ENVIRONMENT === 'testing' OR session();
 		$this->setTable();
+		$this->builder();
 	}
 
 	public function setTable(string $table = '')
