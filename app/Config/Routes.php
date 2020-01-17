@@ -58,7 +58,7 @@ if (file_exists(SYSTEMPATH . 'Config/Routes.php'))
  * only routes that have been defined here will be available.
  */
 $routes->setDefaultNamespace('App\Controllers');
-$routes->setDefaultController('GuestPages');
+$routes->setDefaultController('Pages');
 $routes->setDefaultMethod('index');
 $routes->setTranslateURIDashes(false);
 $routes->set404Override();
@@ -72,20 +72,22 @@ $routes->setAutoRoute(true);
 
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
-$routes->get('/', 'GuestPages::game');
 
-$routes->get('game', 'GuestPages::game');
-$routes->get('races', 'GuestPages::races');
-$routes->get('leagues', 'GuestPages::leagues');
-$routes->get('leaderboard', 'GuestPages::leaderboard');
-$routes->get('login', 'GuestPages::login');
-$routes->get('contact', 'GuestPages::contact');
+// GUEST PAGES
+$routes->get('/', 'Pages::game');
+$routes->get('game', 'Pages::game');
+$routes->get('races', 'Pages::races');
+$routes->get('leagues', 'Pages::leagues');
+$routes->get('leaderboard', 'Pages::leaderboard');
 // TODO: consider removing, and use redirect withErrors
-$routes->get('login/(:num)', 'GuestPages::login/$1');
+$routes->get('login/(:num)', 'Pages::login/$1');
+$routes->get('login', 'Pages::login');
+$routes->get('contact', 'Pages::contact');
 
-$routes->get('statistics', 'MemberPages::statistics');
-$routes->get('picture', 'MemberPages::picture');
-$routes->get('password', 'MemberPages::password');
+// MEMBER PAGES
+$routes->get('statistics', 'Pages::statistics');
+$routes->get('picture', 'Pages::picture');
+$routes->get('password', 'Pages::password');
 
 $routes->get('logout', 'User::logout');
 
