@@ -23,6 +23,7 @@ class User extends BaseModel
 	protected $useTimestamps = true;
 	protected $beforeInsert = ['hashPassword'];
 	protected $beforeUpdate = ['hashPassword'];
+	protected $validationRules = 'signup';
 
 	protected $allowedFields = [
 		'username',
