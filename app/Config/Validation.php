@@ -29,6 +29,7 @@ class Validation
 		'list'   => 'CodeIgniter\Validation\Views\list',
 		'single' => 'CodeIgniter\Validation\Views\single',
 	];
+    'string' => 'App\Views\Validation\string'
 
 	//--------------------------------------------------------------------
 	// Rules
