@@ -1,168 +1,176 @@
 <?php namespace App\Controllers;
 
 use CodeIgniter\API\ResponseTrait;
+use CodeIgniter\HTTP\RedirectResponse;
 use Config\Services;
 use ReflectionException;
 
 class User extends BaseController
 {
-	use ResponseTrait;
+  use ResponseTrait;
 
-	public function login()
-	{
-		$name = $this->request->getVar('login-name');
-		$password = $this->request->getVar('login-password');
+  public function login()
+  {
+    if (!$this->validate('login'))
+      return redirect()->to('/login/100')->withInput();
 
-		isset($name) AND isset($password) OR redirect()->to('login/100');
+    $name = $this->request->getVar('login_name');
+    $password = $this->request->getVar('login_password');
 
-		$user = $this->userModel->getUser($name, ['username', 'email'], true);
+    $user = $this->userModel->getUser($name, ['username', 'email']);
 
-		$userExists = isset($user) && password_verify($password, $user->password);
+    $userExists = isset($user) && password_verify($password, $user->password);
 
-		if (!$userExists) redirect()->to('login/200')->with('login_form',
-			'Login failed! Please try again...'
-		);
+    if (!$userExists)
+    {
+      $this->validator->setError(
+        'loginForm', 'Login failed! Please try again...'
+      );
 
-		if ($user->email_verified === '0')
-		{
-			$this->userModel->unverifiedUsername($user->username);
-			redirect()->to('login/400');
-		}
+      return redirect()->to('/login/100')->withInput();
+    }
 
-		$this->userModel->login($user);
+    if ($user->email_verifier !== null)
+    {
+      $this->userModel->unverifiedUsername($user->username);
+      return redirect()->to('/login/400');
+    }
 
-		redirect();
-	}
+    $this->userModel->login($user);
 
-	//--------------------------------------------------------------------
+    return redirect()->to('/');
+  }
 
-	/**
-	 * Sign-up and send email verification to user
-	 *
-	 * @return void
-	 * @throws ReflectionException
-	 */
-	public function signup()
-	{
-		if (!$this->validate('signup'))
-			redirect()->to('login/100')->withInput();
+  //--------------------------------------------------------------------
 
-		$user = $this->userModel->createUser($this->request->getVar());
+  /**
+   * Sign-up and send email verification to user
+   *
+   * @return RedirectResponse|void
+   * @throws ReflectionException
+   */
+  public function signup()
+  {
+    if (!$this->validate('signup'))
+      return redirect()->to('login/100')->withInput();
 
-		if (!$user) redirect()->to('login/200')->with('signup_form',
-			'Server error. Sign Up failed! Please try again later.'
-		);
+    $user = $this->userModel->createUser($this->request->getVar());
 
-		$this->send_email_verifier($user);
-	}
+    if (!$user) return redirect()->to('/login/200')->with('signup_form',
+      'Server error. Sign Up failed! Please try again later.'
+    );
 
-	//--------------------------------------------------------------------
+    $this->send_email_verifier($user);
+  }
 
-	/**
-	 * Verify Email when user follows verification email link
-	 *
-	 * @param string $username
-	 * @param string $emailVerifier
-	 * @return void
-	 */
-	public function verify_email($username, $emailVerifier)
-	{
-		$user = $this->userModel->getUser($username, 'username');
+  //--------------------------------------------------------------------
 
-		isset($user) AND $user->email_verified === '0' OR redirect()->to('login');
+  /**
+   * Verify Email when user follows verification email link
+   *
+   * @param string $username
+   * @param string $emailVerifier
+   * @return RedirectResponse
+   */
+  public function verify_email($username, $emailVerifier)
+  {
+    $user = $this->userModel->getUser($username, 'username');
 
-		if ($emailVerifier !== $user->email_verifier)
-		{
-			$this->userModel->unverifiedUsername($user->username);
-			redirect()->to('login/400');
-		}
+    if (empty($user) || $user->email_verifier === null)
+      return redirect()->to('/login');
 
-		$this->userModel->confirmEmailVerification($user->id);
+    if ($emailVerifier !== $user->email_verifier)
+    {
+      $this->userModel->unverifiedUsername($user->username);
+      return redirect()->to('/login/400');
+    }
 
-		redirect()->to('login/300');
-	}
+    $this->userModel->confirmEmailVerification($user->id);
 
-	//--------------------------------------------------------------------
+    return redirect()->to('/login/300');
+  }
 
-	/**
-	 * Send email verification to user
-	 *
-	 * @param array|string $user
-	 * @return void
-	 */
-	public function send_email_verifier($user)
-	{
-		$data = is_object($user) ? $user :
-			(array) $this->userModel->getUser($user, 'username');
+  //--------------------------------------------------------------------
 
-		if ($data['email_verified'] === '1') redirect()->to('login/300');
+  /**
+   * Send email verification to user
+   *
+   * @param array|string $user
+   * @return RedirectResponse
+   */
+  public function send_email_verifier($user)
+  {
+    $data = is_object($user) ? $user :
+      $this->userModel->getUser($user, 'username');
 
-		$email = Services::email();
+    if ($data['email_verifier'] === '1') return redirect()->to('/login/300');
 
-		$email->setSubject('Email Verification');
-		$email->setTo($data['email']);
-		$email->setMessage( view('template/verify_email', $data) );
-		$email->send();
+    $email = Services::email();
 
-		$this->userModel->unverifiedUsername($data['username']);
+    $email->setSubject('Email Verification');
+    $email->setTo($data['email']);
+    $email->setMessage(view('template/verify_email', $data));
+    $email->send();
 
-		redirect()->to('login/400');
-	}
+    $this->userModel->unverifiedUsername($data['username']);
 
-	// TODO: remove test_email() and show_email()
-	public function test_email()
-	{
-		$email = Services::email();
+    return redirect()->to('/login/400');
+  }
 
-		$data = (array) $this->userModel->getUser(5);
+  // TODO: remove test_email() and show_email()
+  public function test_email()
+  {
+    $email = Services::email();
 
-		$email->setSubject('Email Verification');
-		$email->setTo($data['email']);
-		$email->setMessage( view('template/verify_email', $data) );
-		$email->send(false);
+    $data['user'] = $this->userModel->getUser(5);
 
-		echo $email->printDebugger(['headers']);
-	}
+    $email->setSubject('Email Verification');
+    $email->setTo($data['email']);
+    $email->setMessage(view('template/verify_email', $data));
+    $email->send(false);
 
-	// TODO: remove test_email() and show_email()
-	public function show_email()
-	{
-		$data = (array) $this->userModel->getUser(5);
-		echo view('template/verify_email', $data);
-	}
+    echo $email->printDebugger(['headers']);
+  }
 
-	//--------------------------------------------------------------------
+  // TODO: remove test_email() and show_email()
+  public function show_email()
+  {
+    $data['user'] = $this->userModel->getUser(5);
+    echo view('template/verify_email', $data);
+  }
 
-	/**
-	 * Check if login/signup form input is valid
-	 * Called mostly by ajax calls
-	 *
-	 * @param string $inputType
-	 * @return void
-	 */
-	public function is_valid($inputType)
-	{
-		$input = $this->request->getVar('inputText');
+  //--------------------------------------------------------------------
 
-		$validation = Services::validation();
+  /**
+   * Check if login/signup form input is valid
+   * Called mostly by ajax calls
+   *
+   * @param string $inputType
+   * @return void
+   */
+  public function is_valid($inputType)
+  {
+    $input = $this->request->getVar('inputText');
 
-		$invalidEmail = $inputType === 'email' &&
-			$validation->check($input, 'valid_email');
+    $validation = Services::validation();
 
-		if ($invalidEmail) $this->failValidationError('Invalid Email Format');
+    $invalidEmail = $inputType === 'email' &&
+      $validation->check($input, 'valid_email');
 
-		$isUnique = $validation->check($input, "is_unique[user.{$inputType}]");
+    if ($invalidEmail) $this->failValidationError('Invalid Email Format');
 
-		return $isUnique ?
-			$this->respond(true, 200) :
-			$this->failValidationError('Email Not Unique');
-	}
+    $isUnique = $validation->check($input, "is_unique[user.{$inputType}]");
 
-	//--------------------------------------------------------------------
+    return $isUnique ?
+      $this->respond(true, 200) :
+      $this->failValidationError('Email Not Unique');
+  }
 
-	public function logout()
-	{
-		session_destroy();
-		redirect()->to('login');
-	}
+  //--------------------------------------------------------------------
+
+  public function logout()
+  {
+    session_destroy();
+    return redirect()->to('/login');
+  }
 }

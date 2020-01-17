@@ -56,16 +56,22 @@ class User extends BaseModel
 
 	//--------------------------------------------------------------------
 
+  public function isLoggedIn()
+  {
+    return $this->user ? true : false;
+  }
+
+	//--------------------------------------------------------------------
+
 	/**
 	 * Retrieve user details from the database or session
 	 *
 	 * @param mixed $id - text/number
 	 * @param string|array $idType - userID/username/email or an array
-	 * @param bool $saveSession - set TRUE and save user data in session
 	 *
 	 * @return object
 	 */
-	public function getUser($id = '', $idType = 'id', $saveSession = false)
+	public function getUser($id = '', $idType = 'id')
 	{
 		if (empty($id)) return $this->user;
 
@@ -74,7 +80,7 @@ class User extends BaseModel
       user.username,
       user.password,
       user.email,
-      user.email_verified,
+      user.hi_score,
       user.total_qp,
       user_photo.file_name AS photo,
       email_verifier.verifier AS email_verifier,
@@ -89,7 +95,7 @@ class User extends BaseModel
 		);
 
 		$this->builder->join('user_photo', 'user_photo.user_id = user.id', 'left');
-		$this->builder->join('league', 'league.id = user.league');
+		$this->builder->join('league', 'league.id = user.league_id');
 
 		if (is_array($idType))
 		{
@@ -103,10 +109,7 @@ class User extends BaseModel
 		}
 		else $this->builder->where("user.{$idType}", $id);
 
-		$user = $this->builder->get()->getRow();
-		$saveSession AND $this->user = $user;
-
-		return $user;
+    return $this->builder->get()->getRow();
 	}
 
 	//--------------------------------------------------------------------
@@ -161,23 +164,12 @@ class User extends BaseModel
 	/**
 	 * Set user email as verified
 	 *
-	 * @param int $userID
+	 * @param int $userId
 	 * @return bool
 	 */
-	public function confirmEmailVerification($userID)
+	public function confirmEmailVerification($userId)
 	{
-		$this->db->transStart();
-
-		$this->builder->set('email_verified', 1);
-		$this->builder->where('user_id', $userID);
-		$this->builder->update();
-
-		$this->builder->where('user_id', $userID);
-		$this->builder->delete('email_verifier');
-
-		$this->db->transComplete();
-
-		return $this->db->transStatus();
+	  return (new EmailVerifier)->delete($userId) ? true : false;
 	}
 
 	//--------------------------------------------------------------------
