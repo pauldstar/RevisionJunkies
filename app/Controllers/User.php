@@ -157,13 +157,11 @@ class User extends BaseController
     $invalidEmail = $inputType === 'email' &&
       $validation->check($input, 'valid_email');
 
-    if ($invalidEmail) $this->failValidationError('Invalid Email Format');
+    if ($invalidEmail) $this->respond(false);
 
     $isUnique = $validation->check($input, "is_unique[user.{$inputType}]");
 
-    return $isUnique ?
-      $this->respond(true, 200) :
-      $this->failValidationError('Email Not Unique');
+    return $this->respond($isUnique);
   }
 
   //--------------------------------------------------------------------
