@@ -64,6 +64,8 @@ class User extends BaseController
 
       return redirect()->to('/login/200')->withInput();
     }
+
+    return $this->send_email_verifier($user);
   }
 
   //--------------------------------------------------------------------
