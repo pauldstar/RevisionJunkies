@@ -28,7 +28,7 @@
 													<tr>
 														<td style="padding-top: 24px;">
 															<a href="http://quepenny.com" target="_blank">
-                                <img src="http://quepenny.com/assets/images/logo-white.png" alt="QuePenny" width="93" style="outline:none;border:none">
+                                <img src="http://quepenny.com/assets/images/general/logo-white.png" alt="QuePenny" width="93" style="outline:none;border:none">
                               </a>
 														</td>
 													</tr>
@@ -90,7 +90,7 @@
 										<div style="color:rgb(119,119,119);text-align:center;font-size:11px;line-height:1.5em;margin:15px 0px 30px;padding:0px 15px">
 											<p style="margin:0px 0px 10px">&copy; <?= date("Y") ?> QuePenny. All rights reserved.</p>
 											<p style="margin-bottom:20px!important;margin-top:0px;margin-right:0px;margin-left:0px">
-												<a href="http://quepenny.com" style="text-decoration:none;font-weight:bold" target="_blank"><img src="http://quepenny.com/assets/images/logo-white.png" style="outline:none;border:none;width:42px;opacity:0.47;"></a>
+												<a href="http://quepenny.com" style="text-decoration:none;font-weight:bold" target="_blank"><img src="http://quepenny.com/assets/images/general/logo-white.png" style="outline:none;border:none;width:42px;opacity:0.47;"></a>
 											</p>
 										</div>
 									</td>
