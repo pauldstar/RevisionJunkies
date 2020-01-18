@@ -129,11 +129,11 @@ class User extends BaseModel
 		$email_verifier = random_string('alnum', 10);
 
 		$user = [
-			'username' => $input['signup_username'],
-			'password' => $input['signup_username'],
-			'email' => $input['signup_email'],
-			'firstname' => $input['signup_firstname'],
-			'lastname' => $input['signup_lastname'],
+			'username' => $input['username'],
+			'password' => $input['username'],
+			'email' => $input['email'],
+			'firstname' => $input['firstname'],
+			'lastname' => $input['lastname'],
 		];
 
 		$verifierModel = new EmailVerifier();
@@ -153,7 +153,7 @@ class User extends BaseModel
 
 		if (!$this->db->transStatus()) return false;
 
-		$this->unverifiedUsername = $input['signup-username'];
+		$this->unverifiedUsername = $input['username'];
 		$user['email_verified'] = '0';
 		$user['email_verifier'] = $email_verifier;
 
