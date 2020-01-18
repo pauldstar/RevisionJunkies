@@ -150,7 +150,7 @@ class User extends BaseController
    */
   public function is_valid($inputType)
   {
-    $input = $this->request->getVar('inputText');
+    $input = $this->request->getVar('input');
 
     $validation = Services::validation();
 

@@ -103,7 +103,7 @@ function isAvailable(inputType, inputText, $input)
   $.ajax({
     url: `${SITE_URL}user/is_valid/${inputType}`,
     type: 'POST',
-    data: { inputText: inputText },
+    data: { input: inputText },
     dataType: 'JSON',
     success: data => showValidationMessage(data, $input)
   });
