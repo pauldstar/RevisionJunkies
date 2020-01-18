@@ -33,9 +33,9 @@ class UserSeeder extends Seeder
 			for ($c = 1; $c <= 9; $c++)
 			{
 				$data = [
-					'username' => str_replace('.', '', $faker->userName),
-					'password' => $faker->password,
-					'email' => $faker->email,
+					'username' => str_replace('.', '', $faker->unique()->userName),
+					'password' => $faker->password(8),
+					'email' => $faker->unique()->email,
 					'firstname' => $faker->firstName,
 					'lastname' => $faker->lastName,
 					'hi_score' => $faker->numberBetween(0, 9999),
