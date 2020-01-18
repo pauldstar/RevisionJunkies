@@ -66,7 +66,7 @@ function validateInput()
   let $input = $(this),
       inputText = $input.val();
 
-  if (!inputText) return;
+  if (! inputText) return;
 
   let regex;
 
@@ -76,7 +76,7 @@ function validateInput()
       if (inputText.length > 20)
         return void(showValidationMessage(false, $input));
       regex = /^[A-Za-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)*$/;
-      if (!regex.test(inputText))
+      if (! regex.test(inputText))
         return void(showValidationMessage(false, $input));
       isAvailable('username', inputText, $input);
       break;
@@ -84,7 +84,7 @@ function validateInput()
     case 'signup-email':
       regex =
         /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-      if (!regex.test(inputText))
+      if (! regex.test(inputText))
         return void(showValidationMessage(false, $input));
       isAvailable('email', inputText, $input);
       break;
@@ -92,7 +92,7 @@ function validateInput()
     case 'signup-firstname':
     case 'signup-lastname':
       regex = /^[A-Za-z][A-Za-z]*(?:-[A-Za-z]+)*(?:'[A-Za-z]+)*$/;
-      if (!regex.test(inputText))
+      if (! regex.test(inputText))
         showValidationMessage(regex.test(inputText), $input);
       break;
   }

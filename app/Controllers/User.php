@@ -51,12 +51,12 @@ class User extends BaseController
    */
   public function signup()
   {
-    if (!$this->validate('signup'))
-      return redirect()->to('login/100')->withInput();
+    if (! $this->validate('signup'))
+      return redirect()->to('login/200')->withInput();
 
     $user = $this->userModel->createUser($this->request->getVar());
 
-    if (!$user) return redirect()->to('/login/200')->with('signup_form',
+    if (! $user) return redirect()->to('/login/200')->with('signup_form',
       'Server error. Sign Up failed! Please try again later.'
     );
 

@@ -52,7 +52,7 @@ class Filters extends BaseConfig
 // TODO: add access filter for ajax calls
     'ajaxAccess' => [
       'before' => [
-        'pages/statistics'
+        ''
       ]
     ]
   ];
