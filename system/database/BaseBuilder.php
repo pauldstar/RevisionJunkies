@@ -2202,7 +2202,7 @@ class BaseBuilder
 	}
 
 	//--------------------------------------------------------------------
-
+  // TODO: added 'IGNORE'; preferably extend BaseBuilder and override _insert()
 	/**
 	 * Insert statement
 	 *
@@ -2216,7 +2216,7 @@ class BaseBuilder
 	 */
 	protected function _insert(string $table, array $keys, array $unescapedKeys): string
 	{
-		return 'INSERT INTO ' . $table . ' (' . implode(', ', $keys) . ') VALUES (' . implode(', ', $unescapedKeys) . ')';
+		return 'INSERT IGNORE INTO ' . $table . ' (' . implode(', ', $keys) . ') VALUES (' . implode(', ', $unescapedKeys) . ')';
 	}
 
 	//--------------------------------------------------------------------
