@@ -1,7 +1,7 @@
 <?php namespace App\Database\Seeds;
 
 use CodeIgniter\Database\Seeder;
-use App\Models\League;
+use App\Models\LeagueModel;
 use ReflectionException;
 
 class LeagueSeeder extends Seeder
@@ -28,7 +28,7 @@ class LeagueSeeder extends Seeder
 
 		foreach ($leagues as $data)
 		{
-			$league = new League();
+			$league = new LeagueModel();
 			$league->insert($data);
 		}
 	}

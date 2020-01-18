@@ -1,6 +1,6 @@
 <?php namespace App\Models;
 
-class EmailVerifier extends BaseModel
+class EmailVerifierModel extends BaseModel
 {
   protected $primaryKey = 'user_id';
 

@@ -5,7 +5,7 @@ use CodeIgniter\Config\Services;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\Filters\FilterInterface;
-use App\Models\User;
+use App\Models\UserModel;
 
 class AjaxAccess implements FilterInterface
 {
@@ -15,7 +15,7 @@ class AjaxAccess implements FilterInterface
 
   public function before(RequestInterface $request)
   {
-    $userModel = new User;
+    $userModel = new UserModel;
     if ($userModel->isLoggedIn()) return $request;
 
     $this->request = $request;

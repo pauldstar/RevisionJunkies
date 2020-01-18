@@ -4,7 +4,7 @@ class QuestionTest extends \CIUnitTestCase
 {
   public function testFormatQuestionsEmpty()
   {
-    $questionModel = new Question();
+    $questionModel = new QuestionModel();
     $test = $questionModel->formatQuestions([]);
     $this->assertIsArray($test);
     $this->assertEmpty($test);
@@ -52,14 +52,14 @@ class QuestionTest extends \CIUnitTestCase
    */
   public function testFormatQuestionsLvl134(array $dbQuestions)
   {
-    $questionModel = new Question();
+    $questionModel = new QuestionModel();
     $dbQuestions = $questionModel->loadDbQuestions(134);
     $this->formatQuestions($dbQuestions);
   }
 
   private function formatQuestions($dbQuestions)
   {
-    $questionModel = new Question();
+    $questionModel = new QuestionModel();
     $questions = $questionModel->formatQuestions($dbQuestions);
 
     foreach ($questions as $index => $qtn)
@@ -83,7 +83,7 @@ class QuestionTest extends \CIUnitTestCase
 
   public function testLoadDbQuestionsLvl1()
   {
-    $questionModel = new Question();
+    $questionModel = new QuestionModel();
     $questions = $questionModel->loadDbQuestions(1);
     $this->assertCount(4, $questions);
 
@@ -99,7 +99,7 @@ class QuestionTest extends \CIUnitTestCase
 
   public function testLoadDbQuestionsLvl2()
   {
-    $questionModel = new Question();
+    $questionModel = new QuestionModel();
     $questions = $questionModel->loadDbQuestions(2);
     $this->assertCount(7, $questions);
 
@@ -114,7 +114,7 @@ class QuestionTest extends \CIUnitTestCase
 
   public function testLoadDbQuestionsLvl3()
   {
-    $questionModel = new Question();
+    $questionModel = new QuestionModel();
     $questions = $questionModel->loadDbQuestions(3);
     $this->assertCount(7, $questions);
 
@@ -129,7 +129,7 @@ class QuestionTest extends \CIUnitTestCase
 
   public function testLoadDbQuestionsLvl4()
   {
-    $questionModel = new Question();
+    $questionModel = new QuestionModel();
     $questions = $questionModel->loadDbQuestions(4);
     $this->assertCount(10, $questions);
 

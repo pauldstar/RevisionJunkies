@@ -14,7 +14,7 @@
  */
 
 use CodeIgniter\Controller;
-use App\Models\User as UserModel;
+use App\Models\UserModel as UserModel;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use Psr\Log\LoggerInterface;

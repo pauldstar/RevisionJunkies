@@ -1,6 +1,6 @@
 <?php namespace App\Models;
 
-class UserPhoto extends BaseModel
+class UserPhotoModel extends BaseModel
 {
   protected $primaryKey = 'user_id';
 

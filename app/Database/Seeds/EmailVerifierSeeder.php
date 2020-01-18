@@ -1,7 +1,7 @@
 <?php namespace App\Database\Seeds;
 
-use App\Models\EmailVerifier;
-use App\Models\User;
+use App\Models\EmailVerifierModel;
+use App\Models\UserModel;
 use CodeIgniter\Database\Seeder;
 use ReflectionException;
 
@@ -13,8 +13,8 @@ class EmailVerifierSeeder extends Seeder
    */
   public function run()
   {
-    $users = (new User)->findColumn('id');
-    $verifier = new EmailVerifier;
+    $users = (new UserModel)->findColumn('id');
+    $verifier = new EmailVerifierModel;
 
     foreach ($users as $id)
     {

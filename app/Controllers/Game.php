@@ -1,7 +1,7 @@
 <?php namespace App\Controllers;
 
-use App\Models\Question as QuestionModel;
-use App\Models\Game as GameModel;
+use App\Models\QuestionModel;
+use App\Models\GameModel;
 use CodeIgniter\API\ResponseTrait;
 use CodeIgniter\HTTP\Response;
 

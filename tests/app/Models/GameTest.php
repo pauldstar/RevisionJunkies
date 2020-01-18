@@ -4,7 +4,7 @@ class GameTest extends \CIUnitTestCase
 {
   public function testStartTime()
   {
-    $gameModel = new Game;
+    $gameModel = new GameModel;
     $gameModel->startTime(1234567890);
     $test = $gameModel->startTime();
     $this->assertEquals(1234567890, $test);
@@ -12,7 +12,7 @@ class GameTest extends \CIUnitTestCase
 
   public function testScore()
   {
-    $gameModel = new Game;
+    $gameModel = new GameModel;
     $test = $gameModel->score();
     $this->assertEquals(0, $test);
 
@@ -35,7 +35,7 @@ class GameTest extends \CIUnitTestCase
 
   public function testLevel()
   {
-    $gameModel = new Game;
+    $gameModel = new GameModel;
     $test = $gameModel->level();
     $this->assertEquals(1, $test);
 

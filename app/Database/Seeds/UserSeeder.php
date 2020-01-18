@@ -1,7 +1,7 @@
 <?php namespace App\Database\Seeds;
 
-use App\Models\League;
-use App\Models\User;
+use App\Models\LeagueModel;
+use App\Models\UserModel;
 use CodeIgniter\Database\Seeder;
 use Faker\Factory;
 use ReflectionException;
@@ -22,13 +22,13 @@ class UserSeeder extends Seeder
 			'lastname' => 'Ogbeiwi'
 		];
 
-		$user = new User();
+		$user = new UserModel();
 		$user->save($data);
 
 		if (ENVIRONMENT !== 'production')
 		{
 			$faker = Factory::create();
-			$leagues = (new League)->findColumn('id');
+			$leagues = (new LeagueModel)->findColumn('id');
 
 			for ($c = 1; $c <= 9; $c++)
 			{

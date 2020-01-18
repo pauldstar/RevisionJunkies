@@ -1,6 +1,6 @@
 <?php namespace App\Models;
 
-class Game extends BaseModel
+class GameModel extends BaseModel
 {
   private $startTime;
 	private $score;

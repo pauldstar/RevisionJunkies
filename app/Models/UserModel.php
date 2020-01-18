@@ -4,7 +4,7 @@ use CodeIgniter\Email\Email;
 use CodeIgniter\HTTP\RequestInterface;
 use ReflectionException;
 
-class User extends BaseModel
+class UserModel extends BaseModel
 {
 	/**
 	 * Current logged in user
@@ -57,7 +57,7 @@ class User extends BaseModel
 
 	//--------------------------------------------------------------------
 
-  public function isLoggedIn()
+  public function isLoggedIn() : bool
   {
     return $this->user ? true : false;
   }
@@ -136,7 +136,7 @@ class User extends BaseModel
 			'lastname' => $input['lastname'],
 		];
 
-		$verifierModel = new EmailVerifier();
+		$verifierModel = new EmailVerifierModel();
 
 		$this->db->transStart();
 
@@ -154,7 +154,6 @@ class User extends BaseModel
 		if (!$this->db->transStatus()) return false;
 
 		$this->unverifiedUsername = $input['username'];
-		$user['email_verified'] = '0';
 		$user['email_verifier'] = $email_verifier;
 
 		return (object) $user;
@@ -170,7 +169,7 @@ class User extends BaseModel
 	 */
 	public function confirmEmailVerification($userId)
 	{
-	  return (new EmailVerifier)->delete($userId) ? true : false;
+	  return (new EmailVerifierModel)->delete($userId) ? true : false;
 	}
 
 	//--------------------------------------------------------------------

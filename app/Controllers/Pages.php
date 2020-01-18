@@ -1,6 +1,6 @@
 <?php namespace App\Controllers;
 
-use App\Models\User;
+use App\Models\UserModel;
 use CodeIgniter\Controller;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\HTTP\RedirectResponse;
@@ -30,7 +30,7 @@ class Pages extends Controller
    */
   public function __construct()
   {
-    $this->userModel = new User();
+    $this->userModel = new UserModel();
 
     $this->pages = [
       'game',

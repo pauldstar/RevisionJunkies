@@ -1,6 +1,6 @@
 <?php namespace App\Models;
 
-class League extends BaseModel
+class LeagueModel extends BaseModel
 {
 	protected $allowedFields = [
 		'id',

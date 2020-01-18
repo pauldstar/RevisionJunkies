@@ -1,6 +1,6 @@
 <?php namespace App\Models;
 
-class Question extends BaseModel
+class QuestionModel extends BaseModel
 {
 	protected $useTimestamps = true;
 
