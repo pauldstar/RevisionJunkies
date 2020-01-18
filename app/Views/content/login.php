@@ -56,6 +56,10 @@
         <?= $activeTab === 'signup' ? 'active show' : '' ?>
       " role="tabpanel" aria-labelledby="signup-pill">
 
+        <p class="text-danger">
+          <?= optional($validation)->showError('signupForm') ?>
+        </p>
+
         <?= form_open('user/signup', 'id="signup-form" novalidate') ?>
 
         <div class="form-group">

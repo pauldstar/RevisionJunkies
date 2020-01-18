@@ -56,11 +56,14 @@ class User extends BaseController
 
     $user = $this->userModel->createUser($this->request->getVar());
 
-    if (! $user) return redirect()->to('/login/200')->with('signup_form',
-      'Server error. Sign Up failed! Please try again later.'
-    );
+    if (! $user)
+    {
+      $this->validator->setError(
+        'signupForm', 'Server error. Sign Up failed! Please try again later.'
+      );
 
-    $this->send_email_verifier($user);
+      return redirect()->to('/login/200')->withInput();
+    }
   }
 
   //--------------------------------------------------------------------
