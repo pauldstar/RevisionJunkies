@@ -105,7 +105,7 @@ function isAvailable(inputType, inputText, $input)
     type: 'POST',
     data: { inputText: inputText },
     dataType: 'JSON',
-    success: data => showValidationMessage(data.response, $input)
+    success: data => showValidationMessage(data, $input)
   });
 }
 
