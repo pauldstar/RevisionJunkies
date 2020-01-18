@@ -22,28 +22,28 @@ require_once SYSTEMPATH . 'Config/Services.php';
  */
 class Services extends CoreServices
 {
-	/**
-	 * Return the appropriate migration runner.
-	 *
-	 * @param BaseConfig $config
-	 * @param ConnectionInterface $db
-	 * @param boolean	$getShared
-	 *
-	 * @return MigrationRunner
-	 */
-	public static function migrations(BaseConfig $config = null,
-																		ConnectionInterface $db = null,
-																		bool $getShared = true)
-	{
-		if ($getShared)
-		{
-			return static::getSharedInstance('migrations', $config, $db);
-		}
+  /**
+   * Return the appropriate migration runner.
+   *
+   * @param BaseConfig $config
+   * @param ConnectionInterface $db
+   * @param boolean $getShared
+   *
+   * @return MigrationRunner
+   */
+  public static function migrations(BaseConfig $config = null,
+                                    ConnectionInterface $db = null,
+                                    bool $getShared = true)
+  {
+    if ($getShared)
+    {
+      return static::getSharedInstance('migrations', $config, $db);
+    }
 
-		$config = empty($config) ? new Migrations() : $config;
+    $config = empty($config) ? new Migrations() : $config;
 
-		return new MigrationRunner($config, $db);
-	}
+    return new MigrationRunner($config, $db);
+  }
 
-	//--------------------------------------------------------------------
+  //--------------------------------------------------------------------
 }
