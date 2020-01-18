@@ -23,7 +23,7 @@ class EmailVerifierSeeder extends Seeder
         'verifier' => random_string('alnum', 10),
       ];
 
-      $verifier->save($data);
+      $verifier->insert($data);
     }
   }
 }
