@@ -147,7 +147,7 @@ class User extends BaseModel
 			'verifier' => $email_verifier
 		];
 
-		$verifierModel->save($emailVerifier);
+		$verifierModel->insert($emailVerifier);
 
 		$this->db->transComplete();
 
