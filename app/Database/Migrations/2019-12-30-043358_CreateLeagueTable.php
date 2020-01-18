@@ -9,7 +9,7 @@ class CreateLeagueTable extends Migration
 		$fields = [
 			'id' => [
 				'type' => 'TINYINT',
-				'constraint' => '1',
+				'constraint' => '2',
 				'unsigned' => true,
 				'auto_increment' => true
 			],
