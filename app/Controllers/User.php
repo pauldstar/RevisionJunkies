@@ -105,19 +105,20 @@ class User extends BaseController
    */
   public function send_email_verifier($user)
   {
+
     $data = is_object($user) ? $user :
       $this->userModel->getUser($user, 'username');
 
-    if ($data['email_verifier'] === '1') return redirect()->to('/login/300');
+    if ($data->email_verifier === null) return redirect()->to('/login/300');
 
     $email = Services::email();
 
     $email->setSubject('Email Verification');
-    $email->setTo($data['email']);
-    $email->setMessage(view('template/verify_email', $data));
+    $email->setTo($data->email);
+    $email->setMessage(view('template/verify_email', (array) $data));
     $email->send();
 
-    $this->userModel->unverifiedUsername($data['username']);
+    $this->userModel->unverifiedUsername($data->username);
 
     return redirect()->to('/login/400');
   }
@@ -127,11 +128,11 @@ class User extends BaseController
   {
     $email = Services::email();
 
-    $data['user'] = $this->userModel->getUser(5);
+    $data = $this->userModel->getUser(5);
 
     $email->setSubject('Email Verification');
-    $email->setTo($data['email']);
-    $email->setMessage(view('template/verify_email', $data));
+    $email->setTo($data->email);
+    $email->setMessage(view('template/verify_email', (array) $data));
     $email->send(false);
 
     echo $email->printDebugger(['headers']);
@@ -140,7 +141,7 @@ class User extends BaseController
   // TODO: remove test_email() and show_email()
   public function show_email()
   {
-    $data['user'] = $this->userModel->getUser(5);
+    $data = (array) $this->userModel->getUser(5);
     echo view('template/verify_email', $data);
   }
 
