@@ -15,12 +15,11 @@ class AjaxAccess implements FilterInterface
 
   public function before(RequestInterface $request)
   {
-    $this->request = $request;
-    $this->response = Services::response();
     $userModel = new User;
-
     if ($userModel->isLoggedIn()) return $request;
 
+    $this->request = $request;
+    $this->response = Services::response();
     return $this->failUnauthorized();
   }
 
