@@ -11,7 +11,7 @@ class User extends BaseController
 
   public function login()
   {
-    if (!$this->validate('login'))
+    if (! $this->validate('login'))
       return redirect()->to('/login/100')->withInput();
 
     $name = $this->request->getVar('login_name');
@@ -46,7 +46,7 @@ class User extends BaseController
   /**
    * Sign-up and send email verification to user
    *
-   * @return RedirectResponse|void
+   * @return RedirectResponse
    * @throws ReflectionException
    */
   public function signup()
@@ -105,7 +105,6 @@ class User extends BaseController
    */
   public function send_email_verifier($user)
   {
-
     $data = is_object($user) ? $user :
       $this->userModel->getUser($user, 'username');
 
