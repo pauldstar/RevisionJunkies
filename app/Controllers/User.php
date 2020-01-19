@@ -21,7 +21,7 @@ class User extends BaseController
 
     $userExists = isset($user) && password_verify($password, $user->password);
 
-    if (!$userExists)
+    if (! $userExists)
     {
       $this->validator->setError(
         'loginForm', 'Login failed! Please try again...'
