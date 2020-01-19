@@ -40,10 +40,10 @@ class CreateQuestionTable extends Migration
 			'incorrect_answers' => [
 				'type' => 'TEXT',
 			],
-			'created_at' => [
+			'updated_at' => [
 				'type' => 'TIMESTAMP',
 			],
-			'updated_at' => [
+			'created_at' => [
 				'type' => 'TIMESTAMP',
 			]
 		];

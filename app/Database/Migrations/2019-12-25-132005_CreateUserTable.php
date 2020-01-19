@@ -50,10 +50,10 @@ class CreateUserTable extends Migration
 				'unsigned' => true,
 				'default' => 1
 			],
-			'created_at' => [
+			'updated_at' => [
 				'type' => 'TIMESTAMP',
 			],
-			'updated_at' => [
+			'created_at' => [
 				'type' => 'TIMESTAMP',
 			]
 		];
