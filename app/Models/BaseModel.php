@@ -17,7 +17,8 @@ class BaseModel extends Model
 
 	public function setTable(string $table = '')
 	{
-		$modelName = substr(strrchr(static::class, "\\"), 1);
-		$this->table = camel_to_snake($modelName);
+		$className = substr(strrchr(static::class, "\\"), 1);
+		$tableName = str_replace('Model', '', $className);
+		$this->table = camel_to_snake($tableName);
 	}
 }
