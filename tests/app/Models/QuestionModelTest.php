@@ -1,6 +1,6 @@
 <?php namespace App\Models;
 
-class QuestionTest extends \CIUnitTestCase
+class QuestionModelTest extends \CIUnitTestCase
 {
   public function testFormatQuestionsEmpty()
   {

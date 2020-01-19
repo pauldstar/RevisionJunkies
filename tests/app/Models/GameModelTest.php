@@ -1,6 +1,6 @@
 <?php namespace App\Models;
 
-class GameTest extends \CIUnitTestCase
+class GameModelTest extends \CIUnitTestCase
 {
   public function testStartTime()
   {
