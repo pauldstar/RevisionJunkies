@@ -79,7 +79,6 @@ $routes->get('game', 'Pages::game');
 $routes->get('races', 'Pages::races');
 $routes->get('leagues', 'Pages::leagues');
 $routes->get('leaderboard', 'Pages::leaderboard');
-// TODO: consider removing, and use redirect withErrors
 $routes->get('login/(:num)', 'Pages::login/$1');
 $routes->get('login', 'Pages::login');
 $routes->get('contact', 'Pages::contact');
