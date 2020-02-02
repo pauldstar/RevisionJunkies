@@ -238,4 +238,3 @@ class QuestionFacadeTest extends \CIUnitTestCase
     QuestionFacade::reset();
   }
 }
-
