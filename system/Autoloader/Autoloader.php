@@ -264,6 +264,8 @@ class Autoloader
 			$mapped_file = $this->loadLegacy($class);
 		}
 
+		if ($mapped_file && method_exists($class, '__static')) $class::__static();
+
 		return $mapped_file;
 	}
 
