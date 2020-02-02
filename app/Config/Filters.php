@@ -49,11 +49,11 @@ class Filters extends BaseConfig
         'user/logout'
       ]
     ],
-// TODO: add access filter for ajax calls
-    'ajaxAccess' => [
-      'before' => [
-        ''
-      ]
-    ]
+
+//    'ajaxAccess' => [
+//      'before' => [
+//        ''
+//      ]
+//    ]
   ];
 }
