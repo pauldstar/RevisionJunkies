@@ -59,6 +59,7 @@ abstract class QuestionFacade extends BaseFacade
         );
 
         shuffle($gameQuestion['options']);
+        $sessionQuestion->options = $gameQuestion['options'];
       }
 
       $gameQuestions[] = $gameQuestion;
