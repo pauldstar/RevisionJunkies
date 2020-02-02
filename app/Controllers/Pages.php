@@ -1,6 +1,6 @@
 <?php namespace App\Controllers;
 
-use App\Models\UserModel;
+use App\Models\Facades\UserFacade;
 use CodeIgniter\Controller;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\HTTP\RedirectResponse;
@@ -16,22 +16,18 @@ class Pages extends Controller
    */
   protected $pages;
 
-  protected $userModel;
-
   protected $helpers = ['html', 'number'];
 
   /**
    * Class constructor
    *
    * Create list of pages that are NOT EXPLICITLY called with methods
-   * Each having a view file matching its name in app/views/content
+   * Each having a view file matching its name in app/Views/content
    *
    * Write all page names in snake_case for use in routes
    */
   public function __construct()
   {
-    $this->userModel = new UserModel();
-
     $this->pages = [
       'game',
       'leagues',
@@ -80,7 +76,7 @@ class Pages extends Controller
    */
   public function login(string $responseCode = '')
   {
-    if ($this->userModel->isLoggedIn()) return redirect()->to('/');
+    if (UserFacade::isLoggedIn()) return redirect()->to('/');
 
     $data = [
       'activeTab' => 'login',
@@ -95,7 +91,7 @@ class Pages extends Controller
     {
       case '400':
         $data['emailUnverified'] = 'active';
-        $data['username'] = $this->userModel->unverifiedUsername();
+        $data['username'] = UserFacade::unverifiedUsername();
         break;
       case '300':
         $data['emailVerified'] = 'active';
@@ -121,12 +117,12 @@ class Pages extends Controller
    * @param string $page
    * @param array $data - for the page
    */
-  protected function outputPage(string $page, array $data = [])
+  private function outputPage(string $page, array $data = [])
   {
-    $data['loggedIn'] = $this->userModel->isLoggedIn();
+    $data['loggedIn'] = UserFacade::isLoggedIn();
     $data['title'] = $page;
     $data['styles'] = link_tag($page);
-    $data['user'] = $this->userModel->getUser();
+    $data['user'] = UserFacade::getUser();
     $data['hiScore'] = optional($data['user'])->hi_score ?? 0;
     $data['totalQP'] = optional($data['user'])->total_qp ?? 0;
 

@@ -22,15 +22,9 @@ use Psr\Log\LoggerInterface;
 
 /**
  * Class BaseController
- * 
- * @property bool $loggedIn
- * @property UserModel $userModel
  */
 class BaseController extends Controller
 {
-	protected $loggedIn;
-	protected $userModel;
-
 	/**
 	 * An array of helpers to be loaded automatically upon
 	 * class instantiation. These helpers will be available
@@ -58,7 +52,5 @@ class BaseController extends Controller
 		//--------------------------------------------------------------------
 		// E.g.:
 		// $this->session = \Config\Services::session();
-		$this->userModel = new UserModel();
-		$this->loggedIn = !! $this->userModel->getUser();
 	}
 }
