@@ -77,11 +77,11 @@ class Game extends BaseController
    */
   public function answer_score($answerCode = null): Response
   {
-    $question = QuestionFacade::currentSessionQuestion();
-    $firstHash = QuestionFacade::currentAnswerHash();
+    $question = QuestionFacade::nextSessionQuestion();
+    $firstHash = QuestionFacade::nextHashSecret();
     $answerHash = QuestionFacade
-      ::getUserAnswerHash($question, $firstHash, $answerCode);
-    $score = QuestionFacade::getAnswerScore($question, $answerHash);
+      ::userAnswerHash($question, $firstHash, $answerCode);
+    $score = QuestionFacade::answerScore($question, $answerHash);
     GameFacade::score($score);
 
     return $this->respond($score);

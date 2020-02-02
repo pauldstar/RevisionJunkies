@@ -118,7 +118,7 @@ abstract class QuestionFacade extends BaseFacade
   /**
    * @return null|object
    */
-  public static function currentSessionQuestion()
+  public static function nextSessionQuestion()
   {
     return array_shift(self::$questions);
   }
@@ -130,7 +130,7 @@ abstract class QuestionFacade extends BaseFacade
    *
    * @return string
    */
-  public static function currentAnswerHash()
+  public static function nextHashSecret()
   {
     return array_shift(self::$answerHashChain);
   }
@@ -141,15 +141,15 @@ abstract class QuestionFacade extends BaseFacade
    * Get score for user answer on given question
    *
    * @param object $sessionQuestion
-   * @param string $answerHash
+   * @param string $userAnswerHash from userAnswerHash()
    * @return float
    */
-  public static function getAnswerScore(object $sessionQuestion,
-                                        string $answerHash): float
+  public static function answerScore(object $sessionQuestion,
+                                     string $userAnswerHash): float
   {
-    if (empty($answerHash)) return 0;
+    if (empty($userAnswerHash)) return 0;
 
-    return $answerHash === $sessionQuestion->answer_hash
+    return $userAnswerHash === $sessionQuestion->answer_hash
       ? $sessionQuestion->score : 0;
   }
 
@@ -167,38 +167,38 @@ abstract class QuestionFacade extends BaseFacade
    * get hash for user's answer
    *
    * @param object $sessionQuestion
+   * @param string $currentHashSecret from currentHashSecret()
    * @param string|int $answerCode
-   * @param string $firstAnswerHash
    * @return string
    */
-  public static function getUserAnswerHash(object $sessionQuestion,
-                                           string $firstAnswerHash,
-                                           $answerCode = null)
+  public static function userAnswerHash(object $sessionQuestion,
+                                        string $currentHashSecret,
+                                        $answerCode = null)
   {
     if ($answerCode === null) return '';
 
-    $testHash = '';
+    $hash = '';
 
     switch ($sessionQuestion->type)
     {
       case 'multiple':
-        $testHash = md5($sessionQuestion->options[$answerCode]);
+        $hash = md5($sessionQuestion->options[$answerCode]);
         break;
 
       case 'boolean':
         switch ($answerCode)
         {
           case 0:
-            $testHash = md5('False');
+            $hash = md5('False');
             break;
           case 1:
-            $testHash = md5('True');
+            $hash = md5('True');
             break;
         }
         break;
     }
 
-    return md5($firstAnswerHash . $testHash);
+    return md5($currentHashSecret . $hash);
   }
 
   //--------------------------------------------------------------------

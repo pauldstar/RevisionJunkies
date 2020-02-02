@@ -26,8 +26,8 @@ class QuestionFacadeTest extends \CIUnitTestCase
   {
     QuestionFacade::reset();
     $gameQuestions = QuestionFacade::formatQuestions($dbQuestions);
-    $sessionQuestion = QuestionFacade::currentSessionQuestion();
-    $this->assertEquals(0, QuestionFacade::getAnswerScore($sessionQuestion, ''));
+    $sessionQuestion = QuestionFacade::nextSessionQuestion();
+    $this->assertEquals(0, QuestionFacade::answerScore($sessionQuestion, ''));
 
     foreach ($gameQuestions as $qtn)
     {
@@ -68,7 +68,7 @@ class QuestionFacadeTest extends \CIUnitTestCase
         }
       }
 
-      $sessionQuestion = QuestionFacade::currentSessionQuestion();
+      $sessionQuestion = QuestionFacade::nextSessionQuestion();
     }
   }
 
@@ -147,7 +147,7 @@ class QuestionFacadeTest extends \CIUnitTestCase
         $this->assertCount(4, $qtn['options']);
       }
 
-      $sessionQuestion = QuestionFacade::currentSessionQuestion();
+      $sessionQuestion = QuestionFacade::nextSessionQuestion();
       $this->assertEquals($qtn['level'], $sessionQuestion->level);
       $this->assertEquals($qtn['score'], $sessionQuestion->score);
       $this->assertEquals($qtn['ah'], $sessionQuestion->answer_hash);
