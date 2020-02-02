@@ -31,41 +31,21 @@ class QuestionFacadeTest extends \CIUnitTestCase
 
     foreach ($gameQuestions as $qtn)
     {
-      switch ($qtn['type'])
+      $options = $qtn['type'] === 'multiple'
+        ? $qtn['options'] : ['False', 'True'];
+
+      $hashSecret = QuestionFacade::nextHashSecret();
+
+      foreach ($options as $i => $option)
       {
-        case 'boolean':
-        {
-          $firstHash = QuestionFacade::currentAnswerHash();
+        $answerHash = QuestionFacade
+          ::userAnswerHash($sessionQuestion, $hashSecret, $i);
+        $answerScore = QuestionFacade
+          ::answerScore($sessionQuestion, $answerHash);
 
-          foreach (['False', 'True'] as $i => $option)
-          {
-            $answerHash = QuestionFacade
-              ::getUserAnswerHash($sessionQuestion, $firstHash, $i);
-            $answerScore = QuestionFacade
-              ::getAnswerScore($sessionQuestion, $answerHash);
-
-            if ($option === $sessionQuestion->correct_answer)
-              $this->assertEquals($sessionQuestion->score, $answerScore);
-            else $this->assertEquals(0, $answerScore);
-          }
-
-          break;
-        }
-
-        case 'multiple':
-        {
-          foreach ($qtn['options'] as $i => $option)
-          {
-            $answerScore = QuestionFacade::getAnswerScore($sessionQuestion, $i);
-            $answerHash = QuestionFacade::getUserAnswerHash($sessionQuestion, $i);
-
-            if ($option === $sessionQuestion->correct_answer)
-              $this->assertEquals($sessionQuestion->score, $answerScore);
-            else $this->assertEquals(0, $answerScore);
-          }
-
-          break;
-        }
+        if ($option === $sessionQuestion->correct_answer)
+          $this->assertEquals($sessionQuestion->score, $answerScore);
+        else $this->assertEquals(0, $answerScore);
       }
 
       $sessionQuestion = QuestionFacade::nextSessionQuestion();
