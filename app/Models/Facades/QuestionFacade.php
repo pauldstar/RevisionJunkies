@@ -55,7 +55,7 @@ abstract class QuestionFacade extends BaseFacade
       {
         $gameQuestion['options'] = array_merge(
           [$sessionQuestion->correct_answer],
-          json_decode($sessionQuestion->incorrect_answers)
+          $sessionQuestion->incorrect_answers
         );
 
         shuffle($gameQuestion['options']);
@@ -109,9 +109,8 @@ abstract class QuestionFacade extends BaseFacade
     }
 
     $builder->orderBy('', 'random');
-    $query = $builder->get($limit);
 
-    return $query->getResult();
+    return $builder->findAll($limit);
   }
 
   //--------------------------------------------------------------------
