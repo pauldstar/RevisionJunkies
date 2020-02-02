@@ -22,6 +22,36 @@ class QuestionFacadeTest extends \CIUnitTestCase
     $this->answerScore($dbQuestions);
   }
 
+  /**
+   * @depends testLoadDbQuestionsLvl3
+   * @param array $dbQuestions
+   */
+  public function testGetAnswerScoreLvl3(array $dbQuestions)
+  {
+    $this->answerScore($dbQuestions);
+  }
+
+  /**
+   * @depends testLoadDbQuestionsLvl4
+   * @param array $dbQuestions
+   */
+  public function testGetAnswerScoreLvl4(array $dbQuestions)
+  {
+    $this->answerScore($dbQuestions);
+  }
+
+  /**
+   * @depends testLoadDbQuestionsLvl134
+   * @param array $dbQuestions
+   */
+  public function testGetAnswerScoreLvl134(array $dbQuestions)
+  {
+    $this->answerScore($dbQuestions);
+  }
+
+  /**
+   * @param $dbQuestions
+   */
   private function answerScore($dbQuestions)
   {
     QuestionFacade::reset();
@@ -100,11 +130,12 @@ class QuestionFacadeTest extends \CIUnitTestCase
   }
 
   /**
+   * @depends testLoadDbQuestionsLvl134
+   * @param array $dbQuestions
    * @return array
    */
-  public function testFormatQuestionsLvl134()
+  public function testFormatQuestionsLvl134($dbQuestions)
   {
-    $dbQuestions = QuestionFacade::loadDbQuestions(134);
     return $this->formatQuestions($dbQuestions);
   }
 
@@ -185,6 +216,16 @@ class QuestionFacadeTest extends \CIUnitTestCase
     $this->assertCount(10, $questions);
 
     foreach ($questions as $qtn) $this->assertEquals('4', $qtn->level);
+
+    return $questions;
+  }
+
+  public function testLoadDbQuestionsLvl134()
+  {
+    $questions = QuestionFacade::loadDbQuestions(134);
+    $this->assertCount(10, $questions);
+
+    foreach ($questions as $qtn) $this->assertEquals('134', $qtn->level);
 
     return $questions;
   }
