@@ -80,7 +80,7 @@ abstract class QuestionFacade extends BaseFacade
    * @param int $level current game level
    * @return array
    */
-  public static function loadDbQuestions($level)
+  public static function loadQuestions($level)
   {
     $builder = self::instance()->select(
       "question, type, correct_answer, difficulty," .

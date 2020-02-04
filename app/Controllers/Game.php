@@ -60,7 +60,7 @@ class Game extends BaseController
   public function get_questions(): Response
   {
     $level = GameFacade::level();
-    $dbQuestions = QuestionFacade::loadDbQuestions($level);
+    $dbQuestions = QuestionFacade::loadQuestions($level);
     $gameQuestions = QuestionFacade::formatQuestions($dbQuestions);
     GameFacade::level(true);
 

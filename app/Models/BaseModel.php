@@ -12,7 +12,7 @@ abstract class BaseModel extends Model
 {
 	protected $returnType = 'object';
 
-	private static $instance;
+	private static $model;
 
 	public function __construct()
 	{
@@ -36,10 +36,10 @@ abstract class BaseModel extends Model
    * Returns new instance of the calling model class
    * @return BaseModel
    */
-  public static function instance()
+  public static function model()
   {
     $className = static::class;
-    self::$instance || self::$instance = new $className();
-    return self::$instance;
+    self::$model || self::$model = new $className();
+    return self::$model;
   }
 }

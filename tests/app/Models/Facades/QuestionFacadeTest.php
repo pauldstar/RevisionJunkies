@@ -1,7 +1,5 @@
 <?php namespace App\Models\Facades;
 
-use ReflectionException;
-
 class QuestionFacadeTest extends \CIUnitTestCase
 {
   /**
@@ -169,7 +167,7 @@ class QuestionFacadeTest extends \CIUnitTestCase
 
   public function testLoadDbQuestionsLvl1()
   {
-    $questions = QuestionFacade::loadDbQuestions(1);
+    $questions = QuestionFacade::loadQuestions(1);
     $this->assertCount(4, $questions);
 
     foreach ($questions as $qtn)
@@ -184,7 +182,7 @@ class QuestionFacadeTest extends \CIUnitTestCase
 
   public function testLoadDbQuestionsLvl2()
   {
-    $questions = QuestionFacade::loadDbQuestions(2);
+    $questions = QuestionFacade::loadQuestions(2);
     $this->assertCount(7, $questions);
 
     foreach ($questions as $qtn)
@@ -198,7 +196,7 @@ class QuestionFacadeTest extends \CIUnitTestCase
 
   public function testLoadDbQuestionsLvl3()
   {
-    $questions = QuestionFacade::loadDbQuestions(3);
+    $questions = QuestionFacade::loadQuestions(3);
     $this->assertCount(7, $questions);
 
     foreach ($questions as $qtn)
@@ -212,7 +210,7 @@ class QuestionFacadeTest extends \CIUnitTestCase
 
   public function testLoadDbQuestionsLvl4()
   {
-    $questions = QuestionFacade::loadDbQuestions(4);
+    $questions = QuestionFacade::loadQuestions(4);
     $this->assertCount(10, $questions);
 
     foreach ($questions as $qtn) $this->assertEquals('4', $qtn->level);
@@ -222,7 +220,7 @@ class QuestionFacadeTest extends \CIUnitTestCase
 
   public function testLoadDbQuestionsLvl134()
   {
-    $questions = QuestionFacade::loadDbQuestions(134);
+    $questions = QuestionFacade::loadQuestions(134);
     $this->assertCount(10, $questions);
 
     foreach ($questions as $qtn) $this->assertEquals('134', $qtn->level);
