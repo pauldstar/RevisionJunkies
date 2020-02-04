@@ -2,8 +2,10 @@
 
 use App\Models\Facades\QuestionFacade;
 use App\Models\Facades\GameFacade;
+use App\Models\Facades\UserFacade;
 use CodeIgniter\API\ResponseTrait;
 use CodeIgniter\HTTP\Response;
+use ReflectionException;
 
 class Game extends BaseController
 {
@@ -41,12 +43,13 @@ class Game extends BaseController
    * @param string|int $score
    * @param string|int $timeDelta - game time length
    * @return Response
+   * @throws ReflectionException
    */
   public function end_game($score, $timeDelta): Response
   {
     $elapsed = time() - GameFacade::startTime();
     $output = "user<br />{$timeDelta}<br />session<br />$elapsed";
-
+    UserFacade::updateStats($score);
     return $this->respond($output);
   }
 

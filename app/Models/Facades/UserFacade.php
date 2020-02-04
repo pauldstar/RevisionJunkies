@@ -164,6 +164,23 @@ abstract class UserFacade extends BaseFacade
   //--------------------------------------------------------------------
 
   /**
+   * @param int $score
+   * @return void|null
+   * @throws ReflectionException
+   */
+  public static function updateStats($score = 0)
+  {
+    if (! self::$user) return null;
+
+    self::$user->hi_score = $score;
+    self::$user->total_qp = $score;
+
+    self::model()->save(self::$user);
+  }
+
+  //--------------------------------------------------------------------
+
+  /**
    * Save user in session and update last login time in db
    *
    * @param object $user
