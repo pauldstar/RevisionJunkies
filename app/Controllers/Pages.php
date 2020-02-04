@@ -123,8 +123,8 @@ class Pages extends Controller
     $data['title'] = $page;
     $data['styles'] = link_tag($page);
     $data['user'] = UserFacade::getUser();
-    $data['hiScore'] = optional($data['user'])->hi_score ?? 0;
-    $data['totalQP'] = optional($data['user'])->total_qp ?? 0;
+    $data['hiScore'] = optional($data['user'])->hi_score;
+    $data['totalQP'] = optional($data['user'])->total_qp;
 
     $data['navItems']['main'] = [
       'game' => ['glyphicon' => 'equalizer', 'color' => 'danger'],
