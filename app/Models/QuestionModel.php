@@ -1,7 +1,10 @@
 <?php namespace App\Models;
 
+use App\Entities\QuestionEntity;
+
 class QuestionModel extends BaseModel
 {
+  protected $returnType = QuestionEntity::class;
   protected $useTimestamps = true;
 
   protected $allowedFields = [
@@ -11,21 +14,6 @@ class QuestionModel extends BaseModel
     'type',
     'difficulty',
     'correct_answer',
-    'incorrect_answers',
+    'incorrect_answers'
   ];
-
-  protected $afterFind = ['decodeIncorrectAnswers'];
-
-  //--------------------------------------------------------------------
-
-  protected function decodeIncorrectAnswers(array $data): array
-  {
-    foreach ($data['data'] as $i => $question)
-    {
-      $answers = $question->incorrect_answers;
-      $question->incorrect_answers = json_decode($answers);
-    }
-
-    return $data;
-  }
 }

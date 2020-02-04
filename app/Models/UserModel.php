@@ -1,10 +1,11 @@
 <?php namespace App\Models;
 
+use App\Entities\UserEntity;
+
 class UserModel extends BaseModel
 {
-	protected $useTimestamps = true;
-	protected $beforeInsert = ['hashPassword'];
-	protected $beforeUpdate = ['hashPassword'];
+  protected $returnType = UserEntity::class;
+  protected $useTimestamps = true;
 	protected $validationRules = 'signup';
 
 	protected $allowedFields = [
@@ -17,17 +18,5 @@ class UserModel extends BaseModel
 		'total_qp',
 		'league_id'
 	];
-
-	//--------------------------------------------------------------------
-
-	protected function hashPassword(array $data) : array
-	{
-		if (! isset($data['data']['password'])) return $data;
-
-		$password = $data['data']['password'];
-		$data['data']['password'] = password_hash($password, PASSWORD_BCRYPT);
-
-		return $data;
-	}
 }
 
