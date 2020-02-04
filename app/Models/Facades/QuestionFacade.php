@@ -82,7 +82,7 @@ abstract class QuestionFacade extends BaseFacade
    */
   public static function loadQuestions($level)
   {
-    $builder = self::instance()->select(
+    $builder = self::select(
       "question, type, correct_answer, difficulty," .
       "incorrect_answers, {$level} as level"
     );
@@ -105,7 +105,6 @@ abstract class QuestionFacade extends BaseFacade
         break;
       default:
         $limit = 10;
-        break;
     }
 
     $builder->orderBy('', 'random');
@@ -177,26 +176,10 @@ abstract class QuestionFacade extends BaseFacade
   {
     if ($answerCode === null) return '';
 
-    $hash = '';
-
-    switch ($sessionQuestion->type)
-    {
-      case 'multiple':
-        $hash = md5($sessionQuestion->options[$answerCode]);
-        break;
-
-      case 'boolean':
-        switch ($answerCode)
-        {
-          case 0:
-            $hash = md5('False');
-            break;
-          case 1:
-            $hash = md5('True');
-            break;
-        }
-        break;
-    }
+    $options = $sessionQuestion->type === 'multiple'
+        ? $sessionQuestion->options : ['False', 'True'];
+    
+    $hash = md5($options[$answerCode]);
 
     return md5($currentHashSecret . $hash);
   }
