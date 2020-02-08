@@ -1,5 +1,8 @@
 <?php namespace Config;
 
+use App\Models\Facades\QuestionFacade;
+use App\Models\Facades\UserFacade;
+
 /**
  * --------------------------------------------------------------------
  * URI Routing
@@ -79,15 +82,14 @@ $routes->get('game', 'Pages::game');
 $routes->get('races', 'Pages::races');
 $routes->get('leagues', 'Pages::leagues');
 $routes->get('leaderboard', 'Pages::leaderboard');
-$routes->get('login/(:num)', 'Pages::login/$1');
-$routes->get('login', 'Pages::login');
 $routes->get('contact', 'Pages::contact');
+$routes->get('login', 'Pages::login');
+$routes->get('login/(:num)', 'Pages::login/$1');
 
 // MEMBER PAGES
 $routes->get('statistics', 'Pages::statistics');
 $routes->get('picture', 'Pages::picture');
 $routes->get('password', 'Pages::password');
-
 $routes->get('logout', 'User::logout');
 
 /**
