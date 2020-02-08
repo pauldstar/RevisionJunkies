@@ -28,7 +28,7 @@ class UserSeeder extends Seeder
 		if (ENVIRONMENT !== 'production')
 		{
 			$faker = Factory::create();
-			$leagues = (new LeagueModel)->findColumn('id');
+			$leagues = (new LeagueModel())->findColumn('id');
 
 			for ($c = 1; $c <= 9; $c++)
 			{
