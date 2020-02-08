@@ -60,7 +60,8 @@ class CreateUserTable extends Migration
 
 		$this->forge->addField($fields);
 		$this->forge->addKey('id', true);
-		$this->forge->createTable('user', false, ['ENGINE' => 'InnoDB']);
+    $this->forge->addForeignKey('league_id', 'league', 'id', 'CASCADE');
+    $this->forge->createTable('user', false, ['ENGINE' => 'InnoDB']);
 	}
 
 	//--------------------------------------------------------------------

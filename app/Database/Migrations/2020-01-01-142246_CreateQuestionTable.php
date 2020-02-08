@@ -50,7 +50,7 @@ class CreateQuestionTable extends Migration
 
 		$this->forge->addField($fields);
 		$this->forge->addKey('id', true);
-		$this->forge->addForeignKey('user_id', 'user', 'id', 'CASCADE', 'CASCADE');
+		$this->forge->addForeignKey('user_id', 'user', 'id', 'CASCADE');
 		$this->forge->createTable('question', false, ['ENGINE' => 'InnoDB']);
 	}
 
