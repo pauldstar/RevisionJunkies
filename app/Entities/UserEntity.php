@@ -4,9 +4,6 @@ use CodeIgniter\Entity;
 
 class UserEntity extends Entity
 {
-  public $email_verifier;
-  public $photo;
-
   protected $casts = [
     'hi_score' => 'integer',
     'total_qp' => 'integer'
