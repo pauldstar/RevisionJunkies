@@ -1,5 +1,6 @@
 <?php namespace App\Controllers;
 
+use App\Models\Facades\UserFacade;
 use CodeIgniter\API\ResponseTrait;
 use CodeIgniter\HTTP\RedirectResponse;
 use Config\Services;
@@ -17,7 +18,7 @@ class User extends BaseController
     $name = $this->request->getVar('login_name');
     $password = $this->request->getVar('login_password');
 
-    $user = $this->userModel->getUser($name, ['username', 'email']);
+    $user = UserFacade::getUser($name, ['username', 'email']);
 
     $userExists = isset($user) && password_verify($password, $user->password);
 
@@ -32,11 +33,11 @@ class User extends BaseController
 
     if ($user->email_verifier !== null)
     {
-      $this->userModel->unverifiedUsername($user->username);
+      UserFacade::unverifiedUsername($user->username);
       return redirect()->to('/login/400');
     }
 
-    $this->userModel->login($user);
+    UserFacade::login($user);
 
     return redirect()->to('/');
   }
@@ -54,7 +55,7 @@ class User extends BaseController
     if (! $this->validate('signup'))
       return redirect()->to('login/200')->withInput();
 
-    $user = $this->userModel->createUser($this->request->getVar());
+    $user = UserFacade::createUser($this->request->getVar());
 
     if (! $user)
     {
@@ -79,18 +80,18 @@ class User extends BaseController
    */
   public function verify_email($username, $emailVerifier)
   {
-    $user = $this->userModel->getUser($username, 'username');
+    $user = UserFacade::getUser($username, 'username');
 
     if (empty($user) || $user->email_verifier === null)
       return redirect()->to('/login');
 
     if ($emailVerifier !== $user->email_verifier)
     {
-      $this->userModel->unverifiedUsername($user->username);
+      UserFacade::unverifiedUsername($user->username);
       return redirect()->to('/login/400');
     }
 
-    $this->userModel->confirmEmailVerification($user->id);
+    UserFacade::confirmEmailVerification($user->id);
 
     return redirect()->to('/login/300');
   }
@@ -106,7 +107,7 @@ class User extends BaseController
   public function send_email_verifier($user)
   {
     $data = is_object($user) ? $user :
-      $this->userModel->getUser($user, 'username');
+      UserFacade::getUser($user, 'username');
 
     if ($data->email_verifier === null) return redirect()->to('/login/300');
 
@@ -117,7 +118,7 @@ class User extends BaseController
     $email->setMessage(view('template/verify_email', (array) $data));
     $email->send();
 
-    $this->userModel->unverifiedUsername($data->username);
+    UserFacade::unverifiedUsername($data->username);
 
     return redirect()->to('/login/400');
   }
@@ -127,7 +128,7 @@ class User extends BaseController
   {
     $email = Services::email();
 
-    $data = $this->userModel->getUser(5);
+    $data = UserFacade::getUser(5);
 
     $email->setSubject('Email Verification');
     $email->setTo($data->email);
@@ -140,7 +141,7 @@ class User extends BaseController
   // TODO: remove test_email() and show_email()
   public function show_email()
   {
-    $data = (array) $this->userModel->getUser(5);
+    $data = (array) UserFacade::getUser(5);
     echo view('template/verify_email', $data);
   }
 
@@ -173,7 +174,7 @@ class User extends BaseController
 
   public function logout()
   {
-    session_destroy();
+    UserFacade::logout();
     return redirect()->to('/login');
   }
 }
