@@ -1,11 +1,10 @@
 <?php namespace App\Models\Facades;
 
-use CodeIgniter\Test\CIDatabaseTestCase;
 use App\Entities\UserEntity;
 use Faker\Factory;
 use ReflectionException;
 
-class UserFacadeTest extends CIDatabaseTestCase
+class UserFacadeTest extends \CIDatabaseTestCase
 {
   /**
    * @depends testGetUser

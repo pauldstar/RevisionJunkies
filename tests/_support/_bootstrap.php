@@ -30,3 +30,4 @@ if (! isset($_SERVER['app.baseURL']))
 //--------------------------------------------------------------------
 
 require  __DIR__ . '/CIUnitTestCase.php';
+require  __DIR__ . '/CIDatabaseTestCase.php';
