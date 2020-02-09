@@ -13,13 +13,27 @@ abstract class BaseFacade
 {
   public static $models = [];
 
+  //--------------------------------------------------------------------
+
+  /**
+   * This is ONLY a reminder to declare any child classes as abstract
+   * So do NOT implement
+   *
+   * @param $doNotImplement
+   * @return mixed
+   */
   abstract public static function subclassMustBeAbstract($doNotImplement);
+
+  //--------------------------------------------------------------------
 
   public static function __static()
   {
     // 'testing' environment already init's session()
+    // TODO: remove ENVIRONMENT check once CI4 session testing is possible
     ENVIRONMENT === 'testing' || session();
   }
+
+  //--------------------------------------------------------------------
 
   public static function __callStatic($method, $args)
   {
