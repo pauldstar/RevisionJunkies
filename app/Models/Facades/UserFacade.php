@@ -1,15 +1,22 @@
 <?php namespace App\Models\Facades;
 
+use App\Entities\UserEntity;
 use App\Models\EmailVerifierModel;
 use ReflectionException;
 
 abstract class UserFacade extends BaseFacade
 {
   /**
-   * Current logged in user
+   * Current user
    * @var  object
    */
   private static $user;
+
+  /**
+   * is current user a member?
+   * @var  object
+   */
+  private static $isLoggedIn;
 
   /**
    * Username of currently unverified user
@@ -27,6 +34,7 @@ abstract class UserFacade extends BaseFacade
     parent::__static();
 
     self::$user = &$_SESSION['user'];
+    self::$isLoggedIn = &$_SESSION['isMember'];
     self::$unverifiedUsername = &$_SESSION['unverifiedUsername'];
   }
 
@@ -34,7 +42,7 @@ abstract class UserFacade extends BaseFacade
 
   public static function isLoggedIn(): bool
   {
-    return self::$user ? true : false;
+    return self::$isLoggedIn ? true : false;
   }
 
   //--------------------------------------------------------------------
@@ -49,7 +57,7 @@ abstract class UserFacade extends BaseFacade
    */
   public static function getUser($id = '', $idType = 'id')
   {
-    if (empty($id)) return self::$user;
+    if ($id === '') return self::$user;
 
     $selections = '
       user.id,
@@ -64,7 +72,7 @@ abstract class UserFacade extends BaseFacade
       league.color AS league_color
     ';
 
-    $builder = self::instance()->select($selections);
+    $builder = self::select($selections);
 
     $builder->join(
       'email_verifier', 'email_verifier.user_id = user.id', 'left'
@@ -84,7 +92,7 @@ abstract class UserFacade extends BaseFacade
       $builder->where($clause);
     } else $builder->where("user.{$idType}", $id);
 
-    return $builder->get()->getRow();
+    return $builder->first();
   }
 
   //--------------------------------------------------------------------
@@ -98,40 +106,31 @@ abstract class UserFacade extends BaseFacade
    */
   public static function createUser(array $input)
   {
-    $model = self::instance();
-
     helper('text');
-    $email_verifier = random_string('alnum', 10);
 
-    $user = [
-      'username' => $input['username'],
-      'password' => $input['password'],
-      'email' => $input['email'],
-      'firstname' => $input['firstname'],
-      'lastname' => $input['lastname'],
-    ];
-
+    $user = new UserEntity($input);
     $verifierModel = new EmailVerifierModel();
 
-    $model->transStart();
+    self::transStart();
 
-    $model->save($user);
+    self::save($user);
+    $user->id = self::getInsertID();
 
     $emailVerifier = [
-      'user_id' => $model->getInsertID(),
-      'verifier' => $email_verifier
+      'user_id' => $user->id,
+      'verifier' => random_string('alnum', 10)
     ];
 
     $verifierModel->insert($emailVerifier);
 
-    $model->transComplete();
+    self::transComplete();
 
-    if (!$model->transStatus()) return false;
+    if (! self::transStatus()) return false;
 
-    self::$unverifiedUsername = $input['username'];
-    $user['email_verifier'] = $email_verifier;
+    self::$unverifiedUsername = $user->username;
+    $user->email_verifier = $emailVerifier['verifier'];
 
-    return (object)$user;
+    return $user;
   }
 
   //--------------------------------------------------------------------
@@ -144,7 +143,7 @@ abstract class UserFacade extends BaseFacade
    */
   public static function confirmEmailVerification($userId)
   {
-    return (new EmailVerifierModel)->delete($userId) ? true : false;
+    return (new EmailVerifierModel())->delete($userId) ? true : false;
   }
 
   //--------------------------------------------------------------------
@@ -189,10 +188,27 @@ abstract class UserFacade extends BaseFacade
   public static function login($user)
   {
     self::$user = $user;
+    self::$isLoggedIn = true;
 
-    self::instance()
-      ->set('updated_at', 'NOW()', false)
-      ->where('id', $user->id)
-      ->update();
+    self::set('updated_at', 'NOW()')
+        ->where('id', $user->id)
+        ->update();
+  }
+
+  //--------------------------------------------------------------------
+
+  /**
+   * End member session
+   */
+  public static function logout()
+  {
+    // TODO: remove ENVIRONMENT check once CI4 session testing is possible
+    if (ENVIRONMENT === 'testing')
+    {
+      self::$user = null;
+      self::$isLoggedIn = null;
+      self::$unverifiedUsername = null;
+    }
+    else session_destroy();
   }
 }
