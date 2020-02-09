@@ -7,6 +7,52 @@ use ReflectionException;
 class UserFacadeTest extends \CIDatabaseTestCase
 {
   /**
+   * @throws ReflectionException
+   */
+  public function testUpdateStats()
+  {
+    $checkUpdates = function($hiScore, $totalQp)
+    {
+      $user = $this->getPrivateProperty(UserFacade::class, 'user');
+      $this->assertEquals($hiScore, $user->hi_score);
+      $this->assertEquals($totalQp, $user->total_qp);
+    };
+
+    $set = ['hi_score' => null, 'total_qp' => null];
+    UserFacade::set($set)->where('user.id', 1)->update();
+
+    $user = UserFacade::getUser(1);
+    UserFacade::login($user);
+
+    $checkUpdates(0, 0);
+    UserFacade::updateStats();
+    $checkUpdates(0, 0);
+    UserFacade::updateStats(10);
+    $checkUpdates(10, 10);
+    UserFacade::updateStats(5);
+    $checkUpdates(10, 15);
+    UserFacade::updateStats(15);
+    $checkUpdates(15, 30);
+
+    UserFacade::logout();
+    $this->expectExceptionMessage(
+      "Trying to get property 'hi_score' of non-object"
+    );
+    $checkUpdates(0, 0);
+  }
+
+  public function testUnverifiedUsername()
+  {
+    $this->assertNull(UserFacade::unverifiedUsername());
+
+    $username = 'RaceCar_is_raCecaR';
+    UserFacade::unverifiedUsername($username);
+    $this->assertEquals($username, UserFacade::unverifiedUsername());
+
+    UserFacade::unverifiedUsername(false);
+  }
+
+  /**
    * @depends testGetUser
    * @param UserEntity $user
    */
