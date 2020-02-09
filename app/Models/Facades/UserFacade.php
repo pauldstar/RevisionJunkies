@@ -13,12 +13,6 @@ abstract class UserFacade extends BaseFacade
   private static $user;
 
   /**
-   * is current user a member?
-   * @var  object
-   */
-  private static $isLoggedIn;
-
-  /**
    * Username of currently unverified user
    * @var  string
    */
@@ -34,7 +28,6 @@ abstract class UserFacade extends BaseFacade
     parent::__static();
 
     self::$user = &$_SESSION['user'];
-    self::$isLoggedIn = &$_SESSION['isMember'];
     self::$unverifiedUsername = &$_SESSION['unverifiedUsername'];
   }
 
@@ -42,7 +35,7 @@ abstract class UserFacade extends BaseFacade
 
   public static function isLoggedIn(): bool
   {
-    return self::$isLoggedIn ? true : false;
+    return self::$user ? true : false;
   }
 
   //--------------------------------------------------------------------
@@ -154,10 +147,12 @@ abstract class UserFacade extends BaseFacade
    * @param string $username
    * @return void|string
    */
-  public static function unverifiedUsername($username = NULL)
+  public static function unverifiedUsername($username = null)
   {
     if ($username) self::$unverifiedUsername = $username;
-    else return self::$unverifiedUsername;
+    elseif ($username === false) self::$unverifiedUsername = null;
+
+    return self::$unverifiedUsername;
   }
 
   //--------------------------------------------------------------------
@@ -169,12 +164,12 @@ abstract class UserFacade extends BaseFacade
    */
   public static function updateStats($score = 0)
   {
-    if (! self::$user) return null;
+    if (! self::$user) return;
 
     self::$user->hi_score = $score;
     self::$user->total_qp = $score;
 
-    self::model()->save(self::$user);
+    self::save(self::$user);
   }
 
   //--------------------------------------------------------------------
@@ -188,11 +183,10 @@ abstract class UserFacade extends BaseFacade
   public static function login($user)
   {
     self::$user = $user;
-    self::$isLoggedIn = true;
 
     self::set('updated_at', 'NOW()')
-        ->where('id', $user->id)
-        ->update();
+      ->where('id', $user->id)
+      ->update();
   }
 
   //--------------------------------------------------------------------
@@ -206,7 +200,6 @@ abstract class UserFacade extends BaseFacade
     if (ENVIRONMENT === 'testing')
     {
       self::$user = null;
-      self::$isLoggedIn = null;
       self::$unverifiedUsername = null;
     }
     else session_destroy();
