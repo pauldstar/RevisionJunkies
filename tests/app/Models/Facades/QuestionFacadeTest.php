@@ -228,10 +228,7 @@ class QuestionFacadeTest extends \CIUnitTestCase
     return $questions;
   }
 
-  /**
-   * @afterclass
-   */
-  public static function resetSessionQuestions()
+  public function tearDown(): void
   {
     QuestionFacade::reset();
   }
