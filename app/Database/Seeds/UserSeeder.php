@@ -1,5 +1,7 @@
 <?php namespace App\Database\Seeds;
 
+use App\Entities\UserEntity;
+use App\Models\Facades\UserFacade;
 use App\Models\LeagueModel;
 use App\Models\UserModel;
 use CodeIgniter\Database\Seeder;
@@ -22,8 +24,8 @@ class UserSeeder extends Seeder
 			'lastname' => 'Ogbeiwi'
 		];
 
-		$user = new UserModel();
-		$user->save($data);
+		$user = new UserEntity($data);
+		UserFacade::save($user);
 
 		if (ENVIRONMENT !== 'production')
 		{
@@ -43,7 +45,8 @@ class UserSeeder extends Seeder
 					'league_id' => $faker->randomElement($leagues)
 				];
 
-				$user->save($data);
+        $user = new UserEntity($data);
+        UserFacade::save($user);
 			}
 		}
 	}

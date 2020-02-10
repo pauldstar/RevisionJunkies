@@ -4,7 +4,7 @@ class QuestionSeeder extends BaseSeeder
 {
 	public function run()
 	{
-		$sql = self::loadSQL('questions');
+		$sql = self::loadSql('questions');
 		$this->db->query($sql);
 	}
 }

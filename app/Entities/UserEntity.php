@@ -20,8 +20,10 @@ class UserEntity extends Entity
 
   protected function setHiScore(int $value)
   {
-    $value > $this->attributes['hi_score']
-      && $this->attributes['hi_score'] = $value;
+    if (isset($this->attributes['hi_score']))
+      $value > $this->attributes['hi_score']
+        && $this->attributes['hi_score'] = $value;
+    else $this->attributes['hi_score'] = $value;
   }
 
   //--------------------------------------------------------------------
@@ -35,7 +37,9 @@ class UserEntity extends Entity
 
   protected function setTotalQp(int $value)
   {
-    $this->attributes['total_qp'] += $value;
+    if (isset($this->attributes['total_qp']))
+      $this->attributes['total_qp'] += $value;
+    else $this->attributes['total_qp'] = $value;
   }
 
   //--------------------------------------------------------------------
