@@ -29,17 +29,4 @@ abstract class BaseModel extends Model
 		$tableName = str_replace('Model', '', $className);
 		$this->table = camel_to_snake($tableName);
   }
-
-  //--------------------------------------------------------------------
-
-  /**
-   * Returns new instance of the calling model class
-   * @return BaseModel
-   */
-  public static function model()
-  {
-    $className = static::class;
-    self::$model || self::$model = new $className();
-    return self::$model;
-  }
 }
