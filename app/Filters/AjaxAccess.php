@@ -1,5 +1,6 @@
 <?php namespace App\Filters;
 
+use App\Facades\UserFacade;
 use CodeIgniter\API\ResponseTrait;
 use CodeIgniter\Config\Services;
 use CodeIgniter\HTTP\RequestInterface;
@@ -15,8 +16,7 @@ class AjaxAccess implements FilterInterface
 
   public function before(RequestInterface $request)
   {
-    $userModel = new UserModel;
-    if ($userModel->isLoggedIn()) return $request;
+    if (UserFacade::isLoggedIn()) return $request;
 
     $this->request = $request;
     $this->response = Services::response();

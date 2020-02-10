@@ -1,5 +1,6 @@
 <?php namespace App\Filters;
 
+use App\Facades\UserFacade;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\Filters\FilterInterface;
@@ -9,9 +10,7 @@ class PageAccess implements FilterInterface
 {
   public function before(RequestInterface $request)
   {
-    $userModel = new UserModel;
-
-    if (! $userModel->isLoggedIn()) return redirect()->to('login');
+    if (! UserFacade::isLoggedIn()) return redirect()->to('login');
 
     return $request;
   }
