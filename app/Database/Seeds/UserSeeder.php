@@ -1,7 +1,7 @@
 <?php namespace App\Database\Seeds;
 
 use App\Entities\UserEntity;
-use App\Models\Facades\UserFacade;
+use App\Facades\UserFacade;
 use App\Models\LeagueModel;
 use App\Models\UserModel;
 use CodeIgniter\Database\Seeder;

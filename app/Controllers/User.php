@@ -1,6 +1,6 @@
 <?php namespace App\Controllers;
 
-use App\Models\Facades\UserFacade;
+use App\Facades\UserFacade;
 use CodeIgniter\API\ResponseTrait;
 use CodeIgniter\HTTP\RedirectResponse;
 use Config\Services;

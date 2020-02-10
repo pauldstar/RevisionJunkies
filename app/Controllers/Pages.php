@@ -1,6 +1,6 @@
 <?php namespace App\Controllers;
 
-use App\Models\Facades\UserFacade;
+use App\Facades\UserFacade;
 use CodeIgniter\Controller;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\HTTP\RedirectResponse;

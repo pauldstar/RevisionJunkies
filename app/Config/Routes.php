@@ -1,7 +1,7 @@
 <?php namespace Config;
 
-use App\Models\Facades\QuestionFacade;
-use App\Models\Facades\UserFacade;
+use App\Facades\QuestionFacade;
+use App\Facades\UserFacade;
 
 /**
  * --------------------------------------------------------------------

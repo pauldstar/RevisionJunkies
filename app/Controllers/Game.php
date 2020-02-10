@@ -1,8 +1,8 @@
 <?php namespace App\Controllers;
 
-use App\Models\Facades\QuestionFacade;
-use App\Models\Facades\GameFacade;
-use App\Models\Facades\UserFacade;
+use App\Facades\QuestionFacade;
+use App\Facades\GameFacade;
+use App\Facades\UserFacade;
 use CodeIgniter\API\ResponseTrait;
 use CodeIgniter\HTTP\Response;
 use ReflectionException;
@@ -81,10 +81,9 @@ class Game extends BaseController
   public function answer_score($answerCode = null): Response
   {
     $question = QuestionFacade::nextSessionQuestion();
-    $firstHash = QuestionFacade::nextHashSecret();
-    $answerHash = QuestionFacade
-      ::userAnswerHash($question, $firstHash, $answerCode);
-    $score = QuestionFacade::answerScore($question, $answerHash);
+    $secret = QuestionFacade::nextHashSecret();
+    $hash = QuestionFacade::userAnswerHash($question, $secret, $answerCode);
+    $score = QuestionFacade::answerScore($question, $hash);
     GameFacade::score($score);
 
     return $this->respond($score);

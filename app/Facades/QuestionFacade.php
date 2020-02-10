@@ -1,4 +1,4 @@
-<?php namespace App\Models\Facades;
+<?php namespace App\Facades;
 
 abstract class QuestionFacade extends BaseFacade
 {
@@ -35,6 +35,7 @@ abstract class QuestionFacade extends BaseFacade
   /**
    * Prepare questions for user game session
    *
+   * @depends loadQuestions
    * @param array $dbQuestions
    * @return array
    */
@@ -139,8 +140,9 @@ abstract class QuestionFacade extends BaseFacade
   /**
    * Get score for user answer on given question
    *
+   * @depends userAnswerHash
    * @param object $sessionQuestion
-   * @param string $userAnswerHash from userAnswerHash()
+   * @param string $userAnswerHash
    * @return float
    */
   public static function answerScore(object $sessionQuestion,
@@ -165,8 +167,9 @@ abstract class QuestionFacade extends BaseFacade
   /**
    * get hash for user's answer
    *
+   * @depends currentHashSecret
    * @param object $sessionQuestion
-   * @param string $currentHashSecret from currentHashSecret()
+   * @param string $currentHashSecret
    * @param string|int $answerCode
    * @return string
    */

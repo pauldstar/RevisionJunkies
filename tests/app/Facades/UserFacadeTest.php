@@ -1,4 +1,4 @@
-<?php namespace App\Models\Facades;
+<?php namespace App\Facades;
 
 use App\Entities\UserEntity;
 use Faker\Factory;
