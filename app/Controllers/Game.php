@@ -30,27 +30,10 @@ class Game extends BaseController
   /**
    * Start game & timer
    */
-  public function start_game(): void
+  public function start_game(): Response
   {
     GameFacade::startTime(true);
-  }
-
-  //--------------------------------------------------------------------
-
-  /**
-   * End game and update user details
-   *
-   * @param string|int $score
-   * @param string|int $timeDelta - game time length
-   * @return Response
-   * @throws ReflectionException
-   */
-  public function end_game($score, $timeDelta): Response
-  {
-    $elapsed = time() - GameFacade::startTime();
-    $output = "user<br />{$timeDelta}<br />session<br />$elapsed";
-    UserFacade::updateStats($score);
-    return $this->respond($output);
+    return $this->respond(true);
   }
 
   //--------------------------------------------------------------------
@@ -87,5 +70,23 @@ class Game extends BaseController
     GameFacade::score($score);
 
     return $this->respond($score);
+  }
+
+  //--------------------------------------------------------------------
+
+  /**
+   * End game and update user details
+   *
+   * @param string|int $score
+   * @param string|int $timeDelta - game time length
+   * @return Response
+   * @throws ReflectionException
+   */
+  public function end_game($score, $timeDelta): Response
+  {
+    $elapsed = time() - GameFacade::startTime();
+    $output = "user<br />{$timeDelta}<br />session<br />$elapsed";
+    UserFacade::updateStats($score);
+    return $this->respond($output);
   }
 }
