@@ -1118,20 +1118,20 @@ var Modal = (_=>
 })();
 
 var Md5 = (_=>
-{ 'use strict';
-  let _oldHash = '';
+{
+  let _currentHashSecret = '';
 
   function _run(answerHash, string)
   {
-    if (!answerHash) return void(_oldHash = '');
-    if (!string) return void(_oldHash = answerHash);
+    if (! answerHash) return void(_currentHashSecret = '');
+    if (! string) return void(_currentHashSecret = answerHash);
 
-    let newHash = _md5(string),
-        test = _md5(_oldHash + newHash);
+    let hash = _md5(string),
+        result = _md5(_currentHashSecret + hash);
 
-    _oldHash = answerHash;
+    _currentHashSecret = answerHash;
 
-    return test;
+    return result;
   }
 
   function _md5(e)
