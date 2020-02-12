@@ -43,31 +43,30 @@ abstract class QuestionFacade extends BaseFacade
   {
     $gameQuestions = [];
 
-    foreach ($dbQuestions as $sessionQuestion)
+    foreach ($dbQuestions as $sessionQtn)
     {
-      $gameQuestion['level'] = $sessionQuestion->level;
-      $gameQuestion['question'] = $sessionQuestion->question;
-      $gameQuestion['type'] = $sessionQuestion->type;
-      $gameQuestion['score'] = self::getRandomScore($sessionQuestion->level);
-      $gameQuestion['ah'] = self
-        ::getNextAnswerHash($sessionQuestion->correct_answer);
+      $gameQtn['level'] = $sessionQtn->level;
+      $gameQtn['question'] = $sessionQtn->question;
+      $gameQtn['type'] = $sessionQtn->type;
+      $gameQtn['score'] = self::getRandomScore($sessionQtn->level);
+      $gameQtn['ah'] = self::getNextAnswerHash($sessionQtn->correct_answer);
 
-      if ($sessionQuestion->type === 'multiple')
+      if ($sessionQtn->type === 'multiple')
       {
-        $gameQuestion['options'] = array_merge(
-          [$sessionQuestion->correct_answer],
-          $sessionQuestion->incorrect_answers
+        $gameQtn['options'] = array_merge(
+          [$sessionQtn->correct_answer],
+          $sessionQtn->incorrect_answers
         );
 
-        shuffle($gameQuestion['options']);
-        $sessionQuestion->options = $gameQuestion['options'];
+        shuffle($gameQtn['options']);
+        $sessionQtn->options = $gameQtn['options'];
       }
 
-      $gameQuestions[] = $gameQuestion;
+      $gameQuestions[] = $gameQtn;
 
-      $sessionQuestion->score = $gameQuestion['score'];
-      $sessionQuestion->answer_hash = $gameQuestion['ah'];
-      self::$questions[] = $sessionQuestion;
+      $sessionQtn->score = $gameQtn['score'];
+      $sessionQtn->answer_hash = $gameQtn['ah'];
+      self::$questions[] = $sessionQtn;
     }
 
     return $gameQuestions;
