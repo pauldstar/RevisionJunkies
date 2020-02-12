@@ -35,17 +35,8 @@ abstract class BaseFacade
 
   //--------------------------------------------------------------------
 
-  public static function __callStatic($method, $args)
+  protected static function callMethod($model, $method, $args)
   {
-    $className = substr(strrchr(static::class, "\\"), 1);
-    $className = str_replace('Facade', 'Model', $className);
-    $modelName = "\App\Models\\{$className}";
-
-    isset(self::$models[$modelName])
-     || self::$models[$modelName] = new $modelName();
-
-    $model = self::$models[$modelName];
-
     switch(count($args))
     {
       case 0: return $model->$method();
@@ -57,4 +48,19 @@ abstract class BaseFacade
     }
   }
 
+  //--------------------------------------------------------------------
+
+  public static function __callStatic($method, $args)
+  {
+    $className = substr(strrchr(static::class, "\\"), 1);
+    $className = str_replace('Facade', 'Model', $className);
+    $modelName = "\App\Models\\{$className}";
+
+    isset(self::$models[$modelName])
+     || self::$models[$modelName] = new $modelName();
+
+    $model = self::$models[$modelName];
+
+    self::callMethod($model, $method, $args);
+  }
 }
