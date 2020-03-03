@@ -355,7 +355,7 @@ var Grid = (_=>
     this.y = position.y;
   };
 
-  Tile.prototype.getIntValue = function()
+  Tile.prototype.intValue = function()
   {
     return Math.floor(this.floatValue);
   };
@@ -389,10 +389,7 @@ var Grid = (_=>
 
   function _addStartTiles()
   {
-    for (let i = 0; i < 2; i++)
-    {
-      _addRandomTile();
-    }
+    for (let i = 0; i < 2; i++) _addRandomTile();
   }
 
   function _buildGrid()
@@ -405,7 +402,7 @@ var Grid = (_=>
 
       for (let y = 0; y < _size; y++)
       {
-				_cells[x].push(null);
+        _cells[x].push(null);
       }
     }
   }
@@ -435,7 +432,7 @@ var Grid = (_=>
 
     _eachCell((x, y, tile) =>
     {
-      tileIntValue = tile.getIntValue();
+      tileIntValue = tile.intValue();
 
       for (let direction = 0; direction < 4; direction++)
       {
@@ -448,7 +445,7 @@ var Grid = (_=>
         otherTile = _cellContent(cell);
 
         if (tile.floatValue) isMergeable = otherTile &&
-          _isSameNumberClass(tileIntValue, otherTile.getIntValue());
+          _isSameNumberClass(tileIntValue, otherTile.intValue());
         else if (tile.floatValue === undefined)
            isMergeable = otherTile && otherTile.floatValue;
 
@@ -522,7 +519,7 @@ var Grid = (_=>
       if (tile && tile.isMaxMerge) maxMerge = tile;
     });
 
-    return returnIntValue ? (maxMerge ? maxMerge.getIntValue() : 0) : maxMerge;
+    return returnIntValue ? (maxMerge ? maxMerge.intValue() : 0) : maxMerge;
   }
 
   function _eachCell(callback)
@@ -615,7 +612,7 @@ var Grid = (_=>
               next = _cellContent(positions.next);
           // Only one merger per row traversal?
           let isMergeable = next && !next.parentTiles &&
-            _isSameNumberClass(next.getIntValue(), tile.getIntValue());
+            _isSameNumberClass(next.intValue(), tile.intValue());
 
           if (!isMergeable) _moveTile(tile, positions.farthest);
           else
@@ -812,11 +809,11 @@ var GameDisplay = (_=>
 
     let statusClass = tile.floatValue === undefined ? 'tile-new' :
       tile.floatValue === 0 ? 'tile-zero' :
-      tile.getIntValue() % 2 === 0 ? 'tile-even' : 'tile-odd';
+      tile.intValue() % 2 === 0 ? 'tile-even' : 'tile-odd';
 
     let classes = ['tile', statusClass, positionClass],
         textContent = tile.floatValue === undefined ? '?' :
-          tile.floatValue === 0 ? 'X' : tile.getIntValue();
+          tile.floatValue === 0 ? 'X' : tile.intValue();
 
     if (tile.isMaxMerge) classes.push('tile-max');
 
