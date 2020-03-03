@@ -196,8 +196,8 @@ abstract class QuestionFacade extends BaseFacade
    */
   private static function getRandomScore($level)
   {
-    $max = 33 * $level;
-    $min = 1;
+    $max = 330 * $level;
+    $min = 10;
     $randFloat = mt_rand() / mt_getrandmax();
 
     return $randFloat * ($max - $min) + $min;

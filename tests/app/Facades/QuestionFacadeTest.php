@@ -148,7 +148,7 @@ class QuestionFacadeTest extends \CIUnitTestCase
 
     foreach ($questions as $qtn)
     {
-      $this->assertGreaterThanOrEqual('1', $qtn['score']);
+      $this->assertGreaterThanOrEqual(10, $qtn['score']);
       $this->assertLessThanOrEqual(33 * $qtn['level'], $qtn['score']);
 
       if ($qtn['type'] === 'multiple')
