@@ -11,24 +11,23 @@ class GameFacadeTest extends \CIUnitTestCase
 
   public function testScore()
   {
-    $test = GameFacade::score();
-    $this->assertEquals(0, $test);
+    GameFacade::score(true);
+    $this->assertEmpty(GameFacade::score());
 
     GameFacade::score(10);
-    $test = GameFacade::score();
-    $this->assertEquals(10, $test);
+    $this->assertCount(1, GameFacade::score());
+    $this->assertEquals(10, GameFacade::score()[0]);
 
     GameFacade::score(20);
-    $test = GameFacade::score();
-    $this->assertEquals(30, $test);
+    $this->assertCount(2, GameFacade::score());
+    $this->assertEquals(20, GameFacade::score()[1]);
 
     GameFacade::score(40);
-    $test = GameFacade::score();
-    $this->assertEquals(70, $test);
+    $this->assertCount(3, GameFacade::score());
+    $this->assertEquals(40, GameFacade::score()[2]);
 
-    GameFacade::score(0, false);
-    $test = GameFacade::score();
-    $this->assertEquals(0, $test);
+    GameFacade::score(true);
+    $this->assertEmpty(GameFacade::score());
   }
 
   public function testLevel()

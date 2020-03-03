@@ -3,7 +3,6 @@
 class GameModel extends BaseModel
 {
   private $startTime;
-  private $score;
   private $level;
   private $scores;
   private $cache;
@@ -15,7 +14,6 @@ class GameModel extends BaseModel
 
     $this->startTime = null;
     $this->level = 1;
-    $this->score = 0;
     $this->scores = [];
     $this->ignoredIndices = '';
     $this->cache = [[]];
@@ -24,6 +22,8 @@ class GameModel extends BaseModel
   //--------------------------------------------------------------------
 
   /**
+   * Start game counter
+   *
    * @param bool $startGame
    * @return void|int
    */
@@ -36,20 +36,31 @@ class GameModel extends BaseModel
   //--------------------------------------------------------------------
 
   /**
-   * @param int $score
-   * @param bool $increment
-   * @return void|int
+   * Set/reset scores
+   *
+   * @param int|bool $score
+   * @return void|array
    */
-  public function score($score = 0, $increment = true)
+  public function score($score = false)
   {
-    if ($score && $increment) $this->score += $score;
-    elseif (!$increment) $this->score = $score;
-    else return $this->score;
+    if ($score === true)
+    {
+      $this->scores = [];
+      $this->ignoredIndices = '';
+    }
+    elseif (is_int($score))
+    {
+      $this->scores[] = $score;
+      $this->ignoredIndices .= '0';
+    }
+    else return $this->scores;
   }
 
   //--------------------------------------------------------------------
 
   /**
+   * Get/set level
+   *
    * @param bool $increment
    * @param bool $reset
    * @return void|int
@@ -65,7 +76,7 @@ class GameModel extends BaseModel
 
   public function reset()
   {
-    $this->score(0);
+    $this->score(true);
     $this->level(false, true);
   }
 
