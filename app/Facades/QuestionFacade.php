@@ -179,8 +179,8 @@ abstract class QuestionFacade extends BaseFacade
     if ($answerCode === null) return '';
 
     $options = $sessionQuestion->type === 'multiple'
-        ? $sessionQuestion->options : ['False', 'True'];
-    
+      ? $sessionQuestion->options : ['False', 'True'];
+
     $hash = md5($options[$answerCode]);
 
     return md5($currentHashSecret . $hash);
