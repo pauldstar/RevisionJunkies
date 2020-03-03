@@ -9,6 +9,7 @@ use App\Models\GameModel;
  * @method static startTime(bool $startGame = false)
  * @method static score($score = 0, $increment = true)
  * @method static level(bool $increment = false, bool $reset = false)
+ * @method static scoreIsValid(float $remainder, int $diff = 0, int $count = null, string $ignoreIndices = null)
  * @method static reset()
  *
  * @mixin GameModel
