@@ -75,7 +75,7 @@ class Game extends BaseController
   //--------------------------------------------------------------------
 
   /**
-   * End game and update user details
+   * End game and update user details if game score/time is valid
    *
    * @param string|int $score
    * @param string|int $timeDelta - game time length
@@ -84,9 +84,16 @@ class Game extends BaseController
    */
   public function end_game($score, $timeDelta): Response
   {
-    $elapsed = time() - GameFacade::startTime();
-    $output = "user<br />{$timeDelta}<br />session<br />$elapsed";
-    UserFacade::updateStats($score);
-    return $this->respond($output);
+    $scoreValid = GameFacade::scoreIsValid($score);
+    $serverTimeDelta = time() - GameFacade::startTime();
+    $timeDiff = abs($timeDelta - $serverTimeDelta);
+
+    if ($scoreValid && $timeDiff < 3)
+    {
+      UserFacade::updateStats($score);
+      return $this->respond(true);
+    }
+
+    return $this->failValidationError();
   }
 }
