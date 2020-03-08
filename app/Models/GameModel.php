@@ -8,10 +8,10 @@ class GameModel extends BaseModel
   private $cache;
   private $ignoredIndices;
 
-  public function __construct()
-  {
-    parent::__construct();
+  //--------------------------------------------------------------------
 
+  public function reset()
+  {
     $this->startTime = null;
     $this->level = 1;
     $this->scores = [];
@@ -74,53 +74,45 @@ class GameModel extends BaseModel
 
   //--------------------------------------------------------------------
 
-  public function reset()
-  {
-    $this->score(true);
-    $this->level(false, true);
-  }
-
-  //--------------------------------------------------------------------
-
   /**
    * Check if user final score is valid
    *
    * @param float $remainder default value is the game score
    * @param int $sum
    * @param int $count
-   * @param string $ignoreIndices
+   * @param string $ignoredIndices
    * @return bool
    */
   public function scoreIsValid(float $remainder, int $sum = 0,
-                               int $count = null, string $ignoreIndices = null)
+                               int $count = null, string $ignoredIndices = null)
   {
     isset($count) || $count = count($this->scores);
-    isset($ignoreIndices) || $ignoreIndices = $this->ignoredIndices;
+    isset($ignoredIndices) || $ignoredIndices = $this->ignoredIndices;
 
-    if ($this->minCache($remainder, $ignoreIndices)) return false;
+    if ($this->minCache($remainder, $ignoredIndices)) return false;
     if ($remainder <= 0 || $count === 0) return $remainder == 0 ? true : false;
 
     foreach ($this->scores as $i => $score)
     {
-      $shouldIgnore = $ignoreIndices[$i] || ! $this->sameClass($sum, $score);
+      $shouldIgnore = $ignoredIndices[$i] || ! $this->sameClass($sum, $score);
 
       if ($shouldIgnore) continue;
 
-      $ignoreIndices[$i] = '1';
+      $ignoredIndices[$i] = '1';
 
       $validScore = $this->scoreIsValid(
         $remainder - $score,
         $sum + $score,
         $count - 1,
-        $ignoreIndices
+        $ignoredIndices
       );
 
       if ($validScore) return true;
 
-      $ignoreIndices[$i] = '0';
+      $ignoredIndices[$i] = '0';
     }
 
-    $this->minCache($remainder, $ignoreIndices, true);
+    $this->minCache($remainder, $ignoredIndices, true);
 
     return false;
   }
