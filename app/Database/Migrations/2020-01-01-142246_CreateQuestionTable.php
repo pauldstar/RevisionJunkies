@@ -41,10 +41,10 @@ class CreateQuestionTable extends Migration
 				'type' => 'TEXT',
 			],
 			'updated_at' => [
-				'type' => 'TIMESTAMP',
+				'type' => 'DATETIME',
 			],
 			'created_at' => [
-				'type' => 'TIMESTAMP',
+				'type' => 'DATETIME',
 			]
 		];
 
