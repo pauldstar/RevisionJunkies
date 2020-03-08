@@ -1,8 +1,5 @@
 <?php namespace Config;
 
-use App\Facades\QuestionFacade;
-use App\Facades\UserFacade;
-
 /**
  * --------------------------------------------------------------------
  * URI Routing
