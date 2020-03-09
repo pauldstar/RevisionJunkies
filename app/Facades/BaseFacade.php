@@ -1,18 +1,18 @@
 <?php namespace App\Facades;
 
 use App\Models\BaseModel;
-use CodeIgniter\Model;
 
 /**
  * Class BaseFacade
  * Allows calling model methods as if static
+ * Saves singleton in sessions
  *
  * @package App\Models\Facades
  * @mixin BaseModel
  */
 abstract class BaseFacade
 {
-  public static $models = [];
+  private static $models = [];
 
   //--------------------------------------------------------------------
 
@@ -37,18 +37,13 @@ abstract class BaseFacade
     ENVIRONMENT === 'testing' || session();
 
     isset(self::$models[$modelName])
-     || self::$models[$modelName] = & $_SESSION[$modelName];
+    || self::$models[$modelName] = & $_SESSION[$modelName];
 
     isset(self::$models[$modelName])
-     || self::$models[$modelName] = new $modelName();
+    || self::$models[$modelName] = new $modelName();
 
-    return self::callMethod(self::$models[$modelName], $method, $args);
-  }
-
-  //--------------------------------------------------------------------
-
-  protected static function callMethod(Model $model, string $method, array $args)
-  {
+    $model = self::$models[$modelName];
+    
     switch(count($args))
     {
       case 0: return $model->$method();
