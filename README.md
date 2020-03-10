@@ -1,3 +1,3 @@
-# QuePenny
+# RevisionJunkies
 
-A fun challenging grid-based game of trivia hosted at [quepenny.com](http://quepenny.com).
+Matches students with study techniques that suit their personality types.(https://revisionjunkies.com).
