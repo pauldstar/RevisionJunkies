@@ -15,8 +15,8 @@ class GameModel extends BaseModel
     $this->startTime = null;
     $this->level = 1;
     $this->scores = [];
-    $this->ignoredIndices = '';
     $this->cache = [[]];
+    $this->ignoredIndices = '';
   }
 
   //--------------------------------------------------------------------
