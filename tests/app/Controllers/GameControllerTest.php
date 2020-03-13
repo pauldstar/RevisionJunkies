@@ -36,6 +36,23 @@ class GameControllerTest extends \CIUnitTestCase
     $this->assertTrue($result->isOK());
   }
 
+  /**
+   * Mimic the client and play the game randomly
+   *
+   * @depends testLoadGame
+   * @param $questions
+   */
+  public function testGamePlay($questions)
+  {
+    $this->expectNotToPerformAssertions();
+
+    $score = 0;
+    $level = 1;
+    $startTime = time();
+    $currentHashSecret = '';
+
+  }
+
   public function testGetQuestions()
   {
     $result = $this->withURI(base_url('game/get_questions'))
